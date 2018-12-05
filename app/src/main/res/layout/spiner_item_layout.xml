@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/pwdBgKey"
+    tools:context=".classes.SetClassesActivity">
+
+
+        <TextView
+            android:id="@+id/tv_name"
+            android:layout_width="wrap_content"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_alignTop="@+id/et_input_classes"
+            android:width="220dp"
+            android:paddingLeft="8dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:paddingRight="20dp"
+            android:textSize="16sp"
+            android:text="11111111111"
+            android:drawablePadding="3dp"
+            android:background="@android:color/white"
+            android:gravity="center" />
+</RelativeLayout>
