@@ -16,13 +16,14 @@
 
 package android.serialport;
 
+import android.util.Log;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.util.Iterator;
 import java.util.Vector;
-import android.util.Log;
 
 public class SerialPortFinder {
 
@@ -34,6 +35,7 @@ public class SerialPortFinder {
 
 		private String mDriverName;
 		private String mDeviceRoot;
+
 		Vector<File> mDevices = null;
 
 		public Vector<File> getDevices() {
