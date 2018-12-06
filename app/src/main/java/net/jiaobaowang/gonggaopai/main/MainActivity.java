@@ -31,11 +31,9 @@ import net.jiaobaowang.gonggaopai.R;
 import net.jiaobaowang.gonggaopai.base.BaseActivity;
 import net.jiaobaowang.gonggaopai.base.BaseActivityManager;
 import net.jiaobaowang.gonggaopai.pwd.PwdActivity;
-import net.jiaobaowang.gonggaopai.service.ReaderService;
 import net.jiaobaowang.gonggaopai.service.UploadService;
 import net.jiaobaowang.gonggaopai.style.StyleActivity;
 import net.jiaobaowang.gonggaopai.util.Const;
-import net.jiaobaowang.gonggaopai.util.ReceiverAndServiceUtil;
 import net.jiaobaowang.gonggaopai.util.Validate;
 
 public class MainActivity extends BaseActivity {
@@ -119,7 +117,7 @@ public class MainActivity extends BaseActivity {
             public void onClick(View v) {//设置班牌类型
                 setHideAnimation(menuMultipleActions, 500);
                 Intent intent = new Intent();
-                intent.setClass(cont, Main3Activity.class);
+                intent.setClass(cont, PwdActivity.class);
                 startActivityForResult(intent, 0x110);
             }
         });
@@ -160,19 +158,19 @@ public class MainActivity extends BaseActivity {
             }
         });
 
-        boolean isUploadServiceRunning=ReceiverAndServiceUtil.isServiceRunning(cont,"net.jiaobaowang.gonggaopai.service.UploadService");
-        boolean isReaderServiceRunning=ReceiverAndServiceUtil.isServiceRunning(cont,"net.jiaobaowang.gonggaopai.service.ReaderService");
-        if(!isUploadServiceRunning){
-            //启动定时任务
-            Intent startService = new Intent(cont,UploadService.class);
-            startService(startService);
-        }
-
-        if(!isReaderServiceRunning){
-            //启动串口读取服务
-            Intent startIntent = new Intent(cont,ReaderService.class);
-            startService(startIntent);
-        }
+//        boolean isUploadServiceRunning=ReceiverAndServiceUtil.isServiceRunning(cont,"net.jiaobaowang.gonggaopai.service.UploadService");
+//        boolean isReaderServiceRunning=ReceiverAndServiceUtil.isServiceRunning(cont,"net.jiaobaowang.gonggaopai.service.ReaderService");
+//        if(!isUploadServiceRunning){
+//            //启动定时任务
+//            Intent startService = new Intent(cont,UploadService.class);
+//            startService(startService);
+//        }
+//
+//        if(!isReaderServiceRunning){
+//            //启动串口读取服务
+//            Intent startIntent = new Intent(cont,ReaderService.class);
+//            startService(startIntent);
+//        }
 
         quanxian();
         if(Validate.isNull(Const.blandlv)&&Validate.isNull(Const.blandid)){

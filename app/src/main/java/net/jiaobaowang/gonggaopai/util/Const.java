@@ -5,27 +5,27 @@ public class Const {
 
     /****可维护字段*****/
     //设置班牌类型成功后跳转的页面路径
-    public static final String baseUrl="http://192.168.1.203:8080/banPaiIndex/test12/html/index/firstPage.html";
+//    public static final String baseUrl="http://192.168.1.203:8080/banPaiIndex/test12/html/index/firstPage.html";
     //第一次进入或没设置班牌类型时跳转的页面路径
-    public static final String defaultUrl="http://192.168.1.203:8080/banPaiIndex/test12/html/index/firstPage.html";
+//    public static final String defaultUrl="http://192.168.1.203:8080/banPaiIndex/test12/html/index/firstPage.html";
     //App更新路径
-    public static String updateUrl="http://192.168.1.203:8080/app/a/apk";
+//    public static String updateUrl="http://192.168.1.203:8080/app/a/apk";
     //顾工 socket数据交互接口
-    public static final String socketIp="192.168.1.121";
-    //顾工 socket数据交互端口号
-    public static final int socketPort=8086;
-
-////    设置班牌类型成功后跳转的页面路径
-//    public static final String baseUrl="https://zyja.zhuxue101.net/appsources/html/index/firstPage.html";
-////    第一次进入或没设置班牌类型时跳转的页面路径
-//    public static final String defaultUrl="https://zyja.zhuxue101.net/appsources/html/index/firstPage.html";
-////    App更新路径
-//    public static String updateUrl="https://boss.zhuxue101.net:446/banpai/dianzibanpai.apk";
-////    顾工 socket数据交互接口
 //    public static final String socketIp="192.168.1.121";
+    //顾工 socket数据交互端口号
 //    public static final int socketPort=8086;
+    public static final boolean DEBUG =false; // 是否显示toast
+//    设置班牌类型成功后跳转的页面路径
+    public static final String baseUrl="https://zyja.zhuxue101.net/appsources/html/index/firstPage.html";
+//    第一次进入或没设置班牌类型时跳转的页面路径
+    public static final String defaultUrl="https://zyja.zhuxue101.net/appsources/html/index/firstPage.html";
+//    App更新路径
+    public static String updateUrl="https://boss.zhuxue101.net:446/banpai/dianzibanpai.apk";
+//    顾工 socket数据交互接口
+    public static final String socketIp="192.168.1.121";
+    public static final int socketPort=8086;
     //班牌登录密码
-    public static final  String PWD="11111111";
+    public static final  String PWD="20182018";
     //班牌类型
     public static String[] ids={"班级班牌","年级班牌","学校班牌"};
     //学校班牌皮肤 key：班牌编号  text：皮肤名称  url：drawable下存放的皮肤图片名称 xx开头
@@ -51,7 +51,6 @@ public class Const {
 
     public static final String SPNAME="GGP";//SharedPreferences名称
     public static final String ACTION_NAME="net.jiaobaowang.carid";//广播接收action
-    public static final boolean DEBUG =true; // 是否显示toast
 
     public static int serNum=0;//流水号
     public static final String kID="11";//子卡机ID
