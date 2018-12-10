@@ -101,15 +101,9 @@ public class SetClassesActivity extends BaseActivity implements KeyboardAdapterC
 
     @Override
     public boolean widgetOnKey(int keyCode, KeyEvent keyEvent) {
-        switch (keyCode) {
-            case KeyEvent.KEYCODE_BACK:
-                Intent intent = new Intent();
-                intent.putExtra("blandlv", selectID);
-                intent.putExtra("blandid", etInput.getText().toString());
-                setResult(1, intent);
-                finish();
-                break;
-        }
+        Intent intent = new Intent();
+        setResult(2, intent);
+        finish();
         return false;
     }
 
@@ -118,9 +112,7 @@ public class SetClassesActivity extends BaseActivity implements KeyboardAdapterC
         Intent intent = new Intent();
         switch (position) {
             case 11:
-                intent.putExtra("blandlv", "");
-                intent.putExtra("blandid", "");
-                setResult(1, intent);
+                setResult(2, intent);
                 finish();
                 break;
             case 12:
@@ -129,6 +121,7 @@ public class SetClassesActivity extends BaseActivity implements KeyboardAdapterC
                 }else if(Validate.isNull(etInput.getText().toString())){
                     Toast.makeText(SetClassesActivity.this,"请输入班级编号",Toast.LENGTH_LONG).show();
                 }else{
+                    intent.putExtra("action", "230");
                     intent.putExtra("blandlv", selectID);
                     intent.putExtra("blandid", etInput.getText().toString());
                     setResult(1, intent);

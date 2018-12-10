@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.v4.app.ActivityCompat;
@@ -32,9 +31,13 @@ import net.jiaobaowang.gonggaopai.base.BaseActivity;
 import net.jiaobaowang.gonggaopai.base.BaseActivityManager;
 import net.jiaobaowang.gonggaopai.pwd.PwdActivity;
 import net.jiaobaowang.gonggaopai.service.UploadService;
-import net.jiaobaowang.gonggaopai.style.StyleActivity;
 import net.jiaobaowang.gonggaopai.util.Const;
 import net.jiaobaowang.gonggaopai.util.Validate;
+
+import java.net.URL;
+import java.net.URLConnection;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 public class MainActivity extends BaseActivity {
 
@@ -89,24 +92,6 @@ public class MainActivity extends BaseActivity {
         AECrashHelper.initCrashHandler(getApplication());
         menuMultipleActions = (FloatingActionsMenu) findViewById(R.id.multiple_actions2);
 
-        final FloatingActionButton actionA = (FloatingActionButton) findViewById(R.id.action_a);
-        actionA.setColorNormalResId(R.color.pink);
-        actionA.setColorPressedResId(R.color.pink_pressed);
-//        actionA.setSize(FloatingActionButton.SIZE_MINI);
-        actionA.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {//设置班牌主题
-                if(Validate.isNull(Const.blandlv)&&Validate.isNull(Const.blandid)){
-                    Toast.makeText(cont,"请先选择班牌类型，再设置班牌主题",Toast.LENGTH_LONG).show();
-                }else{
-                    setHideAnimation(menuMultipleActions, 500);
-                    Intent intent = new Intent();
-                    intent.putExtra("blandlv",Const.blandlv);
-                    intent.setClass(cont, StyleActivity.class);
-                    startActivityForResult(intent, 0x123);
-                }
-            }
-        });
 
         final FloatingActionButton  actionB= (FloatingActionButton)findViewById(R.id.action_b);
         actionB.setColorNormalResId(R.color.pink);
@@ -117,25 +102,12 @@ public class MainActivity extends BaseActivity {
             public void onClick(View v) {//设置班牌类型
                 setHideAnimation(menuMultipleActions, 500);
                 Intent intent = new Intent();
+                intent.putExtra("action","110");
                 intent.setClass(cont, PwdActivity.class);
-                startActivityForResult(intent, 0x110);
+                startActivityForResult(intent, Const.GO_PASSWORD);
             }
         });
 
-        final FloatingActionButton actionC = (FloatingActionButton) findViewById(R.id.action_c);
-        actionC.setColorNormalResId(R.color.pink);
-        actionC.setColorPressedResId(R.color.pink_pressed);
-//        actionC.setSize(FloatingActionButton.SIZE_MINI);
-        actionC.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                setHideAnimation(menuMultipleActions, 500);
-                Intent intent = new Intent();
-                intent.setData(Uri.parse(Const.updateUrl));
-                intent.setAction(Intent.ACTION_VIEW);
-                startActivity(intent); //启动浏览器
-            }
-        });
 
         final FloatingActionButton actionD = (FloatingActionButton) findViewById(R.id.action_d);
         actionD.setColorNormalResId(R.color.pink);
@@ -143,8 +115,11 @@ public class MainActivity extends BaseActivity {
         actionD.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                BaseActivityManager manager=BaseActivityManager.getAppManager();
-                manager.AppExit(cont);
+                setHideAnimation(menuMultipleActions, 500);
+                Intent intent = new Intent();
+                intent.putExtra("action","120");
+                intent.setClass(cont, PwdActivity.class);
+                startActivityForResult(intent, Const.EXIST);
             }
         });
 
@@ -154,7 +129,13 @@ public class MainActivity extends BaseActivity {
         menuMultipleActions_right.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mAgentWeb.back();
+                if (mAgentWeb != null) {
+                    String url=mAgentWeb.getWebCreator().getWebView().getUrl();
+                    if(!url.contains("indexPage1.html")){
+                        mAgentWeb.back();
+                    }
+
+                }
             }
         });
 
@@ -174,11 +155,19 @@ public class MainActivity extends BaseActivity {
 
         quanxian();
         if(Validate.isNull(Const.blandlv)&&Validate.isNull(Const.blandid)){
-            setHideAnimation(menuMultipleActions, 500);
-            Intent intent = new Intent();
-            intent.setClass(cont, PwdActivity.class);
-            startActivityForResult(intent, 0x110);
+            if(BaseActivityManager.getAppManager().isActivityStarted(PwdActivity.class)){
+
+            }else{
+                setHideAnimation(menuMultipleActions, 500);
+                Intent intent = new Intent();
+                intent.putExtra("action","110");
+                intent.setClass(cont, PwdActivity.class);
+                startActivityForResult(intent, Const.GO_PASSWORD);
+            }
         }
+        Intent intent = new Intent(" android.intent.action.hidebar");
+        sendBroadcast(intent);
+        getNetTime();
     }
 
     @Override
@@ -186,20 +175,6 @@ public class MainActivity extends BaseActivity {
         switch (keyCode) {
             case KeyEvent.KEYCODE_BACK:
                 mAgentWeb.back();
-//                if (!mAgentWeb.back()) {
-//                    long secondTime = System.currentTimeMillis();
-//                    if (secondTime - firstTime > 2000 && homeClickNum < 3) {       //如果两次按键时间间隔大于2秒，则不退出
-//                        Toast.makeText(this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
-//                        firstTime = secondTime;//更新firstTime
-//                        return true;
-//                    } else {      //两次按键小于2秒时，退出应用
-//                        ActivityManager activityMgr = (ActivityManager) cont
-//                                .getSystemService(cont.ACTIVITY_SERVICE);
-//                        activityMgr.killBackgroundProcesses(cont.getPackageName());
-//                        System.exit(0);
-//                        return true;
-//                    }
-//                }
                 break;
         }
         return false;
@@ -236,39 +211,49 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == 1 && requestCode == 0x110) {
-            String blandlv=data.getStringExtra("blandlv");
-            String blandid = data.getStringExtra("blandid");
-            if (Validate.noNull(blandlv)||Validate.noNull(blandid)) {
-                SharedPreferences sp = this.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);;
-                SharedPreferences.Editor editor = sp.edit();
-                editor.putString("blandlv", blandlv);
-                editor.putString("blandid", blandid);
-                editor.commit();
-                Const.blandlv=blandlv;
-                Const.blandid=blandid;
-                if(Const.DEBUG) {
-                    Toast.makeText(cont, "班级设置成功，" + "班牌类型：" + Const.blandlv + "，班牌ID：" + Const.blandid + ",cityName=" + Const.cityName, Toast.LENGTH_LONG).show();
+        if (resultCode == 1 && requestCode == Const.GO_PASSWORD) {
+            String actionP=data.getStringExtra("action");
+            if("240".equals(actionP)){
+                String styleid=data.getStringExtra("styleid");
+                String stylename=data.getStringExtra("stylename");
+                if (Validate.noNull(styleid)) {
+                    SharedPreferences sp = this.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sp.edit();
+                    editor.putString("styleid", styleid);
+                    editor.commit();
+                    Const.styleid=styleid;
+                    Toast.makeText(cont, "主题选择成功，名称："+stylename+"，编号：" + Const.styleid, Toast.LENGTH_LONG).show();
+                    initWeb();
+                }else{
+                    if(Const.DEBUG) {
+                        Toast.makeText(cont, "主题选择失败", Toast.LENGTH_LONG).show();
+                    }
                 }
-                initWeb();
-            }else{
-                setShowAnimation(menuMultipleActions, 500);
-                Toast.makeText(cont, "设置班级失败", Toast.LENGTH_LONG).show();
+            }else if("230".equals(actionP)){
+                String blandlv=data.getStringExtra("blandlv");
+                String blandid = data.getStringExtra("blandid");
+                if (Validate.noNull(blandlv)||Validate.noNull(blandid)) {
+                    SharedPreferences sp = this.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);;
+                    SharedPreferences.Editor editor = sp.edit();
+                    editor.putString("blandlv", blandlv);
+                    editor.putString("blandid", blandid);
+                    editor.commit();
+                    Const.blandlv=blandlv;
+                    Const.blandid=blandid;
+                    if(Const.DEBUG) {
+                        Toast.makeText(cont, "班级设置成功，" + "班牌类型：" + Const.blandlv + "，班牌ID：" + Const.blandid + ",cityName=" + Const.cityName, Toast.LENGTH_LONG).show();
+                    }
+                    initWeb();
+                }else{
+                    setShowAnimation(menuMultipleActions, 500);
+                    if(Const.DEBUG) {
+                        Toast.makeText(cont, "设置班级失败", Toast.LENGTH_LONG).show();
+                    }
+                }
             }
-        }else if(resultCode == 1 && requestCode == 0x123){
-            String styleid=data.getStringExtra("styleid");
-            String stylename=data.getStringExtra("stylename");
-            if (Validate.noNull(styleid)) {
-                SharedPreferences sp = this.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sp.edit();
-                editor.putString("styleid", styleid);
-                editor.commit();
-                Const.styleid=styleid;
-                Toast.makeText(cont, "主题选择成功，名称："+stylename+"，编号：" + Const.styleid, Toast.LENGTH_LONG).show();
-                initWeb();
-            }else{
-                Toast.makeText(cont, "主题选择失败", Toast.LENGTH_LONG).show();
-            }
+        }else if(resultCode == 1 && requestCode == Const.EXIST){
+            BaseActivityManager manager=BaseActivityManager.getAppManager();
+            manager.AppExit(cont);
         }else {
             setShowAnimation(menuMultipleActions, 500);
 //            Toast.makeText(cont, "主题选择成功", Toast.LENGTH_LONG).show();
@@ -319,11 +304,6 @@ public class MainActivity extends BaseActivity {
         @Override
         public void onReceiveLocation(BDLocation location){
 
-//            String addr = location.getAddrStr();    //获取详细地址信息
-//            String country = location.getCountry();    //获取国家
-//            String province = location.getProvince();    //获取省份
-//            String district = location.getDistrict();    //获取区县
-//            String street = location.getStreet();    //获取街道信息
             String city = location.getCity();    //获取城市
             Const.cityName=city;
             if (Const.blandlv!=""&&Const.blandid != "") {
@@ -375,6 +355,36 @@ public class MainActivity extends BaseActivity {
             default:
                 break;
         }
+    }
+    private void getNetTime() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                URL url = null;//取得资源对象
+                try {
+                    url = new URL("http://www.baidu.com");
+                    //url = new URL("http://www.ntsc.ac.cn");//中国科学院国家授时中心
+                    //url = new URL("http://www.bjtime.cn");
+                    URLConnection uc = url.openConnection();//生成连接对象
+                    uc.connect(); //发出连接
+                    long ld = uc.getDate(); //取得网站日期时间
+                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTimeInMillis(ld);
+                    final String format = formatter.format(calendar.getTime());
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(MainActivity.this, "当前网络时间为: \n" + format, Toast.LENGTH_SHORT).show();
+                            //TODO 设定系统时间为当前网络时间
+                            //TODO 设置定时开关机时间
+                        }
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 }
 

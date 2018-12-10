@@ -4,36 +4,30 @@ package net.jiaobaowang.gonggaopai.util;
 public class Const {
 
     /****可维护字段*****/
-    //设置班牌类型成功后跳转的页面路径
-//    public static final String baseUrl="http://192.168.1.203:8080/banPaiIndex/test12/html/index/firstPage.html";
-    //第一次进入或没设置班牌类型时跳转的页面路径
-//    public static final String defaultUrl="http://192.168.1.203:8080/banPaiIndex/test12/html/index/firstPage.html";
-    //App更新路径
-//    public static String updateUrl="http://192.168.1.203:8080/app/a/apk";
-    //顾工 socket数据交互接口
-//    public static final String socketIp="192.168.1.121";
-    //顾工 socket数据交互端口号
-//    public static final int socketPort=8086;
     public static final boolean DEBUG =false; // 是否显示toast
-//    设置班牌类型成功后跳转的页面路径
-    public static final String baseUrl="https://zyja.zhuxue101.net/appsources/html/index/firstPage.html";
-//    第一次进入或没设置班牌类型时跳转的页面路径
-    public static final String defaultUrl="https://zyja.zhuxue101.net/appsources/html/index/firstPage.html";
-//    App更新路径
-    public static String updateUrl="https://boss.zhuxue101.net:446/banpai/dianzibanpai.apk";
-//    顾工 socket数据交互接口
-    public static final String socketIp="192.168.1.121";
+
+//  public static final String baseUrl="http://192.168.1.203:8080/banPaiIndex/test12/html/index/firstPage.html";    //设置班牌类型成功后跳转的页面路径
+//  public static final String defaultUrl="http://192.168.1.203:8080/banPaiIndex/test12/html/index/firstPage.html";    //第一次进入或没设置班牌类型时跳转的页面路径
+//  public static String updateUrl="http://192.168.1.203:8080/app/a/apk";    //App更新路径
+//  public static final String socketIp="192.168.1.121";    //顾工 socket数据交互接口
+//  public static final int socketPort=8086;    //顾工 socket数据交互端口号
+
+    public static final String    baseUrl="https://zyja.zhuxue101.net/appsources/html/index/firstPage.html";//    设置班牌类型成功后跳转的页面路径
+    public static final String defaultUrl="https://zyja.zhuxue101.net/appsources/html/index/firstPage.html";//    第一次进入或没设置班牌类型时跳转的页面路径
+    public static String updateUrl="https://boss.zhuxue101.net:446/banpai/dianzibanpai.apk";//    App更新路径
+    public static final String socketIp="192.168.1.121";//    顾工 socket数据交互接口
     public static final int socketPort=8086;
-    //班牌登录密码
-    public static final  String PWD="20182018";
-    //班牌类型
-    public static String[] ids={"班级班牌","年级班牌","学校班牌"};
-    //学校班牌皮肤 key：班牌编号  text：皮肤名称  url：drawable下存放的皮肤图片名称 xx开头
-    public static String xx_json="[{\"key\":\"20180001\",\"text\":\"学校皮肤\",\"url\":\"xx_style_1\"}]";
-    //年级班牌皮肤 key：班牌编号  text：皮肤名称  url：drawable下存放的皮肤图片名称 nj开头
-    public static String nj_json="[{\"key\":\"20180002\",\"text\":\"年级皮肤\",\"url\":\"nj_style_1\"}]";
-    //班级班牌皮肤 key：班牌编号  text：皮肤名称  url：drawable下存放的皮肤图片名称 bj开头
-    public static String bj_json="[{\"key\":\"20180003\",\"text\":\"班级皮肤\",\"url\":\"bj_style_1\"}]";
+
+    public static final  String PWD="20182018"; //班牌密码
+    public static String[] ids={"班级班牌","年级班牌","学校班牌"}; //班牌类型
+    public static String xx_json="[{\"key\":\"20180001\",\"text\":\"学校皮肤\",\"url\":\"xx_style_1\"}]";  //学校班牌皮肤 key：班牌编号  text：皮肤名称  url：drawable下存放的皮肤图片名称 xx开头
+    public static String nj_json="[{\"key\":\"20180002\",\"text\":\"年级皮肤\",\"url\":\"nj_style_1\"}]";    //年级班牌皮肤 key：班牌编号  text：皮肤名称  url：drawable下存放的皮肤图片名称 nj开头
+    public static String bj_json="[{\"key\":\"20180003\",\"text\":\"班级皮肤\",\"url\":\"bj_style_1\"}]";    //班级班牌皮肤 key：班牌编号  text：皮肤名称  url：drawable下存放的皮肤图片名称 bj开头
+
+    public static String settings_json="[{\"key\":\"appUpdate\",\"text\":\"系统更新\",\"url\":\"settings_1\"}," +
+            "{\"key\":\"blandCheck\",\"text\":\"班牌类型\",\"url\":\"settings_2\"}," +
+            "{\"key\":\"styleCheck\",\"text\":\"主题设置\",\"url\":\"settings_3\"}," +
+            "{\"key\":\"timeCheck\",\"text\":\"运行时间\",\"url\":\"settings_4\"}]";  //设置选项
     /*********/
 
     public static String cityName="";//城市名称
@@ -49,6 +43,12 @@ public class Const {
     public static final int CMD_SUBMIT = 0x00000004; // 提交短信
     public static final int CMD_SUBMIT_RESP = 0x80000004; // 提交短信应答
 
+
+    public static final int GO_PASSWORD = 0x110; // 输入密码页
+    public static final int EXIST = 0x120; // 退出APP
+    public static final int GO_SETTINGSCHECKED = 0x220;// 设置选择页
+    public static final int GO_CLASSESSETTING = 0x230;// 班牌设置页
+    public static final int GO_STYLESETTING = 0x240;// 主题设置页
     public static final String SPNAME="GGP";//SharedPreferences名称
     public static final String ACTION_NAME="net.jiaobaowang.carid";//广播接收action
 

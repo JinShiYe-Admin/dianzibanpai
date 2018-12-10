@@ -95,6 +95,19 @@ public class BaseActivityManager {
     }
 
     /**
+     * 结束指定的Activity(重载)
+     */
+    public boolean isActivityStarted(Class<?> cls) {
+        boolean isContains=false;
+        for (BaseActivity activity : activityStack) {
+            if (activity.getClass().equals(cls)) {
+                isContains=true;
+            }
+        }
+        return isContains;
+    }
+
+    /**
      * 关闭除了指定activity以外的全部activity 如果cls不存在于栈中，则栈全部清空
      *
      * @param cls

@@ -10,6 +10,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.widget.Toast;
 
+import net.jiaobaowang.gonggaopai.base.BaseActivityManager;
+import net.jiaobaowang.gonggaopai.main.MainActivity;
 import net.jiaobaowang.gonggaopai.util.BitConverter;
 import net.jiaobaowang.gonggaopai.util.Const;
 
@@ -136,19 +138,23 @@ public class ReaderService extends Service {
             System.arraycopy(test, 3, bytesIC, 0, 4);
             final String cardId = BitConverter.bytesToHexString(bytesIC);
             LocalBroadcastManager manager = LocalBroadcastManager.getInstance(getBaseContext());
-            Intent cardIntent = new Intent();
-            cardIntent.setAction(Const.ACTION_NAME);
-            cardIntent.putExtra("cardId", cardId);
-            manager.sendBroadcast(cardIntent);
+            if(BaseActivityManager.getAppManager().currentActivity().equals(MainActivity.class.getClass())){
+                Intent cardIntent = new Intent();
+                cardIntent.setAction(Const.ACTION_NAME);
+                cardIntent.putExtra("cardId", cardId);
+                manager.sendBroadcast(cardIntent);
+            }
         } else if (test[2] == 0x02) {//ID
             byte[] bytesID = new byte[4];
             System.arraycopy(test, 4, bytesID, 0, 4);
             final String cardId2 = BitConverter.bytesToHexString(bytesID);
             LocalBroadcastManager manager = LocalBroadcastManager.getInstance(getBaseContext());
-            Intent cardIntent = new Intent();
-            cardIntent.setAction(Const.ACTION_NAME);
-            cardIntent.putExtra("cardId", cardId2);
-            manager.sendBroadcast(cardIntent);
+            if(BaseActivityManager.getAppManager().currentActivity().equals(MainActivity.class.getClass())){
+                Intent cardIntent = new Intent();
+                cardIntent.setAction(Const.ACTION_NAME);
+                cardIntent.putExtra("cardId", cardId2);
+                manager.sendBroadcast(cardIntent);
+            }
         }
 //                sttb.setLength(0);
         bytes = new byte[64];

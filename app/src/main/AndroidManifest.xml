@@ -21,6 +21,7 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <!-- 这个权限用于获取wifi的获取权限，wifi信息会用来进行网络定位 -->
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:name="com.orm.SugarApp"
@@ -66,17 +67,29 @@
             android:hardwareAccelerated="true"
             android:screenOrientation="landscape" />
 
-         <meta-data
-         android:name="com.baidu.lbsapi.API_KEY"
-         android:value="Gjku1GSR4UtGbUdzpUdh0lasr49WVWad" />
-        <!--<meta-data-->
-            <!--android:name="com.baidu.lbsapi.API_KEY"-->
-            <!--android:value="uHaZ4fdqEEjKjZRxYIEugw8ox2qLSIlU" />-->
+        <meta-data
+            android:name="com.baidu.lbsapi.API_KEY"
+            android:value="Gjku1GSR4UtGbUdzpUdh0lasr49WVWad" />
+        <!-- <meta-data -->
+        <!-- android:name="com.baidu.lbsapi.API_KEY" -->
+        <!-- android:value="uHaZ4fdqEEjKjZRxYIEugw8ox2qLSIlU" /> -->
 
-        <activity android:name=".main.Main2Activity" />
-        <activity android:name=".style.StyleActivity" />
-        <activity android:name=".style.ImageActivity" />
-        <activity android:name=".main.Main3Activity" />
+        <activity
+            android:name=".main.Main2Activity"
+            android:hardwareAccelerated="true"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".style.StyleActivity"
+            android:hardwareAccelerated="true"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".style.ImageActivity"
+            android:hardwareAccelerated="true"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".main.Main3Activity"
+            android:hardwareAccelerated="true"
+            android:screenOrientation="landscape" />
 
         <service
             android:name=".service.UploadService"
@@ -93,6 +106,17 @@
             android:enabled="true"
             android:exported="true" />
 
+        <receiver
+            android:name=".receiver.BootCompleteReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter android:priority="2147483647"> <!-- //优先级 -->
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <activity android:name=".SettingsCheckActivity" android:hardwareAccelerated="true"
+            android:screenOrientation="landscape" />
     </application>
 
 </manifest>

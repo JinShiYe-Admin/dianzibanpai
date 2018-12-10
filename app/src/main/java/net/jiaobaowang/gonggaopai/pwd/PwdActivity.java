@@ -15,8 +15,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import net.jiaobaowang.gonggaopai.R;
+import net.jiaobaowang.gonggaopai.SettingsCheckActivity;
 import net.jiaobaowang.gonggaopai.base.BaseActivity;
-import net.jiaobaowang.gonggaopai.classes.SetClassesActivity;
 import net.jiaobaowang.gonggaopai.util.Const;
 import net.jiaobaowang.gonggaopai.util.Validate;
 
@@ -30,18 +30,31 @@ public class PwdActivity extends BaseActivity implements KeyboardAdapter.OnKeybo
     private KeyboardView keyboardView;
     private Button confirmBtn,returnBtn;
     private List<String> datas;
-
+    private String action="";
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == 1 && requestCode == 0x220) {
-            String blandlv= data.getStringExtra("blandlv");
-            String blandid= data.getStringExtra("blandid");
-            Intent intent = new Intent();
-            intent.putExtra("blandlv", blandlv);
-            intent.putExtra("blandid", blandid);
-            setResult(1, intent);
-            finish();
+        if (resultCode == 1 && requestCode == Const.GO_SETTINGSCHECKED) {
+            String action= data.getStringExtra("action");
+            if("240".equals(action)){
+                String styleid=data.getStringExtra("styleid");
+                String stylename=data.getStringExtra("stylename");
+                Intent intent = new Intent();
+                intent.putExtra("action", "240");
+                intent.putExtra("styleid", styleid);
+                intent.putExtra("stylename", stylename);
+                setResult(1, intent);
+                finish();
+            }else if("230".equals(action)){
+                String blandlv= data.getStringExtra("blandlv");
+                String blandid= data.getStringExtra("blandid");
+                Intent intent = new Intent();
+                intent.putExtra("action", "230");
+                intent.putExtra("blandlv", blandlv);
+                intent.putExtra("blandid", blandid);
+                setResult(1, intent);
+                finish();
+            }
         }
     }
 
@@ -50,8 +63,7 @@ public class PwdActivity extends BaseActivity implements KeyboardAdapter.OnKeybo
         switch (keyCode) {
             case KeyEvent.KEYCODE_BACK:
                 Intent intent = new Intent();
-                intent.putExtra("classId", "");
-                setResult(1, intent);
+                setResult(2, intent);
                 finish();
                 break;
         }
@@ -70,7 +82,8 @@ public class PwdActivity extends BaseActivity implements KeyboardAdapter.OnKeybo
 
     @Override
     public void initParms(Bundle bundle) {
-
+        Intent intent=getIntent();
+        action=intent.getStringExtra("action");
     }
 
     @Override
@@ -80,6 +93,7 @@ public class PwdActivity extends BaseActivity implements KeyboardAdapter.OnKeybo
 
     @Override
     public void doBusiness(Context mContext) {
+
         confirmBtn= (Button) findViewById(R.id.confirmBtn);
         returnBtn= (Button) findViewById(R.id.returnBtn);
         etInput1= (EditText) findViewById(R.id.et_input1);
@@ -126,10 +140,14 @@ public class PwdActivity extends BaseActivity implements KeyboardAdapter.OnKeybo
         returnBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.putExtra("classId", "");
-                setResult(1, intent);
-                finish();
+                if("110".equals(action)){
+                    Intent intent = new Intent();
+                    setResult(2, intent);
+                    finish();
+                }else if("120".equals(action)){
+                    finish();
+                }
+
             }
         });
 
@@ -138,9 +156,16 @@ public class PwdActivity extends BaseActivity implements KeyboardAdapter.OnKeybo
             public void onClick(View v) {
                 String pass=getValue();
                 if(Const.PWD.equals(pass)){
-                    Intent intent=new Intent();
-                    intent.setClass(PwdActivity.this,SetClassesActivity.class);
-                    startActivityForResult(intent,0x220);
+                    if("110".equals(action)){
+                        Intent intent=new Intent();
+                        intent.setClass(PwdActivity.this,SettingsCheckActivity.class);
+                        startActivityForResult(intent,Const.GO_SETTINGSCHECKED);
+                    }else if("120".equals(action)){
+                        Intent intent = new Intent();
+                        setResult(1, intent);
+                        finish();
+                    }
+
                 }else{
                     Toast.makeText(PwdActivity.this,"密码不正确",Toast.LENGTH_LONG).show();
                 }

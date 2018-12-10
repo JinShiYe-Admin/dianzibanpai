@@ -45,6 +45,7 @@
           fab:fab_colorNormal="@color/white"
           fab:fab_icon="@drawable/style"
           fab:fab_addButtonSize="mini"
+          android:visibility="gone"
           fab:fab_colorPressed="@color/white_pressed"/>
 
       <com.getbase.floatingactionbutton.FloatingActionButton
@@ -62,6 +63,7 @@
           android:layout_height="wrap_content"
           fab:fab_colorNormal="@color/white"
           fab:fab_icon="@drawable/update"
+          android:visibility="gone"
           fab:fab_addButtonSize="mini"
           fab:fab_colorPressed="@color/white_pressed"/>
 
@@ -79,7 +81,7 @@
        android:id="@+id/multiple_actions_right"
        android:layout_width="wrap_content"
        android:layout_height="wrap_content"
-       android:visibility="gone"
+       android:visibility="visible"
        android:layout_alignParentBottom="true"
        android:layout_alignParentRight="true"
        fab:fab_colorNormal="@color/white"

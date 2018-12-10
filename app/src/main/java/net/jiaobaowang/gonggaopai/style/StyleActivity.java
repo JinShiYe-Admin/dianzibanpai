@@ -93,8 +93,7 @@ public class StyleActivity extends BaseActivity{
     @Override
     public boolean widgetOnKey(int keyCode, KeyEvent keyEvent) {
         Intent intent = new Intent();
-        intent.putExtra("styleid", "");
-        setResult(1, intent);
+        setResult(2, intent);
         finish();
         return false;
     }
@@ -141,6 +140,7 @@ public class StyleActivity extends BaseActivity{
                             dialog.dismiss();
                             System.out.println("确定:"+mDatas.get(position).toString());
                             Intent intent = new Intent();
+                            intent.putExtra("action", "240");
                             intent.putExtra("styleid", map.get("key").toString());
                             intent.putExtra("stylename", map.get("text").toString());
                             setResult(1, intent);
