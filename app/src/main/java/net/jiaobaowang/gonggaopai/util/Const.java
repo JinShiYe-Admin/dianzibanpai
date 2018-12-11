@@ -49,6 +49,7 @@ public class Const {
     public static final int GO_SETTINGSCHECKED = 0x220;// 设置选择页
     public static final int GO_CLASSESSETTING = 0x230;// 班牌设置页
     public static final int GO_STYLESETTING = 0x240;// 主题设置页
+    public static final int GO_TIMESETTING = 0x300;// 开机关机时间设置页
     public static final String SPNAME="GGP";//SharedPreferences名称
     public static final String ACTION_NAME="net.jiaobaowang.carid";//广播接收action
 

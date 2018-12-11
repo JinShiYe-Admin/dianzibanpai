@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_width="450dp"
+    android:layout_height="450dp"
     android:paddingTop="50dp"
+    android:gravity="center"
+    android:layout_gravity="center"
     android:background="#111731"
     android:orientation="horizontal">
     <LinearLayout
         android:id="@+id/left"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:orientation="vertical"
+        android:gravity="center"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:layout_weight="1">
@@ -17,18 +20,17 @@
             android:id="@+id/settings_img_left"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
             android:src="@drawable/settings_1"
              />
         <TextView
             android:id="@+id/settings_left"
             android:paddingTop="15dp"
             android:layout_width="match_parent"
-            android:layout_height="45dp"
-            android:gravity="top|center"
-            android:textSize="18sp"
+            android:layout_height="60dp"
+            android:textSize="16sp"
+            android:gravity="center"
             android:textColor="@color/key_normal_bg"
-            android:text=""
+            android:text="123"
             />
     </LinearLayout>
 </LinearLayout>

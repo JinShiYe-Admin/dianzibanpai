@@ -45,6 +45,7 @@ dependencies {
     // (必选)
     compile 'com.alibaba:fastjson:1.1.70.android'
     implementation files('libs/BaiduLBS_Android.jar')
+    compile 'com.contrarywind:Android-PickerView:4.1.6'
     dependencies {
         compile 'com.getbase:floatingactionbutton:1.10.1'
     }

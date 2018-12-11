@@ -115,8 +115,14 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".SettingsCheckActivity" android:hardwareAccelerated="true"
+        <activity
+            android:name=".SettingsCheckActivity"
+            android:hardwareAccelerated="true"
             android:screenOrientation="landscape" />
+        <activity android:name=".timesetting.TimeSettingActivity"
+            android:hardwareAccelerated="true"
+            android:screenOrientation="landscape" >
+        </activity>
     </application>
 
 </manifest>

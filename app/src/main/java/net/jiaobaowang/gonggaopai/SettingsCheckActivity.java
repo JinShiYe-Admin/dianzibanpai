@@ -22,6 +22,7 @@ import com.alibaba.fastjson.JSONArray;
 import net.jiaobaowang.gonggaopai.base.BaseActivity;
 import net.jiaobaowang.gonggaopai.classes.SetClassesActivity;
 import net.jiaobaowang.gonggaopai.style.StyleActivity;
+import net.jiaobaowang.gonggaopai.timesetting.TimeSettingActivity;
 import net.jiaobaowang.gonggaopai.util.Const;
 import net.jiaobaowang.gonggaopai.util.Validate;
 
@@ -53,6 +54,15 @@ public class SettingsCheckActivity extends BaseActivity {
             intent.putExtra("action", "240");
             intent.putExtra("styleid", styleid);
             intent.putExtra("stylename", stylename);
+            setResult(1, intent);
+            finish();
+        }else if(resultCode == 1 && requestCode == Const.GO_TIMESETTING){
+            String startTime=data.getStringExtra("startTime");
+            String shutdownTime=data.getStringExtra("shutdownTime");
+            Intent intent = new Intent();
+            intent.putExtra("action", "300");
+            intent.putExtra("startTime", startTime);
+            intent.putExtra("shutdownTime", shutdownTime);
             setResult(1, intent);
             finish();
         }
@@ -150,7 +160,9 @@ public class SettingsCheckActivity extends BaseActivity {
                             }
                             break;
                         case "timeCheck":
-
+                            Intent timeCheck = new Intent();
+                            timeCheck.setClass(cont, TimeSettingActivity.class);
+                            startActivityForResult(timeCheck, Const.GO_TIMESETTING);
                             break;
                     }
                 }

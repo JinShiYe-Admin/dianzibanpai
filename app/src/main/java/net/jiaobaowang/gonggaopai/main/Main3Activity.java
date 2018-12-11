@@ -1,11 +1,9 @@
 package net.jiaobaowang.gonggaopai.main;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.content.LocalBroadcastManager;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
@@ -124,18 +122,18 @@ public class Main3Activity extends BaseActivity {
 
 
 
-
-                LocalBroadcastManager manager = LocalBroadcastManager.getInstance(cont);
-                Intent cardIntent = new Intent(Const.ACTION_NAME);
-                if(zzzzz==0||zzzzz==10){
-                    cardIntent.putExtra("cardId", "123");
-                }else if(zzzzz==4||zzzzz==6){
-                    cardIntent.putExtra("cardId", "456");
-                }else{
-                    cardIntent.putExtra("cardId", "789");
-                }
-                zzzzz++;
-                manager.sendBroadcast(cardIntent);
+//
+//                LocalBroadcastManager manager = LocalBroadcastManager.getInstance(cont);
+//                Intent cardIntent = new Intent(Const.ACTION_NAME);
+//                if(zzzzz==0||zzzzz==10){
+//                    cardIntent.putExtra("cardId", "123");
+//                }else if(zzzzz==4||zzzzz==6){
+//                    cardIntent.putExtra("cardId", "456");
+//                }else{
+//                    cardIntent.putExtra("cardId", "789");
+//                }
+//                zzzzz++;
+//                manager.sendBroadcast(cardIntent);
 
 
 

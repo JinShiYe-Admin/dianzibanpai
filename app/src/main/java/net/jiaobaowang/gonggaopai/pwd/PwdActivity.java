@@ -54,6 +54,15 @@ public class PwdActivity extends BaseActivity implements KeyboardAdapter.OnKeybo
                 intent.putExtra("blandid", blandid);
                 setResult(1, intent);
                 finish();
+            }else if("300".equals(action)){
+                String startTime=data.getStringExtra("startTime");
+                String shutdownTime=data.getStringExtra("shutdownTime");
+                Intent intent = new Intent();
+                intent.putExtra("action", "300");
+                intent.putExtra("startTime", startTime);
+                intent.putExtra("shutdownTime", shutdownTime);
+                setResult(1, intent);
+                finish();
             }
         }
     }
