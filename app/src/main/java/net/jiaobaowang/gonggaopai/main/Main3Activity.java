@@ -17,6 +17,7 @@ import net.jiaobaowang.gonggaopai.util.BitConverter;
 import net.jiaobaowang.gonggaopai.util.CommonDialog;
 import net.jiaobaowang.gonggaopai.util.Const;
 import net.jiaobaowang.gonggaopai.util.MyQueue;
+import net.jiaobaowang.gonggaopai.util.NetUtil;
 import net.jiaobaowang.gonggaopai.util.SocketUtils;
 import net.jiaobaowang.gonggaopai.util.Validate;
 
@@ -134,10 +135,8 @@ public class Main3Activity extends BaseActivity {
 //                }
 //                zzzzz++;
 //                manager.sendBroadcast(cardIntent);
-
-
-
-
+                NetUtil.init(cont);
+                Toast.makeText(cont,"当前网络状态："+NetUtil.getNetWorkState(),Toast.LENGTH_LONG).show();
 
 
 

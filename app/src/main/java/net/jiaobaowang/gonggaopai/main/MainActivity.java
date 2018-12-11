@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.ActivityCompat;
 import android.view.KeyEvent;
@@ -32,6 +33,7 @@ import net.jiaobaowang.gonggaopai.base.BaseActivityManager;
 import net.jiaobaowang.gonggaopai.pwd.PwdActivity;
 import net.jiaobaowang.gonggaopai.service.UploadService;
 import net.jiaobaowang.gonggaopai.util.Const;
+import net.jiaobaowang.gonggaopai.util.NetUtil;
 import net.jiaobaowang.gonggaopai.util.Validate;
 
 import java.net.URL;
@@ -96,6 +98,11 @@ public class MainActivity extends BaseActivity {
             editor.putInt("serNum",Const.serNum);
             editor.commit();
         }
+
+        if (Const.blandlv!=""&&Const.blandid != "") {
+            setHideAnimation(menuMultipleActions, 0);
+        }
+
         AECrashHelper.initCrashHandler(getApplication());
         menuMultipleActions = (FloatingActionsMenu) findViewById(R.id.multiple_actions2);
 
@@ -316,18 +323,18 @@ public class MainActivity extends BaseActivity {
     public class MyLocationListener extends BDAbstractLocationListener {
         @Override
         public void onReceiveLocation(BDLocation location){
-
             String city = location.getCity();    //获取城市
             Const.cityName=city;
-            if (Const.blandlv!=""&&Const.blandid != "") {
-                setHideAnimation(menuMultipleActions, 0);
-            }
+            SharedPreferences sp = cont.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sp.edit();
+            editor.putString("cityName",city);
+            editor.commit();
             initWeb();
-
         }
     }
 
     public void quanxian(){
+        NetUtil.init(cont);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED
                 || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -338,8 +345,28 @@ public class MainActivity extends BaseActivity {
             // 申请一个（或多个）权限，并提供用于回调返回的获取码（用户定义）
             ActivityCompat.requestPermissions(cont, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.READ_PHONE_STATE}, BAIDU_READ_PHONE_STATE);
         }else{
-            initMap();
-            mLocationClient.start();
+            SharedPreferences sp = this.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
+            Const.cityName = sp.getString("cityName", "");
+            if(Validate.isNull(Const.cityName)){
+                initMap();
+                mLocationClient.start();
+            }else{
+                //开机后wifi还没准备好，需要延时加载webview
+                final Handler mHandler = new Handler();
+                Runnable r = new Runnable() {
+                    @Override
+                    public void run() {
+                        if(NetUtil.getNetWorkState()==-1){
+                            mHandler.postDelayed(this, 200);
+                        }else{
+                            mHandler.removeCallbacks(this);
+                            initWeb();
+                        }
+
+                    }
+                };
+                mHandler.postDelayed(r, 100);//延时100毫秒
+            }
         }
     }
 
