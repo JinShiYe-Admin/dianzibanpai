@@ -49,8 +49,7 @@
         //实体类包名
         <activity
             android:name=".main.MainActivity"
-            android:configChanges="orientation|screenSize"
-            android:hardwareAccelerated="true"
+            android:launchMode="standard"
             android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -60,11 +59,11 @@
         </activity>
         <activity
             android:name=".classes.SetClassesActivity"
-            android:hardwareAccelerated="true"
+            android:launchMode="standard"
             android:screenOrientation="landscape" />
         <activity
             android:name=".pwd.PwdActivity"
-            android:hardwareAccelerated="true"
+            android:launchMode="standard"
             android:screenOrientation="landscape" />
 
         <meta-data
@@ -76,19 +75,19 @@
 
         <activity
             android:name=".main.Main2Activity"
-            android:hardwareAccelerated="true"
+            android:launchMode="standard"
             android:screenOrientation="landscape" />
         <activity
             android:name=".style.StyleActivity"
-            android:hardwareAccelerated="true"
+            android:launchMode="standard"
             android:screenOrientation="landscape" />
         <activity
             android:name=".style.ImageActivity"
-            android:hardwareAccelerated="true"
+            android:launchMode="standard"
             android:screenOrientation="landscape" />
         <activity
             android:name=".main.Main3Activity"
-            android:hardwareAccelerated="true"
+            android:launchMode="standard"
             android:screenOrientation="landscape" />
 
         <service
@@ -118,10 +117,10 @@
 
         <activity
             android:name=".SettingsCheckActivity"
-            android:hardwareAccelerated="true"
+            android:launchMode="standard"
             android:screenOrientation="landscape" />
         <activity android:name=".timesetting.TimeSettingActivity"
-            android:hardwareAccelerated="true"
+            android:launchMode="standard"
             android:screenOrientation="landscape" >
         </activity>
     </application>

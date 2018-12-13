@@ -17,7 +17,6 @@ import net.jiaobaowang.gonggaopai.util.BitConverter;
 import net.jiaobaowang.gonggaopai.util.CommonDialog;
 import net.jiaobaowang.gonggaopai.util.Const;
 import net.jiaobaowang.gonggaopai.util.MyQueue;
-import net.jiaobaowang.gonggaopai.util.NetUtil;
 import net.jiaobaowang.gonggaopai.util.SocketUtils;
 import net.jiaobaowang.gonggaopai.util.Validate;
 
@@ -135,8 +134,14 @@ public class Main3Activity extends BaseActivity {
 //                }
 //                zzzzz++;
 //                manager.sendBroadcast(cardIntent);
-                NetUtil.init(cont);
-                Toast.makeText(cont,"当前网络状态："+NetUtil.getNetWorkState(),Toast.LENGTH_LONG).show();
+
+//                Intent intent = new Intent("android.intent.action.setpoweronoff");
+//                int[] timeon = new int[]{2018,12,14,9,3,0}; //开机时间
+//                intent.putExtra("timeon", timeon);
+//                int[] timeoff = new int[]{2018,12,13,11,39,0}; //关机时间
+//                intent.putExtra("timeoff", timeoff);
+//                intent.putExtra("enable", true); //true 为启用， false 为取消此功能
+//                sendBroadcast(intent);
 
 
 
