@@ -11,6 +11,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -35,6 +36,7 @@ public class SettingsCheckActivity extends BaseActivity {
     private List<Map> mDatas;
     private HomeAdapter mAdapter;
     private GridLayoutManager manager;
+    private Button button_backward;
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -97,10 +99,19 @@ public class SettingsCheckActivity extends BaseActivity {
             Map map = (Map) array.get(i);
             mDatas.add(map);
         }
+        button_backward=(Button)findViewById(R.id.button_backward);
         mRecyclerView = (RecyclerView) findViewById(R.id.settings);
         mRecyclerView.setLayoutManager(new GridLayoutManager(this,3));
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setAdapter(mAdapter = new HomeAdapter());
+        button_backward.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                setResult(2, intent);
+                finish();
+            }
+        });
     }
 
     @Override

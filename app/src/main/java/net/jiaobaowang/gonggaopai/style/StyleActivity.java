@@ -10,6 +10,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -56,6 +57,7 @@ public class StyleActivity extends BaseActivity{
     @Override
     public void doBusiness(Context mContext) {
         TextView lx_name =(TextView)findViewById(R.id.lx_name);
+        Button button_backward=(Button)findViewById(R.id.button_backward);
         Intent intent = getIntent();//获取传来的intent对象
         String blandlv = intent.getStringExtra("blandlv");//获取键值对的键名
         String json="";
@@ -84,7 +86,14 @@ public class StyleActivity extends BaseActivity{
         mRecyclerView.setLayoutManager(manager);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setAdapter(mAdapter = new HomeAdapter());
-
+        button_backward.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                setResult(2, intent);
+                finish();
+            }
+        });
     }
 
 

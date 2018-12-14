@@ -2,6 +2,7 @@ package net.jiaobaowang.gonggaopai.pwd;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
@@ -17,6 +18,7 @@ import android.widget.Toast;
 import net.jiaobaowang.gonggaopai.R;
 import net.jiaobaowang.gonggaopai.SettingsCheckActivity;
 import net.jiaobaowang.gonggaopai.base.BaseActivity;
+import net.jiaobaowang.gonggaopai.base.BaseActivityManager;
 import net.jiaobaowang.gonggaopai.util.Const;
 import net.jiaobaowang.gonggaopai.util.Validate;
 
@@ -150,9 +152,18 @@ public class PwdActivity extends BaseActivity implements KeyboardAdapter.OnKeybo
             @Override
             public void onClick(View v) {
                 if("110".equals(action)){
-                    Intent intent = new Intent();
-                    setResult(2, intent);
-                    finish();
+
+                    SharedPreferences sp = cont.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
+                    String blandlv = sp.getString("blandlv", "");
+                    String blandid = sp.getString("blandid", "");
+                    if(Validate.isNull(blandlv)||Validate.isNull(blandid)){
+                        BaseActivityManager manager=BaseActivityManager.getAppManager();
+                        manager.AppExit(cont);
+                    }else{
+                        Intent intent = new Intent();
+                        setResult(2, intent);
+                        finish();
+                    }
                 }else if("120".equals(action)){
                     finish();
                 }

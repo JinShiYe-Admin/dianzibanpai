@@ -61,8 +61,23 @@ public class SetClassesActivity extends BaseActivity implements KeyboardAdapterC
     @Override
     public void doBusiness(Context mContext) {
         selectId=(TextView)findViewById(R.id.selectId);
+
         etInput= (EditText) findViewById(R.id.et_input_classes);
+
         keyboardView= (KeyboardViewClasses) findViewById(R.id.keyboard_view_classes);
+        etInput.setText(Const.blandid);
+        switch (Const.blandlv){
+            case "0":
+                selectId.setText("班级班牌");
+                break;
+            case "1":
+                selectId.setText("年级班牌");
+                break;
+            case "2":
+                selectId.setText("学校班牌");
+                break;
+        }
+
         // 设置不调用系统键盘
         if (Build.VERSION.SDK_INT <= 10) {
             etInput.setInputType(InputType.TYPE_NULL);
