@@ -15,7 +15,7 @@ public class Const {
     public static final String    baseUrl="https://zyja.zhuxue101.net/appsources/html/index/firstPage.html";//    设置班牌类型成功后跳转的页面路径
     public static final String defaultUrl="https://zyja.zhuxue101.net/appsources/html/index/firstPage.html";//    第一次进入或没设置班牌类型时跳转的页面路径
     public static String updateUrl="https://boss.zhuxue101.net:446/banpai/dianzibanpai.apk";//    App更新路径
-    public static final String socketIp="192.168.1.121";//    顾工 socket数据交互接口
+    public static final String socketIp="192.168.1.236";//    顾工 socket数据交互接口
     public static final int socketPort=8086;
 
     public static final  String PWD="20182018"; //班牌密码

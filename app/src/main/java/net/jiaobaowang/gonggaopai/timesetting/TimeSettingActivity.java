@@ -74,11 +74,11 @@ public class TimeSettingActivity extends BaseActivity {
                             Toast.makeText(cont, time, Toast.LENGTH_SHORT).show();
                         }
                         int hour=Integer.parseInt(time.split(":")[0]);
-//                        if(hour<4||hour>12){
-//                            Toast.makeText(cont, "开机时间段必须在：04:00 至 12:00 之间", Toast.LENGTH_SHORT).show();
-//                        }else{
+                        if(hour<4||hour>12){
+                            Toast.makeText(cont, "开机时间段必须在：04:00 至 12:00 之间", Toast.LENGTH_SHORT).show();
+                        }else{
                             startTime.setText(time);
-//                        }
+                        }
                     }
                 }) .setType(new boolean[]{false, false, false, true, true, false})// 默认全部显示
                         .setOutSideCancelable(true)//点击屏幕，点在控件外部范围时，是否取消显示
@@ -102,11 +102,11 @@ public class TimeSettingActivity extends BaseActivity {
                             Toast.makeText(cont, time, Toast.LENGTH_SHORT).show();
                         }
                         int hour=Integer.parseInt(time.split(":")[0]);
-//                        if(hour<16){
-//                            Toast.makeText(cont, "关机时间段必须在：16:00 至 24:00 之间", Toast.LENGTH_SHORT).show();
-//                        }else{
+                        if(hour<16){
+                            Toast.makeText(cont, "关机时间段必须在：16:00 至 24:00 之间", Toast.LENGTH_SHORT).show();
+                        }else{
                             shutdownTime.setText(time);
-//                        }
+                        }
                     }
                 }) .setType(new boolean[]{false, false, false, true, true, false})// 默认全部显示
                         .setOutSideCancelable(true)//点击屏幕，点在控件外部范围时，是否取消显示
