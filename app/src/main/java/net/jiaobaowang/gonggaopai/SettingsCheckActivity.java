@@ -245,9 +245,6 @@ public class SettingsCheckActivity extends BaseActivity {
                     //自动安装下载的apk
                     String sdpath = Environment.getExternalStorageDirectory() + "/Download";
                     File file=new File(sdpath+"/"+"dianzibanpai.apk");
-                    if(file.exists()){
-                        file.delete();
-                    }
                     Intent installIntent = new Intent(Intent.ACTION_VIEW);
                     installIntent.setDataAndType(Uri.fromFile(file), "application/vnd.android.package-archive");
                     installIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

@@ -37,6 +37,10 @@ public class DownloadIntentService extends IntentService {
             if (!file.exists()) {
                 file.mkdir();
             }
+            File file1 = new File(sdpath+"/"+"dianzibanpai.apk");
+            if (file1.exists()) {
+                file.delete();
+            }
             InputStream input = connection.getInputStream();
             OutputStream output = new FileOutputStream(sdpath+"/"+"dianzibanpai.apk");
             byte data[] = new byte[2048];
