@@ -111,7 +111,8 @@
             android:exported="true">
             <intent-filter android:priority="2147483647"> <!-- //优先级 -->
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <category android:name="android.intent.category.LAUNCHER"/>
+
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </receiver>
 
@@ -119,10 +120,15 @@
             android:name=".SettingsCheckActivity"
             android:launchMode="standard"
             android:screenOrientation="landscape" />
-        <activity android:name=".timesetting.TimeSettingActivity"
+        <activity
+            android:name=".timesetting.TimeSettingActivity"
             android:launchMode="standard"
-            android:screenOrientation="landscape" >
-        </activity>
+            android:screenOrientation="landscape" />
+
+        <service
+            android:name=".service.DownloadIntentService"
+            android:exported="false" />
+
     </application>
 
 </manifest>

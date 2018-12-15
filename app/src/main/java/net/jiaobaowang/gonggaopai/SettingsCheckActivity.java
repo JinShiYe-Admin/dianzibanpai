@@ -1,10 +1,14 @@
 package net.jiaobaowang.gonggaopai;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
 import android.os.Message;
+import android.os.ResultReceiver;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.KeyEvent;
@@ -22,14 +26,19 @@ import com.alibaba.fastjson.JSONArray;
 
 import net.jiaobaowang.gonggaopai.base.BaseActivity;
 import net.jiaobaowang.gonggaopai.classes.SetClassesActivity;
+import net.jiaobaowang.gonggaopai.service.DownloadIntentService;
 import net.jiaobaowang.gonggaopai.style.StyleActivity;
 import net.jiaobaowang.gonggaopai.timesetting.TimeSettingActivity;
+import net.jiaobaowang.gonggaopai.util.CommonDialog;
 import net.jiaobaowang.gonggaopai.util.Const;
 import net.jiaobaowang.gonggaopai.util.Validate;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class SettingsCheckActivity extends BaseActivity {
     private RecyclerView mRecyclerView;
@@ -37,6 +46,9 @@ public class SettingsCheckActivity extends BaseActivity {
     private HomeAdapter mAdapter;
     private GridLayoutManager manager;
     private Button button_backward;
+
+    private ProgressDialog dialog;
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -112,6 +124,13 @@ public class SettingsCheckActivity extends BaseActivity {
                 finish();
             }
         });
+        dialog= new ProgressDialog(this);
+        dialog.setTitle("正在下载安装包...");
+        dialog.setMessage("请稍候...");
+        dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        dialog.setCancelable(true);// 设置是否可以通过点击Back键取消
+        dialog.setCanceledOnTouchOutside(false);// 设置在点击Dialog外是否取消Dialog进度条
+        dialog.setProgress(0);
     }
 
     @Override
@@ -150,10 +169,15 @@ public class SettingsCheckActivity extends BaseActivity {
                 public void onClick(View v) {
                     switch (keys){
                         case "appUpdate":
-                            Intent appUpdate = new Intent();
-                            appUpdate.setData(Uri.parse(Const.updateUrl));
-                            appUpdate.setAction(Intent.ACTION_VIEW);
-                            startActivity(appUpdate);
+//                            Intent appUpdate = new Intent();
+//                            appUpdate.setData(Uri.parse(Const.updateUrl));
+//                            appUpdate.setAction(Intent.ACTION_VIEW);
+//                            startActivity(appUpdate);
+                            dialog.show();
+                            Intent intent = new Intent(cont, DownloadIntentService.class);
+                            intent.putExtra("url",Const.updateUrl);
+                            intent.putExtra("receiver", new DownloadReceiver(new Handler()));
+                            startService(intent);
                             break;
                         case "blandCheck":
                             Intent blandCheck = new Intent();
@@ -198,6 +222,50 @@ public class SettingsCheckActivity extends BaseActivity {
                 left = (LinearLayout) view.findViewById(R.id.left);
                 settings_left = (TextView) view.findViewById(R.id.settings_left);
                 settings_img_left = (ImageView) view.findViewById(R.id.settings_img_left);
+            }
+        }
+    }
+
+    public class DownloadReceiver extends ResultReceiver {
+        public DownloadReceiver(Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+            super.onReceiveResult(resultCode, resultData);
+            if (resultCode == DownloadIntentService.UPDATE_PROGRESS) {
+                int progress = resultData.getInt("progress");
+                //(true)就是根据你的进度可以设置现在的进度值。
+                //(false)就是滚动条的当前值自动在最小到最大值之间来回移动，形成这样一个动画效果
+                dialog.setIndeterminate(false);
+                dialog.setProgress(progress);
+                if (progress == 100) {
+                    dialog.dismiss();
+                    //自动安装下载的apk
+                    String sdpath = Environment.getExternalStorageDirectory() + "/Download";
+                    File file=new File(sdpath+"/"+"dianzibanpai.apk");
+                    Intent installIntent = new Intent(Intent.ACTION_VIEW);
+                    installIntent.setDataAndType(Uri.fromFile(file), "application/vnd.android.package-archive");
+                    installIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(installIntent);
+                }
+            }else if(resultCode == DownloadIntentService.UPDATE_FALSE){
+                dialog.dismiss();
+                final CommonDialog dialog = new CommonDialog(cont);
+                dialog.setMessage("网络连接异常，请稍后再试！")
+                        .setDetail("网络连接异常，请稍后再试！")
+                        .setTitle("系统提示")
+                        .setSingle(0)
+                        .show();
+                final Timer t = new Timer();
+                t.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        dialog.dismiss();
+                        t.cancel();
+                    }
+                }, 2000);
             }
         }
     }
