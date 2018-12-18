@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
 
+import java.util.Iterator;
 import java.util.Stack;
 
 /**
@@ -77,7 +78,6 @@ public class BaseActivityManager {
      */
     public void finishActivity(Activity activity) {
         if (activity != null) {
-            activityStack.remove(activity);
             activity.finish();
             activity = null;
         }
@@ -113,8 +113,11 @@ public class BaseActivityManager {
      * @param cls
      */
     public void finishOthersActivity(Class<?> cls) {
-        for (BaseActivity activity : activityStack) {
-            if (!(activity.getClass().equals(cls))) {
+        Iterator<BaseActivity> iterator = activityStack.iterator();
+        while(iterator.hasNext()){
+            BaseActivity activity = iterator.next();
+            if(!activity.getClass().equals(cls)){
+                iterator.remove();
                 finishActivity(activity);
             }
         }

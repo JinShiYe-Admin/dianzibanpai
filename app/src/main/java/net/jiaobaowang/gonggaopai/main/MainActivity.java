@@ -250,6 +250,7 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        BaseActivityManager.getAppManager().finishOthersActivity(MainActivity.class);
         if (resultCode == 1 && requestCode == Const.GO_PASSWORD) {
             String actionP=data.getStringExtra("action");
             if("240".equals(actionP)){

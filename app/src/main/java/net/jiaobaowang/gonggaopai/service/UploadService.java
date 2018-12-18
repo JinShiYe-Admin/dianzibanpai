@@ -175,11 +175,13 @@ public class UploadService extends Service {
             }
         };
         byte[] byteString=data;
-        StringBuffer buffer=new StringBuffer();
-        for (int i = 0; i <byteString.length ; i++) {
-            buffer.append(byteString[i]);
+        if(Const.DEBUG){
+            StringBuffer buffer=new StringBuffer();
+            for (int i = 0; i <byteString.length ; i++) {
+                buffer.append(byteString[i]);
+            }
+            System.out.println("要发送的数据："+buffer.toString());
         }
-        System.out.println("要发送的数据："+buffer.toString());
         socketSqlUtils = SocketSqlUtils.getInstance(socketSqlHandler,byteString);
         if(!socketSqlUtils.isConnected()){
             socketSqlUtils.connect();
@@ -205,8 +207,8 @@ public class UploadService extends Service {
         byte[] pLength= BitConverter.intToByte2(packageLength);
         int packageCommand=Const.CMD_SUBMIT;//包命令
         byte[] pCommand= BitConverter.intToByte2(packageCommand);
-
-        int serNum = Const.serNum = Const.serNum+1;//流水号
+        int serNum = Const.serNum+1;//流水号
+        Const.serNum=serNum;
         SharedPreferences sp = this.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putInt("serNum",Const.serNum);
@@ -236,7 +238,8 @@ public class UploadService extends Service {
         byte[] pLength= BitConverter.intToByte2(packageLength);
         int packageCommand=Const.CMD_TERMINATE;//包命令
         byte[] pCommand= BitConverter.intToByte2(packageCommand);
-        int serNum= Const.serNum=(Const.serNum+1);//流水号
+        int serNum= Const.serNum+1;//流水号
+        Const.serNum=serNum;
         SharedPreferences sp = this.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putInt("serNum",Const.serNum);
