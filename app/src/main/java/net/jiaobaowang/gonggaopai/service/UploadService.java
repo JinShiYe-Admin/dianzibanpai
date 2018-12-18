@@ -84,6 +84,9 @@ public class UploadService extends Service {
         Intent i = new Intent(this,AlarmReceiver.class);
         pi = PendingIntent.getBroadcast(this,0,i,0);
         manager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime()+Const.TIME,pi);
+        if(number>Integer.MAX_VALUE){
+            number=1;
+        }
         number++;
         return super.onStartCommand(intent, flags, startId);
     }

@@ -63,14 +63,21 @@ public class Const {
     public static final String SPNAME="GGP";//SharedPreferences名称
     public static final String ACTION_NAME="net.jiaobaowang.carid";//广播接收action
 
+    //upload相关
     public static int serNum=0;//流水号
     public static final String kID="11";//子卡机ID
-    public static final int SOCKETCLOSETIME=1000*10;
     public static final int SOCKETTIMEOUTCLOSETIME=1000*10;//socket等待反馈时长，超时则关闭
     public static final int SOCKETRCONNECTTIME=1500*10;//socket重连等待时长
-    public static final int MESSAGE_DELAY=1000*10;//打卡批量发送等待时长，此时间段内如果有新打卡，则重新计算等待时长
     public static final int TIME=1000*40;//调度任务执行周期 @TEST
     public static final int TIMEOUT=1000*10;//socket连接超时等待时长
-    public static final int JGTIME=1000*60;//两次打卡允许的间隔时间差
+
+    //save相关
     public static final int MAXUPLOADNUM=50;//队列数上限
+    public static final int JGTIME=1000*60;//两次打卡允许的间隔时间差
+    public static final int MESSAGE_DELAY=1000*10;//打卡批量发送等待时长，此时间段内如果有新打卡，则重新计算等待时长
+
+
+
+
+    public static final int SOCKETCLOSETIME=1000*10;
 }

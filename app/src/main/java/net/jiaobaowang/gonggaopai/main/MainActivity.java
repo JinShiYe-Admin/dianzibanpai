@@ -622,6 +622,12 @@ public class MainActivity extends BaseActivity {
         }
     }
 
+    /**
+     * 判断两次打卡时间差是否在限定时间内
+     * @param afterCardTime
+     * @param preCardTime
+     * @return
+     */
     private boolean getTime(Long afterCardTime,Long preCardTime){
         if(afterCardTime-preCardTime>Const.JGTIME) {
             return true;
