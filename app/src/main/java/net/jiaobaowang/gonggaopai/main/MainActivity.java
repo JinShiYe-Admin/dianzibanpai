@@ -1,14 +1,17 @@
 package net.jiaobaowang.gonggaopai.main;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,13 +33,25 @@ import com.mauiie.aech.AECrashHelper;
 import net.jiaobaowang.gonggaopai.R;
 import net.jiaobaowang.gonggaopai.base.BaseActivity;
 import net.jiaobaowang.gonggaopai.base.BaseActivityManager;
+import net.jiaobaowang.gonggaopai.entry.Attendance;
 import net.jiaobaowang.gonggaopai.pwd.PwdActivity;
+import net.jiaobaowang.gonggaopai.service.ReaderService;
 import net.jiaobaowang.gonggaopai.service.UploadService;
+import net.jiaobaowang.gonggaopai.util.CommonDialog;
 import net.jiaobaowang.gonggaopai.util.Const;
+import net.jiaobaowang.gonggaopai.util.MyQueue;
 import net.jiaobaowang.gonggaopai.util.NetUtil;
+import net.jiaobaowang.gonggaopai.util.ReceiverAndServiceUtil;
 import net.jiaobaowang.gonggaopai.util.Validate;
 
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainActivity extends BaseActivity {
 
@@ -49,6 +64,14 @@ public class MainActivity extends BaseActivity {
     private MyLocationListener myListener = new MyLocationListener();
     private FloatingActionsMenu menuMultipleActions;
     private static final int BAIDU_READ_PHONE_STATE = 166;
+
+
+
+    private Handler mHandler;
+    private Runnable mScanningFishedRunnable;
+    private MyQueue queue;
+    private CardIdReceiver cardIdReceiver; //广播接收者
+    private LocalBroadcastManager manager;
     @Override
     public int initLayout() {
         return R.layout.activity_main;
@@ -57,6 +80,9 @@ public class MainActivity extends BaseActivity {
     @Override
     public void widgetHandle(Message msg) {
         switch (msg.what){
+//            case 0x666://获取到网络时间，则以网络时间为准
+//                setTime((Long) msg.obj);
+//                break;
             case 0x667:
                 //设置定时开关机时间
                 if(Const.DEBUG) {
@@ -79,12 +105,19 @@ public class MainActivity extends BaseActivity {
     public void doBusiness(Context mContext) {
         base = (RelativeLayout) findViewById(R.id.baseLayout);
         view = (LinearLayout) findViewById(R.id.webView);
-        int result = 0;
-        int resourceId = cont.getResources().getIdentifier("status_bar_height", "dimen", "android");
-        if (resourceId > 0) {
-            result = cont.getResources().getDimensionPixelSize(resourceId);
+        mHandler =new Handler();
+        queue=new MyQueue();
+        initPostRunnable();
+        manager = LocalBroadcastManager.getInstance(cont);
+
+        boolean isRegister = ReceiverAndServiceUtil.isRegister(manager, Const.ACTION_NAME);
+        if (!isRegister) {
+            cardIdReceiver = new CardIdReceiver();
+            IntentFilter intentFilter = new IntentFilter(); //初始化意图过滤器
+            intentFilter.addAction(Const.ACTION_NAME); //添加动作
+            manager.registerReceiver(cardIdReceiver, intentFilter); //注册广播
         }
-        base.setPadding(0, result, 0, 0);
+        quanxian();
         SharedPreferences sp = this.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
         Const.blandlv = sp.getString("blandlv", "");
         Const.blandid = sp.getString("blandid", "");
@@ -149,7 +182,6 @@ public class MainActivity extends BaseActivity {
         if (Const.blandlv!=""&&Const.blandid != "") {
             setHideAnimation(menuMultipleActions, 0);
         }
-        quanxian();
         if(Validate.isNull(Const.blandlv)&&Validate.isNull(Const.blandid)){
             if(BaseActivityManager.getAppManager().isActivityStarted(PwdActivity.class)){
 
@@ -162,20 +194,19 @@ public class MainActivity extends BaseActivity {
             }
         }
         getNetTime();
-//        boolean isUploadServiceRunning= ReceiverAndServiceUtil.isServiceRunning(cont,"net.jiaobaowang.gonggaopai.service.UploadService");
-//        boolean isReaderServiceRunning=ReceiverAndServiceUtil.isServiceRunning(cont,"net.jiaobaowang.gonggaopai.service.ReaderService");
-//        if(!isUploadServiceRunning){
-//            //启动定时任务
-//            Intent startService = new Intent(cont,UploadService.class);
-//            startService(startService);
-//        }
-//
-//        if(!isReaderServiceRunning){
-//            //启动串口读取服务
-//            Intent startIntent = new Intent(cont,ReaderService.class);
-//            startService(startIntent);
-//        }
+        boolean isUploadServiceRunning= ReceiverAndServiceUtil.isServiceRunning(cont,"net.jiaobaowang.gonggaopai.service.UploadService");
+        boolean isReaderServiceRunning=ReceiverAndServiceUtil.isServiceRunning(cont,"net.jiaobaowang.gonggaopai.service.ReaderService");
+        if(!isUploadServiceRunning){
+            //启动定时任务
+            Intent startService = new Intent(cont,UploadService.class);
+            startService(startService);
+        }
 
+        if(!isReaderServiceRunning){
+            //启动串口读取服务
+            Intent startIntent = new Intent(cont,ReaderService.class);
+            startService(startIntent);
+        }
     }
 
     @Override
@@ -395,6 +426,51 @@ public class MainActivity extends BaseActivity {
                 break;
         }
     }
+
+//    private void getNetTime(){
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                URL url = null;//取得资源对象
+//                try {
+//                    url = new URL("http://www.baidu.com");
+//                    //url = new URL("http://www.ntsc.ac.cn");//中国科学院国家授时中心
+//                    //url = new URL("http://www.bjtime.cn");
+//                    URLConnection uc = url.openConnection();//生成连接对象
+//                    uc.connect(); //发出连接
+//                    final long ld = uc.getDate(); //取得网站日期时间
+//                    Calendar calendar = Calendar.getInstance();
+//                    calendar.setTimeInMillis(ld);
+//                    final int year =calendar.get(Calendar.YEAR);
+//                    final int month =calendar.get(Calendar.MONTH);
+//                    final int date =calendar.get(Calendar.DATE);
+//                    final int hour =calendar.get(Calendar.HOUR_OF_DAY);
+//                    final int minute =calendar.get(Calendar.MINUTE);
+//                    final int second =calendar.get(Calendar.SECOND);
+//                    runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            //重置本地时间为网络时间
+//                            Intent intent = new Intent("android.intent.action.settime");
+//                            int[] settime= new int[]{year,month,date,hour,minute,second};
+//                            intent.putExtra("settime", settime);
+//                            sendBroadcast(intent);
+//                            Message message=new Message();
+//                            message.what=0x666;
+//                            message.obj=ld;
+//                            handler.sendMessage(message);
+//                        }
+//                    });
+//                } catch (Exception e) {
+//                    Message message=new Message();
+//                    message.what=0x667;
+//                    handler.sendMessage(message);
+//                    e.printStackTrace();
+//                }
+//            }
+//        }).start();
+//    }
+
     private void getNetTime() {
         final Handler mHandler = new Handler();
         Runnable r = new Runnable() {
@@ -455,6 +531,149 @@ public class MainActivity extends BaseActivity {
             }
         }
     }
+
+
+    /**
+     * 将打卡序列存入数据库
+     */
+    public void initPostRunnable(){
+        mScanningFishedRunnable = new Runnable() {
+            @Override
+            public void run() {
+                LinkedList list =new LinkedList();
+                list.addAll(queue.getList());
+                queue.clear();
+                ListIterator iterator=list.listIterator();
+                while (iterator.hasNext()){
+                    Map info = (Map) iterator.next();
+                    String id= (String) info.get("id");
+                    Long time= (Long) info.get("timestr");
+                    List<Attendance> attendanceList = Attendance.find(Attendance.class,"CARD_ID=?",new String[]{id},null,"TIME_STR DESC","0,1");
+                    if(attendanceList.size()==0){
+                        saveInfo(id,time);
+                    }else{
+                        Attendance attend=attendanceList.get(0);
+                        Long preTimeStr=attend.getTimeStr();
+                        if(getTime(time,preTimeStr)){
+                            saveInfo(id,time);
+                        }
+                    }
+                }
+            }
+        };
+    }
+
+    private boolean alertDialog(String id){
+        final CommonDialog dialog = new CommonDialog(cont);
+        dialog.setMessage(" ")
+                .setImageResId(R.drawable.success)
+                .setTitle("系统提示")
+                .setSingle(0)
+                .show();
+        final Timer t = new Timer();
+        t.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                dialog.dismiss();
+                t.cancel();
+            }
+        }, 800);
+
+        Long timestr= System.currentTimeMillis();
+        Map map=new HashMap();
+        map.put("id",id);
+        map.put("timestr",timestr);
+
+        if(queue.QueueLength()>0){
+            ListIterator iterator=queue.QueueAll();
+            boolean canIn=true;
+            while (iterator.hasNext()){//遍历队列，看之前这个卡ID是否有签到，如果有，判断是否可以再次签到，可以就放入队列
+                Map info = (Map) iterator.next();
+                String qdId= (String) info.get("id");
+                if(id.equals(qdId)){
+                    Long preTime= (Long) info.get("timestr");
+                    canIn=getTime(timestr,preTime);
+                    if(!canIn){
+                        System.out.println("允许时间外打卡");
+                    }
+                }
+            }
+            if(canIn){
+                queue.enQueue(map);
+            }
+        }else{
+            queue.enQueue(map);
+        }
+        //如果队列 长度大于100，则直接通知存储到数据库,否则使用延时存储
+        if(queue.QueueLength()>=Const.MAXUPLOADNUM){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    private boolean getTime(Long afterCardTime,Long preCardTime){
+        if(afterCardTime-preCardTime>Const.JGTIME) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private void alertFalseDialog(){
+        final CommonDialog dialog = new CommonDialog(cont);
+        dialog.setMessage("请先设置班牌类型!")
+                .setDetail(" ")
+                .setImageResId(R.drawable.rmor)
+                .setTitle("系统提示")
+                .setSingle(-1)
+                .show();
+        final Timer t = new Timer();
+        t.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                dialog.dismiss();
+                t.cancel();
+            }
+        }, 2500);
+    }
+
+    private void saveInfo(String id,Long time){
+        Attendance attendance=new Attendance();
+        attendance.setCardId(id);
+        attendance.setTimeStr(time);
+        attendance.setLx(0);
+        attendance.setIsUpload(0);
+        attendance.save();
+    }
+
+    class CardIdReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, final Intent intent) {
+            runOnUiThread(new Runnable() { //运行在主线程
+                @Override
+                public void run() {
+                    String cardId = intent.getStringExtra("cardId");
+                    if(Const.DEBUG){
+                        Toast.makeText(cont,"cardId2222:"+cardId,Toast.LENGTH_SHORT).show();
+                    }
+                    if(Validate.noNull(Const.blandlv)&&Validate.noNull(Const.blandid)){
+                        boolean isToLarge=alertDialog(cardId);
+                        if(isToLarge){
+                            mHandler.removeCallbacks(mScanningFishedRunnable);
+                            mHandler.post(mScanningFishedRunnable);
+                        }else{
+                            mHandler.removeCallbacks(mScanningFishedRunnable);
+                            mHandler.postDelayed(mScanningFishedRunnable,Const.MESSAGE_DELAY);
+                        }
+                    }else{
+                        alertFalseDialog();
+                    }
+                }
+            });
+        }
+    }
+
     /**
      * 根据网络时间或本机时间，设置自动开关机时间，此方法为接收到新的配置通知后调用
      * @param timeMill

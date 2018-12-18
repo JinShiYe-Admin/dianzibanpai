@@ -34,8 +34,8 @@ public class UploadService extends Service {
     private PendingIntent pi;
     private SocketSqlUtils socketSqlUtils;
     private  Handler socketSqlHandler;
-    private Runnable socketRunnable,socketCancelRunnable;
-    private Handler mHandler,socketTimeHandler;
+    private Runnable socketRunnable,socketCancelRunnable,socketRConnectRunnable;
+    private Handler mHandler,socketTimeHandler,socketRConnectHandlere;
     private List<Attendance> attendanceList=new ArrayList<>();
     @Nullable
     @Override
@@ -70,6 +70,7 @@ public class UploadService extends Service {
             }
         };
         socketTimeHandler=new Handler();
+        socketRConnectHandlere=new Handler();
         if (number!=0) {
 //            new Thread(new Runnable() {
 //                @Override
@@ -131,11 +132,6 @@ public class UploadService extends Service {
                             }
                         }
 
-                        List<RecordData> recordResp2= RecordData.listAll(RecordData.class);
-                        for (int i = 0; i <recordResp2.size() ; i++) {
-                            byte[] data=recordResp2.get(i).getData();
-                            System.out.println(new String(data));
-                        }
                         socketTimeHandler.removeCallbacks(socketRunnable);
                         socketTimeHandler.post(socketRunnable);
                         break;
@@ -143,7 +139,9 @@ public class UploadService extends Service {
                         System.out.println("连接已释放");
                         break;
                     case 0x668://socket 连接失败
-                        System.out.println("连接失败");
+                        System.out.println("连接失败，正在尝试重连");
+                        socketRConnectHandlere.removeCallbacks(socketRConnectRunnable);
+                        socketRConnectHandlere.postDelayed(socketRConnectRunnable,Const.SOCKETRCONNECTTIME);
                         break;
                 }
             }
@@ -168,7 +166,20 @@ public class UploadService extends Service {
                 }
             }
         };
+        socketRConnectRunnable = new Runnable() {
+            @Override
+            public void run() {
+                if(socketSqlUtils!=null){
+                    socketSqlUtils.connect();
+                }
+            }
+        };
         byte[] byteString=data;
+        StringBuffer buffer=new StringBuffer();
+        for (int i = 0; i <byteString.length ; i++) {
+            buffer.append(byteString[i]);
+        }
+        System.out.println("要发送的数据："+buffer.toString());
         socketSqlUtils = SocketSqlUtils.getInstance(socketSqlHandler,byteString);
         if(!socketSqlUtils.isConnected()){
             socketSqlUtils.connect();

@@ -18,6 +18,7 @@ import net.jiaobaowang.gonggaopai.util.Const;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Arrays;
 
 public class ReaderService extends Service {
 
@@ -125,36 +126,38 @@ public class ReaderService extends Service {
     private void endBuffer() {
         final byte[] test = new byte[64];
         System.arraycopy(bytes, 0, test, 0, bytes.length);
-//        mhandler.post(new Runnable() {
-//            @Override
-//            public void run() {
-//                if (Const.DEBUG) {
-//                    showToast(getApplicationContext(), "cardId:" + Arrays.toString(test));
-//                }
-//            }
-//        });
+        mhandler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (Const.DEBUG) {
+                    showToast(getApplicationContext(), "cardId:" + Arrays.toString(test));
+                }
+            }
+        });
         if (test[2] == 0x01) {//IC
             byte[] bytesIC = new byte[4];
             System.arraycopy(test, 3, bytesIC, 0, 4);
             final String cardId = BitConverter.bytesToHexString(bytesIC);
             LocalBroadcastManager manager = LocalBroadcastManager.getInstance(getBaseContext());
-            if(BaseActivityManager.getAppManager().currentActivity().equals(MainActivity.class.getClass())){
+            System.out.println(BaseActivityManager.getAppManager().currentActivity());
+            System.out.println(BaseActivityManager.getAppManager().currentActivity() instanceof MainActivity);
+//            if(BaseActivityManager.getAppManager().currentActivity() instanceof MainActivity){
                 Intent cardIntent = new Intent();
                 cardIntent.setAction(Const.ACTION_NAME);
                 cardIntent.putExtra("cardId", cardId);
                 manager.sendBroadcast(cardIntent);
-            }
+//            }
         } else if (test[2] == 0x02) {//ID
             byte[] bytesID = new byte[4];
             System.arraycopy(test, 4, bytesID, 0, 4);
             final String cardId2 = BitConverter.bytesToHexString(bytesID);
             LocalBroadcastManager manager = LocalBroadcastManager.getInstance(getBaseContext());
-            if(BaseActivityManager.getAppManager().currentActivity().equals(MainActivity.class.getClass())){
+//            if(BaseActivityManager.getAppManager().currentActivity() instanceof MainActivity){
                 Intent cardIntent = new Intent();
                 cardIntent.setAction(Const.ACTION_NAME);
                 cardIntent.putExtra("cardId", cardId2);
                 manager.sendBroadcast(cardIntent);
-            }
+//            }
         }
 //                sttb.setLength(0);
         bytes = new byte[64];
