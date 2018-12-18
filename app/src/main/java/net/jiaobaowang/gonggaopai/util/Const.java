@@ -34,7 +34,8 @@ public class Const {
 
     public static String settings_json="[{\"key\":\"appUpdate\",\"text\":\"系统更新\",\"url\":\"settings_1\"}," +
             "{\"key\":\"blandCheck\",\"text\":\"班牌类型\",\"url\":\"settings_2\"}," +
-            "{\"key\":\"styleCheck\",\"text\":\"主题设置\",\"url\":\"settings_3\"}" +
+            "{\"key\":\"styleCheck\",\"text\":\"主题设置\",\"url\":\"settings_3\"}," +
+            "{\"key\":\"timeCheck\",\"text\":\"运行时间\",\"url\":\"settings_4\"}" +
             "]";  //设置选项
     //{"key":"timeCheck","text":"运行时间","url":"settings_4"}
     /*********/

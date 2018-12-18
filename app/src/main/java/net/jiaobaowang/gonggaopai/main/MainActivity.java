@@ -141,7 +141,6 @@ public class MainActivity extends BaseActivity {
         actionB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {//设置班牌类型
-                setHideAnimation(menuMultipleActions, 500);
                 Intent intent = new Intent();
                 intent.putExtra("action","110");
                 intent.setClass(cont, PwdActivity.class);
@@ -156,7 +155,6 @@ public class MainActivity extends BaseActivity {
         actionD.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setHideAnimation(menuMultipleActions, 500);
                 Intent intent = new Intent();
                 intent.putExtra("action","120");
                 intent.setClass(cont, PwdActivity.class);
@@ -179,14 +177,11 @@ public class MainActivity extends BaseActivity {
                 }
             }
         });
-        if (Const.blandlv!=""&&Const.blandid != "") {
-            setHideAnimation(menuMultipleActions, 0);
-        }
+        setHideAnimation(menuMultipleActions, 1000);
         if(Validate.isNull(Const.blandlv)&&Validate.isNull(Const.blandid)){
             if(BaseActivityManager.getAppManager().isActivityStarted(PwdActivity.class)){
 
             }else{
-                setHideAnimation(menuMultipleActions, 500);
                 Intent intent = new Intent();
                 intent.putExtra("action","110");
                 intent.setClass(cont, PwdActivity.class);
@@ -250,6 +245,15 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        final Timer t = new Timer();
+        t.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                setHideAnimation(menuMultipleActions, 1000);
+                t.cancel();
+            }
+        }, 1000);
         BaseActivityManager.getAppManager().finishOthersActivity(MainActivity.class);
         if (resultCode == 1 && requestCode == Const.GO_PASSWORD) {
             String actionP=data.getStringExtra("action");
@@ -311,19 +315,24 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    public void setHideAnimation(View view, int duration) {
+    public void setHideAnimation(final View view,final int duration) {
         if (null == view || duration < 0) {
             return;
         }
-
-        if (null != mHideAnimation) {
-            mHideAnimation.cancel();
-        }
-        // 监听动画结束的操作
-        mHideAnimation = new AlphaAnimation(1.0f, 0.0f);
-        mHideAnimation.setDuration(duration);
-        mHideAnimation.setFillAfter(true);
-        view.startAnimation(mHideAnimation);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                menuMultipleActions.collapse();
+                if (null != mHideAnimation) {
+                    mHideAnimation.cancel();
+                }
+                // 监听动画结束的操作
+                mHideAnimation = new AlphaAnimation(1.0f, 0.0f);
+                mHideAnimation.setDuration(duration);
+                mHideAnimation.setFillAfter(true);
+                view.startAnimation(mHideAnimation);
+            }
+        });
     }
 
     public void setShowAnimation(View view, int duration) {
