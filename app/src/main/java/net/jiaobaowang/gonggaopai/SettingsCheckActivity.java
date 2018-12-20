@@ -113,7 +113,7 @@ public class SettingsCheckActivity extends BaseActivity {
         }
         button_backward=(Button)findViewById(R.id.button_backward);
         mRecyclerView = (RecyclerView) findViewById(R.id.settings);
-        mRecyclerView.setLayoutManager(new GridLayoutManager(this,3));
+        mRecyclerView.setLayoutManager(new GridLayoutManager(this,1));
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setAdapter(mAdapter = new HomeAdapter());
         button_backward.setOnClickListener(new View.OnClickListener() {
@@ -168,23 +168,39 @@ public class SettingsCheckActivity extends BaseActivity {
                 @Override
                 public void onClick(View v) {
                     switch (keys){
-                        case "appUpdate":
-//                            Intent appUpdate = new Intent();
-//                            appUpdate.setData(Uri.parse(Const.updateUrl));
-//                            appUpdate.setAction(Intent.ACTION_VIEW);
-//                            startActivity(appUpdate);
-                            dialog.show();
-                            Intent intent = new Intent(cont, DownloadIntentService.class);
-                            intent.putExtra("url",Const.updateUrl);
-                            intent.putExtra("receiver", new DownloadReceiver(new Handler()));
-                            startService(intent);
+                        case "appUpdate"://系统更新
+                            final CommonDialog dialog2 = new CommonDialog(cont);
+                            dialog2.setMessage("检测到新版本APP，是否立即下载？")
+                                    .setDetail("*")
+                                    .setImageResId(-1)
+                                    .setTitle("系统提醒")
+                                    .setPositive("立即下载")
+                                    .setNegtive("取消")
+                                    .setSingle(2)
+                                    .setOnClickBottomListener(new CommonDialog.OnClickBottomListener() {
+                                        @Override
+                                        public void onPositiveClick() {
+                                            dialog2.dismiss();
+                                            dialog.show();
+                                            Intent intent = new Intent(cont, DownloadIntentService.class);
+                                            intent.putExtra("url",Const.updateUrl);
+                                            intent.putExtra("receiver", new DownloadReceiver(new Handler()));
+                                            startService(intent);
+                                        }
+
+                                        @Override
+                                        public void onNegtiveClick() {
+                                            dialog2.dismiss();
+                                        }
+                                    }).show();
+
                             break;
-                        case "blandCheck":
+                        case "blandCheck"://班牌类型设置
                             Intent blandCheck = new Intent();
                             blandCheck.setClass(cont, SetClassesActivity.class);
                             startActivityForResult(blandCheck, Const.GO_CLASSESSETTING);
                             break;
-                        case "styleCheck":
+                        case "styleCheck"://班牌主题设置
                             if(Validate.isNull(Const.blandlv)&&Validate.isNull(Const.blandid)){
                                 Toast.makeText(cont,"请先选择班牌类型，再设置班牌主题",Toast.LENGTH_LONG).show();
                             }else{
@@ -194,10 +210,36 @@ public class SettingsCheckActivity extends BaseActivity {
                                 startActivityForResult(styleCheck, Const.GO_STYLESETTING);
                             }
                             break;
-                        case "timeCheck":
+                        case "timeCheck"://自动开关机时间
                             Intent timeCheck = new Intent();
                             timeCheck.setClass(cont, TimeSettingActivity.class);
                             startActivityForResult(timeCheck, Const.GO_TIMESETTING);
+                            break;
+                        case "commonSettings"://通用设置
+//                            Intent commonSettings = new Intent();
+//                            commonSettings.setClass(cont, TimeSettingActivity.class);
+//                            startActivityForResult(commonSettings, Const.GO_TIMESETTING);
+                            break;
+                        case "closeSystem"://关机
+                            final CommonDialog dialog3 = new CommonDialog(cont);
+                            dialog3.setMessage("确定要关闭该设备吗？")
+                                    .setDetail("*")
+                                    .setImageResId(-1)
+                                    .setTitle("系统提醒")
+                                    .setPositive("立即关机")
+                                    .setNegtive("取消")
+                                    .setSingle(2)
+                                    .setOnClickBottomListener(new CommonDialog.OnClickBottomListener() {
+                                        @Override
+                                        public void onPositiveClick() {
+                                            dialog3.dismiss();
+                                        }
+
+                                        @Override
+                                        public void onNegtiveClick() {
+                                            dialog3.dismiss();
+                                        }
+                                    }).show();
                             break;
                     }
                 }

@@ -83,7 +83,7 @@ public class UploadService extends Service {
         manager = (AlarmManager) getSystemService(ALARM_SERVICE);
         Intent i = new Intent(this,AlarmReceiver.class);
         pi = PendingIntent.getBroadcast(this,0,i,0);
-        manager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime()+Const.TIME,pi);
+        manager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime()+Const.TIME,pi);//这个闹钟时间被安卓（5.1）限定为最短5S，无法打到秒级定时任务的要求。
         if(number>Integer.MAX_VALUE){
             number=1;
         }

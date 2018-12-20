@@ -1,7 +1,6 @@
 package net.jiaobaowang.gonggaopai.base;
 
 import android.app.Activity;
-import android.app.ActivityManager;
 import android.content.Context;
 
 import java.util.Iterator;
@@ -127,10 +126,12 @@ public class BaseActivityManager {
      * 结束所有Activity
      */
     public void finishAllActivity() {
-        for (int i = 0, size = activityStack.size(); i < size; i++) {
-            if (null != activityStack.get(i)) {
-                activityStack.get(i).finish();
-            }
+        Iterator<BaseActivity> iterator = activityStack.iterator();
+        while(iterator.hasNext()){
+            BaseActivity activity = iterator.next();
+            activity.finish();
+            iterator.remove();
+            finishActivity(activity);
         }
         activityStack.clear();
     }
@@ -141,10 +142,9 @@ public class BaseActivityManager {
     public void AppExit(Context context) {
         try {
             finishAllActivity();
-            ActivityManager activityMgr = (ActivityManager) context
-                    .getSystemService(Context.ACTIVITY_SERVICE);
-            activityMgr.killBackgroundProcesses(context.getPackageName());
-            System.exit(0);
+//            ActivityManager activityMgr = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+//            activityMgr.killBackgroundProcesses(context.getPackageName());
+//            System.exit(0);
         } catch (Exception e) {
             System.exit(0);
         }

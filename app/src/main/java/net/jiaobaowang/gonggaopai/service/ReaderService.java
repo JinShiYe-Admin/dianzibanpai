@@ -163,4 +163,10 @@ public class ReaderService extends Service {
         bytes = new byte[64];
         length = 0;
     }
+
+    @Override
+    public void onDestroy() {
+        System.out.println("service已关闭");
+        super.onDestroy();
+    }
 }

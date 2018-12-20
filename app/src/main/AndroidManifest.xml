@@ -128,7 +128,10 @@
         <service
             android:name=".service.DownloadIntentService"
             android:exported="false" />
-
+        <service
+            android:name=".service.UploadServiceScheduledExecutor"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>

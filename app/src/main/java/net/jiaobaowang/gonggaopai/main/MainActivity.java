@@ -36,7 +36,7 @@ import net.jiaobaowang.gonggaopai.base.BaseActivityManager;
 import net.jiaobaowang.gonggaopai.entry.Attendance;
 import net.jiaobaowang.gonggaopai.pwd.PwdActivity;
 import net.jiaobaowang.gonggaopai.service.ReaderService;
-import net.jiaobaowang.gonggaopai.service.UploadService;
+import net.jiaobaowang.gonggaopai.service.UploadServiceScheduledExecutor;
 import net.jiaobaowang.gonggaopai.util.CommonDialog;
 import net.jiaobaowang.gonggaopai.util.Const;
 import net.jiaobaowang.gonggaopai.util.MyQueue;
@@ -189,19 +189,7 @@ public class MainActivity extends BaseActivity {
             }
         }
         getNetTime();
-        boolean isUploadServiceRunning= ReceiverAndServiceUtil.isServiceRunning(cont,"net.jiaobaowang.gonggaopai.service.UploadService");
-        boolean isReaderServiceRunning=ReceiverAndServiceUtil.isServiceRunning(cont,"net.jiaobaowang.gonggaopai.service.ReaderService");
-        if(!isUploadServiceRunning){
-            //启动定时任务
-            Intent startService = new Intent(cont,UploadService.class);
-            startService(startService);
-        }
-
-        if(!isReaderServiceRunning){
-            //启动串口读取服务
-            Intent startIntent = new Intent(cont,ReaderService.class);
-            startService(startIntent);
-        }
+        _startService();
     }
 
     @Override
@@ -233,7 +221,7 @@ public class MainActivity extends BaseActivity {
             } else {
                 mAgentWeb = AgentWeb.with(this)
                         .setAgentWebParent(view, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
-                        .useDefaultIndicator()
+                        .closeIndicator()
                         .createAgentWeb()
                         .ready()
                         .go(url);
@@ -412,9 +400,9 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void onDestroy() {
+
+        _stopService();
         super.onDestroy();
-        Intent stopIntent = new Intent(cont,UploadService.class);
-        stopService(stopIntent);
     }
 
     @Override
@@ -437,6 +425,37 @@ public class MainActivity extends BaseActivity {
         }
     }
 
+    private void _startService(){
+        boolean isUploadServiceRunning= ReceiverAndServiceUtil.isServiceRunning(cont,"net.jiaobaowang.gonggaopai.service.UploadServiceScheduledExecutor");
+        boolean isReaderServiceRunning=ReceiverAndServiceUtil.isServiceRunning(cont,"net.jiaobaowang.gonggaopai.service.ReaderService");
+        if(!isUploadServiceRunning){
+            //启动定时任务
+            Intent startService = new Intent(cont,UploadServiceScheduledExecutor.class);
+            startService(startService);
+        }
+
+        if(!isReaderServiceRunning){
+            //启动串口读取服务
+            Intent startIntent = new Intent(cont,ReaderService.class);
+            startService(startIntent);
+        }
+    }
+
+    private void _stopService(){
+        boolean isUploadServiceRunning= ReceiverAndServiceUtil.isServiceRunning(cont,"net.jiaobaowang.gonggaopai.service.UploadServiceScheduledExecutor");
+        boolean isReaderServiceRunning=ReceiverAndServiceUtil.isServiceRunning(cont,"net.jiaobaowang.gonggaopai.service.ReaderService");
+        if(isUploadServiceRunning){
+            //关闭定时任务
+            Intent startService = new Intent(cont,UploadServiceScheduledExecutor.class);
+            stopService(startService);
+        }
+
+        if(isReaderServiceRunning){
+            //关闭串口读取服务
+            Intent startIntent = new Intent(cont,ReaderService.class);
+            stopService(startIntent);
+        }
+    }
 //    private void getNetTime(){
 //        new Thread(new Runnable() {
 //            @Override

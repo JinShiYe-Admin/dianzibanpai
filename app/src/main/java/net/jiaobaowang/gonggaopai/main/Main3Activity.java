@@ -13,6 +13,7 @@ import android.widget.Toast;
 import net.jiaobaowang.gonggaopai.R;
 import net.jiaobaowang.gonggaopai.base.BaseActivity;
 import net.jiaobaowang.gonggaopai.entry.Attendance;
+import net.jiaobaowang.gonggaopai.entry.RecordData;
 import net.jiaobaowang.gonggaopai.util.BitConverter;
 import net.jiaobaowang.gonggaopai.util.CommonDialog;
 import net.jiaobaowang.gonggaopai.util.Const;
@@ -150,75 +151,76 @@ public class Main3Activity extends BaseActivity {
 
 
 
-//                boolean isToLarge=alertDialog(text.getText().toString());
-//                text.setText("");
-//                if(isToLarge){
-//                    mHandler.removeCallbacks(mScanningFishedRunnable);
-//                    mHandler.post(mScanningFishedRunnable);
-//                }else{
-//                    mHandler.removeCallbacks(mScanningFishedRunnable);
-//                    mHandler.postDelayed(mScanningFishedRunnable,Const.MESSAGE_DELAY);
-//                }
-//                List<RecordData> recordResp2= RecordData.listAll(RecordData.class);
-//                    System.out.println(recordResp2.toString());
+                boolean isToLarge=alertDialog(text.getText().toString());
+                text.setText("");
+                if(isToLarge){
+                    mHandler.removeCallbacks(mScanningFishedRunnable);
+                    mHandler.post(mScanningFishedRunnable);
+                }else{
+                    mHandler.removeCallbacks(mScanningFishedRunnable);
+                    mHandler.postDelayed(mScanningFishedRunnable,Const.MESSAGE_DELAY);
+                }
+                List<RecordData> recordResp2= RecordData.listAll(RecordData.class);
+                    System.out.println(recordResp2.toString());
 
-//                List list =new ArrayList();
-//                list.addAll(idList);
-//                List<Map> li=Validate.removeDuplicate(list);
-////                idList.clear();
-//                StringBuffer buffer=new StringBuffer();
-//                for (int i = 0; i <5; i++) {
-//                    Map qdMap=li.get(0);
-//                    String sysId="11";
-//                    String cardId=qdMap.get("id").toString();
-//                    String timeStr=qdMap.get("timestr").toString();
-//                    buffer.append(sysId+timeStr+cardId);
-//                }
-//                int packageLength=buffer.toString().getBytes().length+17;//包长度
-//                byte[] pLength= BitConverter.intToByte2(packageLength);
-//                int packageCommand=Const.CMD_SUBMIT;//包命令
-//                byte[] pCommand= BitConverter.intToByte2(packageCommand);
-//                int serNum= Const.serNum=(Const.serNum+1);//流水号
-//                byte[] sNum= BitConverter.intToByte2(serNum);
+                List list =new ArrayList();
+                list.addAll(idList);
+                List<Map> li=Validate.removeDuplicate(list);
+//                idList.clear();
+                StringBuffer buffer=new StringBuffer();
+                for (int i = 0; i <5; i++) {
+                    Map qdMap=li.get(0);
+                    String sysId="11";
+                    String cardId=qdMap.get("id").toString();
+                    String timeStr=qdMap.get("timestr").toString();
+                    buffer.append(sysId+timeStr+cardId);
+                }
+                int packageLength=buffer.toString().getBytes().length+17;//包长度
+                byte[] pLength= BitConverter.intToByte2(packageLength);
+                int packageCommand=Const.CMD_SUBMIT;//包命令
+                byte[] pCommand= BitConverter.intToByte2(packageCommand);
+                int serNum= Const.serNum=(Const.serNum+1);//流水号
+                byte[] sNum= BitConverter.intToByte2(serNum);
 //                int blandId= Integer.parseInt(Const.blandid);//设备号
-//                byte[] bId= BitConverter.intToByte2(blandId);
-//                String blandLv= "0";//设备类型
-//                byte[] bLv =new byte[1];
-//                bLv[0]=(byte)Integer.parseInt(blandLv);
-//                byte[] content=buffer.toString().getBytes();
-////提交数据
-//                final byte[] bytes=new byte[packageLength];
-//                System.arraycopy(pLength,0,bytes,0,pLength.length);
-//                System.arraycopy(pCommand,0,bytes,pLength.length,pCommand.length);
-//                System.arraycopy(sNum,0,bytes,pLength.length+pCommand.length,sNum.length);
-//                System.arraycopy(bId,0,bytes,pLength.length+pCommand.length+sNum.length,bId.length);
-//                System.arraycopy(bLv,0,bytes,pLength.length+pCommand.length+sNum.length+bId.length,bLv.length);
-//                System.arraycopy(content,0,bytes,pLength.length+pCommand.length+sNum.length+bId.length+bLv.length,content.length);
-//
-//                System.out.println("包长度:"+ BitConverter.ToInt32(subByte(bytes,0,4),0));
-//                System.out.println("包命令:"+BitConverter.ToInt32(subByte(bytes,4,4),0));
-//                System.out.println("流水号:"+BitConverter.ToInt32(subByte(bytes,8,4),0));
-//                System.out.println("设备号:"+BitConverter.ToInt32(subByte(bytes,12,4),0));
-//                System.out.println("设备类型:"+subByte(bytes,16,1)[0]);
-//                System.out.println("包体结构:"+new String(subByte(bytes,17,bytes.length-17)));
-//                String pacDe=new String(subByte(bytes,17,bytes.length-17));
-//                if(Validate.noNull(pacDe)){
-//                    String pac=pacDe.substring(0,20);
-//                    String zkjId=pac.substring(0,2);
-//                    String tim=pac.substring(2,12);
-//                    String kId=pac.substring(12,20);
-//                    System.out.println("子卡机ID:"+zkjId);
-//                    System.out.println("卡ID(16进制):"+kId);
-//                    System.out.println("卡ID:"+Validate.hexStr2Str(kId));
-//                    System.out.println("时间戳:"+tim);
-//                }
-//                utils=SocketUtils.getInstance(socketHandler,bytes,cont);
-//                if(!utils.isConnected()){
-//                    utils.connect();
-//                }else{
-//                    utils.send(bytes);
-//                    li.clear();
-//                }
+                int blandId= 100130;//设备号
+                byte[] bId= BitConverter.intToByte2(blandId);
+                String blandLv= "0";//设备类型
+                byte[] bLv =new byte[1];
+                bLv[0]=(byte)Integer.parseInt(blandLv);
+                byte[] content=buffer.toString().getBytes();
+//提交数据
+                final byte[] bytes=new byte[packageLength];
+                System.arraycopy(pLength,0,bytes,0,pLength.length);
+                System.arraycopy(pCommand,0,bytes,pLength.length,pCommand.length);
+                System.arraycopy(sNum,0,bytes,pLength.length+pCommand.length,sNum.length);
+                System.arraycopy(bId,0,bytes,pLength.length+pCommand.length+sNum.length,bId.length);
+                System.arraycopy(bLv,0,bytes,pLength.length+pCommand.length+sNum.length+bId.length,bLv.length);
+                System.arraycopy(content,0,bytes,pLength.length+pCommand.length+sNum.length+bId.length+bLv.length,content.length);
+
+                System.out.println("包长度:"+ BitConverter.ToInt32(subByte(bytes,0,4),0));
+                System.out.println("包命令:"+BitConverter.ToInt32(subByte(bytes,4,4),0));
+                System.out.println("流水号:"+BitConverter.ToInt32(subByte(bytes,8,4),0));
+                System.out.println("设备号:"+BitConverter.ToInt32(subByte(bytes,12,4),0));
+                System.out.println("设备类型:"+subByte(bytes,16,1)[0]);
+                System.out.println("包体结构:"+new String(subByte(bytes,17,bytes.length-17)));
+                String pacDe=new String(subByte(bytes,17,bytes.length-17));
+                if(Validate.noNull(pacDe)){
+                    String pac=pacDe.substring(0,20);
+                    String zkjId=pac.substring(0,2);
+                    String tim=pac.substring(2,12);
+                    String kId=pac.substring(12,20);
+                    System.out.println("子卡机ID:"+zkjId);
+                    System.out.println("卡ID(16进制):"+kId);
+                    System.out.println("卡ID:"+Validate.hexStr2Str(kId));
+                    System.out.println("时间戳:"+tim);
+                }
+                utils=SocketUtils.getInstance(socketHandler,bytes,cont);
+                if(!utils.isConnected()){
+                    utils.connect();
+                }else{
+                    utils.send(bytes);
+                    li.clear();
+                }
 
             }
         });
