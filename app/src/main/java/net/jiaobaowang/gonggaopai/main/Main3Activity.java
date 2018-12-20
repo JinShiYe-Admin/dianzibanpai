@@ -1,6 +1,7 @@
 package net.jiaobaowang.gonggaopai.main;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -13,7 +14,6 @@ import android.widget.Toast;
 import net.jiaobaowang.gonggaopai.R;
 import net.jiaobaowang.gonggaopai.base.BaseActivity;
 import net.jiaobaowang.gonggaopai.entry.Attendance;
-import net.jiaobaowang.gonggaopai.entry.RecordData;
 import net.jiaobaowang.gonggaopai.util.BitConverter;
 import net.jiaobaowang.gonggaopai.util.CommonDialog;
 import net.jiaobaowang.gonggaopai.util.Const;
@@ -30,6 +30,9 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class Main3Activity extends BaseActivity {
     private List<Map> idList;
@@ -41,6 +44,7 @@ public class Main3Activity extends BaseActivity {
     private MyQueue queue;
     private Handler mHandler;
     private Runnable mScanningFishedRunnable;
+    private ScheduledExecutorService mScheduledExecutorService = Executors.newScheduledThreadPool(5);
     @Override
     public int initLayout() {
         return R.layout.activity_main3;
@@ -61,6 +65,7 @@ public class Main3Activity extends BaseActivity {
 
     }
     int zzzzz=0;
+    Timer t;
     @Override
     public void doBusiness(Context mContext) {
         socketTimeHandler =new Handler();
@@ -87,7 +92,7 @@ public class Main3Activity extends BaseActivity {
                         System.out.println("流水号:"+serNum);
                         System.out.println("状态:"+state);
                         socketTimeHandler.removeCallbacks(socketRunnable);
-                        socketTimeHandler.postDelayed(socketRunnable,Const.SOCKETCLOSETIME);
+                        socketTimeHandler.postDelayed(socketRunnable,Const.SOCKETKEEPTIME);
                         break;
                     case 0x667://socket 连接已关闭
                         System.out.println("连接已释放");
@@ -144,83 +149,98 @@ public class Main3Activity extends BaseActivity {
 //                intent.putExtra("enable", true); //true 为启用， false 为取消此功能
 //                sendBroadcast(intent);
 
+                mScheduledExecutorService.scheduleWithFixedDelay(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(t!=null){
+                            t.cancel();
+                            t=null;
+                        }
+                        t=new Timer();
+                        t.schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+                                System.out.println("timer已经关闭");
+                                t.cancel();
+                            }
+                        }, 500);
+                    }
+                }, 1, 1000, TimeUnit.MILLISECONDS);
 
 
 
 
 
-
-
-                boolean isToLarge=alertDialog(text.getText().toString());
-                text.setText("");
-                if(isToLarge){
-                    mHandler.removeCallbacks(mScanningFishedRunnable);
-                    mHandler.post(mScanningFishedRunnable);
-                }else{
-                    mHandler.removeCallbacks(mScanningFishedRunnable);
-                    mHandler.postDelayed(mScanningFishedRunnable,Const.MESSAGE_DELAY);
-                }
-                List<RecordData> recordResp2= RecordData.listAll(RecordData.class);
-                    System.out.println(recordResp2.toString());
-
-                List list =new ArrayList();
-                list.addAll(idList);
-                List<Map> li=Validate.removeDuplicate(list);
-//                idList.clear();
-                StringBuffer buffer=new StringBuffer();
-                for (int i = 0; i <5; i++) {
-                    Map qdMap=li.get(0);
-                    String sysId="11";
-                    String cardId=qdMap.get("id").toString();
-                    String timeStr=qdMap.get("timestr").toString();
-                    buffer.append(sysId+timeStr+cardId);
-                }
-                int packageLength=buffer.toString().getBytes().length+17;//包长度
-                byte[] pLength= BitConverter.intToByte2(packageLength);
-                int packageCommand=Const.CMD_SUBMIT;//包命令
-                byte[] pCommand= BitConverter.intToByte2(packageCommand);
-                int serNum= Const.serNum=(Const.serNum+1);//流水号
-                byte[] sNum= BitConverter.intToByte2(serNum);
-//                int blandId= Integer.parseInt(Const.blandid);//设备号
-                int blandId= 100130;//设备号
-                byte[] bId= BitConverter.intToByte2(blandId);
-                String blandLv= "0";//设备类型
-                byte[] bLv =new byte[1];
-                bLv[0]=(byte)Integer.parseInt(blandLv);
-                byte[] content=buffer.toString().getBytes();
-//提交数据
-                final byte[] bytes=new byte[packageLength];
-                System.arraycopy(pLength,0,bytes,0,pLength.length);
-                System.arraycopy(pCommand,0,bytes,pLength.length,pCommand.length);
-                System.arraycopy(sNum,0,bytes,pLength.length+pCommand.length,sNum.length);
-                System.arraycopy(bId,0,bytes,pLength.length+pCommand.length+sNum.length,bId.length);
-                System.arraycopy(bLv,0,bytes,pLength.length+pCommand.length+sNum.length+bId.length,bLv.length);
-                System.arraycopy(content,0,bytes,pLength.length+pCommand.length+sNum.length+bId.length+bLv.length,content.length);
-
-                System.out.println("包长度:"+ BitConverter.ToInt32(subByte(bytes,0,4),0));
-                System.out.println("包命令:"+BitConverter.ToInt32(subByte(bytes,4,4),0));
-                System.out.println("流水号:"+BitConverter.ToInt32(subByte(bytes,8,4),0));
-                System.out.println("设备号:"+BitConverter.ToInt32(subByte(bytes,12,4),0));
-                System.out.println("设备类型:"+subByte(bytes,16,1)[0]);
-                System.out.println("包体结构:"+new String(subByte(bytes,17,bytes.length-17)));
-                String pacDe=new String(subByte(bytes,17,bytes.length-17));
-                if(Validate.noNull(pacDe)){
-                    String pac=pacDe.substring(0,20);
-                    String zkjId=pac.substring(0,2);
-                    String tim=pac.substring(2,12);
-                    String kId=pac.substring(12,20);
-                    System.out.println("子卡机ID:"+zkjId);
-                    System.out.println("卡ID(16进制):"+kId);
-                    System.out.println("卡ID:"+Validate.hexStr2Str(kId));
-                    System.out.println("时间戳:"+tim);
-                }
-                utils=SocketUtils.getInstance(socketHandler,bytes,cont);
-                if(!utils.isConnected()){
-                    utils.connect();
-                }else{
-                    utils.send(bytes);
-                    li.clear();
-                }
+//                boolean isToLarge=alertDialog(text.getText().toString());
+//                text.setText("");
+//                if(isToLarge){
+//                    mHandler.removeCallbacks(mScanningFishedRunnable);
+//                    mHandler.post(mScanningFishedRunnable);
+//                }else{
+//                    mHandler.removeCallbacks(mScanningFishedRunnable);
+//                    mHandler.postDelayed(mScanningFishedRunnable,Const.MESSAGE_DELAY);
+//                }
+//                List<RecordData> recordResp2= RecordData.listAll(RecordData.class);
+//                    System.out.println(recordResp2.toString());
+//
+//                List list =new ArrayList();
+//                list.addAll(idList);
+//                List<Map> li=Validate.removeDuplicate(list);
+////                idList.clear();
+//                StringBuffer buffer=new StringBuffer();
+//                for (int i = 0; i <5; i++) {
+//                    Map qdMap=li.get(0);
+//                    String sysId="11";
+//                    String cardId=qdMap.get("id").toString();
+//                    String timeStr=qdMap.get("timestr").toString();
+//                    buffer.append(sysId+timeStr+cardId);
+//                }
+//                int packageLength=buffer.toString().getBytes().length+17;//包长度
+//                byte[] pLength= BitConverter.intToByte2(packageLength);
+//                int packageCommand=Const.CMD_SUBMIT;//包命令
+//                byte[] pCommand= BitConverter.intToByte2(packageCommand);
+//                int serNum= Const.serNum=(Const.serNum+1);//流水号
+//                byte[] sNum= BitConverter.intToByte2(serNum);
+////                int blandId= Integer.parseInt(Const.blandid);//设备号
+//                int blandId= 100130;//设备号
+//                byte[] bId= BitConverter.intToByte2(blandId);
+//                String blandLv= "0";//设备类型
+//                byte[] bLv =new byte[1];
+//                bLv[0]=(byte)Integer.parseInt(blandLv);
+//                byte[] content=buffer.toString().getBytes();
+////提交数据
+//                final byte[] bytes=new byte[packageLength];
+//                System.arraycopy(pLength,0,bytes,0,pLength.length);
+//                System.arraycopy(pCommand,0,bytes,pLength.length,pCommand.length);
+//                System.arraycopy(sNum,0,bytes,pLength.length+pCommand.length,sNum.length);
+//                System.arraycopy(bId,0,bytes,pLength.length+pCommand.length+sNum.length,bId.length);
+//                System.arraycopy(bLv,0,bytes,pLength.length+pCommand.length+sNum.length+bId.length,bLv.length);
+//                System.arraycopy(content,0,bytes,pLength.length+pCommand.length+sNum.length+bId.length+bLv.length,content.length);
+//
+//                System.out.println("包长度:"+ BitConverter.ToInt32(subByte(bytes,0,4),0));
+//                System.out.println("包命令:"+BitConverter.ToInt32(subByte(bytes,4,4),0));
+//                System.out.println("流水号:"+BitConverter.ToInt32(subByte(bytes,8,4),0));
+//                System.out.println("设备号:"+BitConverter.ToInt32(subByte(bytes,12,4),0));
+//                System.out.println("设备类型:"+subByte(bytes,16,1)[0]);
+//                System.out.println("包体结构:"+new String(subByte(bytes,17,bytes.length-17)));
+//                String pacDe=new String(subByte(bytes,17,bytes.length-17));
+//                if(Validate.noNull(pacDe)){
+//                    String pac=pacDe.substring(0,20);
+//                    String zkjId=pac.substring(0,2);
+//                    String tim=pac.substring(2,12);
+//                    String kId=pac.substring(12,20);
+//                    System.out.println("子卡机ID:"+zkjId);
+//                    System.out.println("卡ID(16进制):"+kId);
+//                    System.out.println("卡ID:"+Validate.hexStr2Str(kId));
+//                    System.out.println("时间戳:"+tim);
+//                }
+//                utils=SocketUtils.getInstance(socketHandler,bytes,cont);
+//                if(!utils.isConnected()){
+//                    utils.connect();
+//                }else{
+//                    utils.send(bytes);
+//                    li.clear();
+//                }
 
             }
         });
@@ -291,6 +311,20 @@ public class Main3Activity extends BaseActivity {
 
 //        List<Attendance> list=Attendance.listAll(Attendance.class);
 //        System.out.println(list.toString());
+    }
+
+
+    private int getSerNum(){//获取流水号
+        SharedPreferences sp = this.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
+        int serNum=sp.getInt("serNumNNN", 0);
+        return serNum;
+    }
+
+    private void setSerNum(int serNum){//保存流水号
+        SharedPreferences sp = this.getSharedPreferences(Const.SPNAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putInt("serNumNNN",serNum);
+        editor.commit();
     }
 
     /**

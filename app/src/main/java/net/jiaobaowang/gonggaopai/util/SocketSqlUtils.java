@@ -55,10 +55,10 @@ public class SocketSqlUtils {
                             msgs.obj=msg;
                             handler.sendMessage(msgs);
                         }else if(pckCommand==Const.CMD_TERMINATE){
-                            System.out.println("接收到CMD_TERMINATE命令，连接已断开");
+                            System.out.println("接收到CMD_TERMINATE命令，连接已由服务器通知断开");
                             close();
                         }else if(pckCommand==Const.CMD_TERMINATE_RESP){
-                            System.out.println("接收到CMD_TERMINATE_RESP命令，连接已断开");
+                            System.out.println("接收到CMD_TERMINATE_RESP命令，连接已由客户端通知断开");
                             close();
                         }
 

@@ -39,16 +39,13 @@ import net.jiaobaowang.gonggaopai.service.ReaderService;
 import net.jiaobaowang.gonggaopai.service.UploadServiceScheduledExecutor;
 import net.jiaobaowang.gonggaopai.util.CommonDialog;
 import net.jiaobaowang.gonggaopai.util.Const;
-import net.jiaobaowang.gonggaopai.util.MyQueue;
 import net.jiaobaowang.gonggaopai.util.NetUtil;
 import net.jiaobaowang.gonggaopai.util.ReceiverAndServiceUtil;
 import net.jiaobaowang.gonggaopai.util.Validate;
 
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -67,9 +64,6 @@ public class MainActivity extends BaseActivity {
 
 
 
-    private Handler mHandler;
-    private Runnable mScanningFishedRunnable;
-    private MyQueue queue;
     private CardIdReceiver cardIdReceiver; //广播接收者
     private LocalBroadcastManager manager;
     @Override
@@ -105,9 +99,6 @@ public class MainActivity extends BaseActivity {
     public void doBusiness(Context mContext) {
         base = (RelativeLayout) findViewById(R.id.baseLayout);
         view = (LinearLayout) findViewById(R.id.webView);
-        mHandler =new Handler();
-        queue=new MyQueue();
-        initPostRunnable();
         manager = LocalBroadcastManager.getInstance(cont);
 
         boolean isRegister = ReceiverAndServiceUtil.isRegister(manager, Const.ACTION_NAME);
@@ -122,13 +113,6 @@ public class MainActivity extends BaseActivity {
         Const.blandlv = sp.getString("blandlv", "");
         Const.blandid = sp.getString("blandid", "");
         Const.styleid = sp.getString("styleid", "");
-        Const.serNum = sp.getInt("serNum", 0);
-        if(Const.serNum ==0){
-            Const.serNum=10000;
-            SharedPreferences.Editor editor = sp.edit();
-            editor.putInt("serNum",Const.serNum);
-            editor.commit();
-        }
 
         AECrashHelper.initCrashHandler(getApplication());
         menuMultipleActions = (FloatingActionsMenu) findViewById(R.id.multiple_actions2);
@@ -562,37 +546,7 @@ public class MainActivity extends BaseActivity {
     }
 
 
-    /**
-     * 将打卡序列存入数据库
-     */
-    public void initPostRunnable(){
-        mScanningFishedRunnable = new Runnable() {
-            @Override
-            public void run() {
-                LinkedList list =new LinkedList();
-                list.addAll(queue.getList());
-                queue.clear();
-                ListIterator iterator=list.listIterator();
-                while (iterator.hasNext()){
-                    Map info = (Map) iterator.next();
-                    String id= (String) info.get("id");
-                    Long time= (Long) info.get("timestr");
-                    List<Attendance> attendanceList = Attendance.find(Attendance.class,"CARD_ID=?",new String[]{id},null,"TIME_STR DESC","0,1");
-                    if(attendanceList.size()==0){
-                        saveInfo(id,time);
-                    }else{
-                        Attendance attend=attendanceList.get(0);
-                        Long preTimeStr=attend.getTimeStr();
-                        if(getTime(time,preTimeStr)){
-                            saveInfo(id,time);
-                        }
-                    }
-                }
-            }
-        };
-    }
-
-    private boolean alertDialog(String id){
+    private void alertDialog(String id){
         final CommonDialog dialog = new CommonDialog(cont);
         dialog.setMessage(" ")
                 .setImageResId(R.drawable.success)
@@ -607,38 +561,6 @@ public class MainActivity extends BaseActivity {
                 t.cancel();
             }
         }, 800);
-
-        Long timestr= System.currentTimeMillis();
-        Map map=new HashMap();
-        map.put("id",id);
-        map.put("timestr",timestr);
-
-        if(queue.QueueLength()>0){
-            ListIterator iterator=queue.QueueAll();
-            boolean canIn=true;
-            while (iterator.hasNext()){//遍历队列，看之前这个卡ID是否有签到，如果有，判断是否可以再次签到，可以就放入队列
-                Map info = (Map) iterator.next();
-                String qdId= (String) info.get("id");
-                if(id.equals(qdId)){
-                    Long preTime= (Long) info.get("timestr");
-                    canIn=getTime(timestr,preTime);
-                    if(!canIn){
-                        System.out.println("允许时间外打卡");
-                    }
-                }
-            }
-            if(canIn){
-                queue.enQueue(map);
-            }
-        }else{
-            queue.enQueue(map);
-        }
-        //如果队列 长度大于100，则直接通知存储到数据库,否则使用延时存储
-        if(queue.QueueLength()>=Const.MAXUPLOADNUM){
-            return true;
-        }else{
-            return false;
-        }
     }
 
     /**
@@ -651,6 +573,7 @@ public class MainActivity extends BaseActivity {
         if(afterCardTime-preCardTime>Const.JGTIME) {
             return true;
         } else {
+            System.out.println((Const.JGTIME/1000/60)+"分钟内重复打卡");
             return false;
         }
     }
@@ -693,13 +616,20 @@ public class MainActivity extends BaseActivity {
                         Toast.makeText(cont,"cardId2222:"+cardId,Toast.LENGTH_SHORT).show();
                     }
                     if(Validate.noNull(Const.blandlv)&&Validate.noNull(Const.blandid)){
-                        boolean isToLarge=alertDialog(cardId);
-                        if(isToLarge){
-                            mHandler.removeCallbacks(mScanningFishedRunnable);
-                            mHandler.post(mScanningFishedRunnable);
+                        alertDialog(cardId);
+                        Long timestr= System.currentTimeMillis();
+                        Map info=new HashMap();
+                        info.put("id",cardId);
+                        info.put("timestr",timestr);
+                        List<Attendance> attendanceList = Attendance.find(Attendance.class,"CARD_ID=?",new String[]{cardId},null,"TIME_STR DESC","0,1");
+                        if(attendanceList.size()==0){
+                            saveInfo(cardId,timestr);
                         }else{
-                            mHandler.removeCallbacks(mScanningFishedRunnable);
-                            mHandler.postDelayed(mScanningFishedRunnable,Const.MESSAGE_DELAY);
+                            Attendance attend=attendanceList.get(0);
+                            Long preTimeStr=attend.getTimeStr();
+                            if(getTime(timestr,preTimeStr)){
+                                saveInfo(cardId,timestr);
+                            }
                         }
                     }else{
                         alertFalseDialog();
@@ -708,30 +638,4 @@ public class MainActivity extends BaseActivity {
             });
         }
     }
-
-    /**
-     * 根据网络时间或本机时间，设置自动开关机时间，此方法为接收到新的配置通知后调用
-     * @param timeMill
-     */
-//    public void setTime(Long timeMill,String startTimes[], String shutdownTimes[]){
-//        Calendar calendar = Calendar.getInstance();
-//        calendar.setTimeInMillis(timeMill);
-//        final int year =calendar.get(Calendar.YEAR);
-//        final int month =calendar.get(Calendar.MONTH);
-//        final int date =calendar.get(Calendar.DATE);
-//        final int startminute =Integer.parseInt(startTimes[0]);
-//        final int startsecond =Integer.parseInt(startTimes[1]);
-//        final int shutdownminute =Integer.parseInt(shutdownTimes[0]);
-//        final int shutdownsecond =Integer.parseInt(shutdownTimes[1]);
-//        Intent intent = new Intent("android.intent.action.setpoweronoff");
-//        int[] timeon = new int[]{year,month,date,startminute,startsecond,0}; //开机时间
-//        intent.putExtra("timeon", timeon);
-//        int[] timeoff = new int[]{year,month,date,shutdownminute,shutdownsecond,0}; //关机时间
-//        intent.putExtra("timeoff", timeoff);
-//        intent.putExtra("enable", true); //true 为启用， false 为取消此功能
-//        sendBroadcast(intent);
-//        if(Const.DEBUG){
-//            Toast.makeText(cont, "设置自动开关机成功222222222:"+year+"-"+month+"-"+date+" "+startminute+":"+startsecond+"至"+shutdownminute+":"+shutdownsecond, Toast.LENGTH_LONG).show();
-//        }
-//    }
 }
