@@ -24,15 +24,17 @@ import java.util.TimerTask;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
+/**
+ * 上传考勤数据service
+ */
 public class UploadServiceScheduledExecutor extends Service {
     private SocketSqlUtils socketSqlUtils;
     private Handler socketSqlHandler;
     private Runnable socketRConnectRunnable;
     private Handler mHandler,socketRConnectHandlere;
     private List<Attendance> attendanceList=new ArrayList<>();
-    private boolean canUpload=true;
-    private Timer t;
+    private boolean canUpload=true;//单线程发送，循环中如果有数据正在发送，或因为socket导致的数据发送异常，则下次循环不执行数据上传任务
+    private Timer t;//结束socket 连接计时器
     // 通过静态方法创建ScheduledExecutorService的实例
     private ScheduledExecutorService mScheduledExecutorService = Executors.newScheduledThreadPool(1);
     @Nullable

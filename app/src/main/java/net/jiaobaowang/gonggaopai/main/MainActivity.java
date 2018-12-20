@@ -286,7 +286,11 @@ public class MainActivity extends BaseActivity {
 //            Toast.makeText(cont, "主题选择成功", Toast.LENGTH_LONG).show();
         }
     }
-
+    /**
+     * 隐藏悬浮按钮
+     * @param view
+     * @param duration
+     */
     public void setHideAnimation(final View view,final int duration) {
         if (null == view || duration < 0) {
             return;
@@ -307,6 +311,11 @@ public class MainActivity extends BaseActivity {
         });
     }
 
+    /**
+     * 显示悬浮按钮
+     * @param view
+     * @param duration
+     */
     public void setShowAnimation(View view, int duration) {
         if (null == view || duration < 0) {
             return;
@@ -344,7 +353,9 @@ public class MainActivity extends BaseActivity {
             initWeb();
         }
     }
-
+    /**
+     *获取定位权限，没有定位权限，页面的天气预报将无法显示
+     */
     public void quanxian(){
         NetUtil.init(cont);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -384,7 +395,6 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void onDestroy() {
-
         _stopService();
         super.onDestroy();
     }
@@ -440,6 +450,9 @@ public class MainActivity extends BaseActivity {
             stopService(startIntent);
         }
     }
+//    /**
+//     * 获取网络时间，然后设置本机时间为网络时间，同时设置班级的自动开关机时间
+//     */
 //    private void getNetTime(){
 //        new Thread(new Runnable() {
 //            @Override
@@ -483,23 +496,21 @@ public class MainActivity extends BaseActivity {
 //            }
 //        }).start();
 //    }
-
+    /**
+     * 参照本机时间设置班级的自动开关机时间
+     */
     private void getNetTime() {
         final Handler mHandler = new Handler();
         Runnable r = new Runnable() {
             @Override
             public void run() {
-                if(NetUtil.getNetWorkState()==-1){
-                    mHandler.postDelayed(this, 200);
-                }else{
-                    mHandler.removeCallbacks(this);
-                    Message message=new Message();
-                    message.what=0x667;
-                    handler.sendMessage(message);
-                }
+                mHandler.removeCallbacks(this);
+                Message message=new Message();
+                message.what=0x667;
+                handler.sendMessage(message);
             }
         };
-        mHandler.postDelayed(r, 10000);//延时5秒
+        mHandler.postDelayed(r, 10000);//延时10秒
     }
 
     /**
@@ -545,7 +556,9 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-
+    /**
+     * 打卡提示
+     */
     private void alertDialog(String id){
         final CommonDialog dialog = new CommonDialog(cont);
         dialog.setMessage(" ")
@@ -578,6 +591,9 @@ public class MainActivity extends BaseActivity {
         }
     }
 
+    /**
+     * 班牌设置提示
+     */
     private void alertFalseDialog(){
         final CommonDialog dialog = new CommonDialog(cont);
         dialog.setMessage("请先设置班牌类型!")
@@ -596,6 +612,11 @@ public class MainActivity extends BaseActivity {
         }, 2500);
     }
 
+    /**
+     * 保存单次打卡数据
+     * @param id
+     * @param time
+     */
     private void saveInfo(String id,Long time){
         Attendance attendance=new Attendance();
         attendance.setCardId(id);
@@ -605,6 +626,9 @@ public class MainActivity extends BaseActivity {
         attendance.save();
     }
 
+    /**
+     * 打卡签到广播接收
+     */
     class CardIdReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, final Intent intent) {

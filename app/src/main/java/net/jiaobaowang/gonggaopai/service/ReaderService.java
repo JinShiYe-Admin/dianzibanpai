@@ -20,6 +20,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Arrays;
 
+/**
+ * 读卡器读卡service
+ */
 public class ReaderService extends Service {
 
     FileInputStream mInputStream;
