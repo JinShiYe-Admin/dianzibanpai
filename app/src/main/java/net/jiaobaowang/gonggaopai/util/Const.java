@@ -15,8 +15,8 @@ public class Const {
     public static final String    baseUrl="https://zyja.zhuxue101.net/appsources/html/index/firstPage.html";//    设置班牌类型成功后跳转的页面路径
     public static final String defaultUrl="https://zyja.zhuxue101.net/appsources/html/index/firstPage.html";//    第一次进入或没设置班牌类型时跳转的页面路径
     public static String updateUrl="https://boss.zhuxue101.net:446/banpai/dianzibanpai.apk";//    App更新路径
-    public static final String socketIp="192.168.1.238";//    顾工 socket数据交互接口
-    public static final int socketPort=8086;
+    public static String socketIp="192.168.1.238";//    顾工 socket数据交互接口
+    public static int socketPort=8086;
 
 
 
@@ -26,7 +26,6 @@ public class Const {
 //    public static String socketIp="192.168.1.236";//顾工 socket数据交互接口
 //    public static final int socketPort=8086;
 
-    public static final  String PWD=""; //班牌密码
     public static String[] ids={"班级班牌","年级班牌","学校班牌"}; //班牌类型
     public static String xx_json="[{\"key\":\"20180001\",\"text\":\"学校皮肤\",\"url\":\"xx_style_1\"}]";  //学校班牌皮肤 key：班牌编号  text：皮肤名称  url：drawable下存放的皮肤图片名称 xx开头
     public static String nj_json="[{\"key\":\"20180002\",\"text\":\"年级皮肤\",\"url\":\"nj_style_1\"}]";    //年级班牌皮肤 key：班牌编号  text：皮肤名称  url：drawable下存放的皮肤图片名称 nj开头
@@ -36,16 +35,22 @@ public class Const {
             "{\"key\":\"blandCheck\",\"text\":\"班牌类型设置\",\"url\":\"settings_2\"}," +
             "{\"key\":\"styleCheck\",\"text\":\"班牌主题设置\",\"url\":\"settings_3\"}," +
             "{\"key\":\"timeCheck\",\"text\":\"自动开关机时间\",\"url\":\"settings_4\"}," +
-            "{\"key\":\"commonSettings\",\"text\":\"通用设置（socket地址，班牌密码）\",\"url\":\"common_settings\"}," +
+            "{\"key\":\"passwordsetting\",\"text\":\"班牌密码设置\",\"url\":\"passwordsetting\"}," +
+            "{\"key\":\"ipseeting\",\"text\":\"Socket地址设置\",\"url\":\"ipseeting\"}," +
             "{\"key\":\"closeSystem\",\"text\":\"关机\",\"url\":\"close_system\"}" +
             "]";  //设置选项
-    //{"key":"timeCheck","text":"运行时间","url":"settings_4"}
     /*********/
 
-    public static String cityName="";//城市名称
-    public static String blandlv="";//班牌类型
-    public static String blandid="";//班牌编号
-    public static String styleid="";//主题编号
+    public static final String cityName="cityName";//城市名称
+    public static final String blandlv="blandlv";//班牌类型
+    public static final String blandid="blandid";//班牌编号
+    public static final String styleid="styleid";//主题编号
+    public static final String reload="reload";//加载webview
+    public static final String startTime="startTime";//自动开机时间
+    public static final String shutdownTime="shutdownTime";//自动关机时间
+    public static final String password="password";//班牌密码
+    public static final String socketip="socketip";//socket ip
+    public static final String socketport="socketport";//socket port
 
     public static final int CMD_ERROR = 0xFFFFFFFF;//命令错误
     public static final int CMD_CONNECT = 0x00000001;//连接
@@ -58,10 +63,6 @@ public class Const {
 
     public static final int GO_PASSWORD = 0x110; // 输入密码页
     public static final int EXIST = 0x120; // 退出APP
-    public static final int GO_SETTINGSCHECKED = 0x220;// 设置选择页
-    public static final int GO_CLASSESSETTING = 0x230;// 班牌设置页
-    public static final int GO_STYLESETTING = 0x240;// 主题设置页
-    public static final int GO_TIMESETTING = 0x300;// 开机关机时间设置页
     public static final String SPNAME="GGP";//SharedPreferences名称
     public static final String ACTION_NAME="net.jiaobaowang.carid";//广播接收action
 
@@ -71,10 +72,9 @@ public class Const {
     public static final int SOCKETKEEPTIME=1000*10;//socket通道保持时长没如果没有数据发送则关闭
     public static final int SOCKETTIMEOUTCLOSETIME=1000*10;//socket等待反馈时长，超时则关闭
     public static final int SOCKETRCONNECTTIME=1500*10;//socket重连等待周期
-    public static final int TIME=200;//调度任务执行周期 @TEST
+    public static final int TIME=500;//调度任务执行周期 @TEST
     public static final int TIMEOUT=1000*10;//socket连接超时等待时长
     //save相关
-
     public static final int JGTIME=1000*60;//两次打卡允许的间隔时间差
 
 

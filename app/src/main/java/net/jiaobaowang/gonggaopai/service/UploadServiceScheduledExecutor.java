@@ -59,7 +59,9 @@ public class UploadServiceScheduledExecutor extends Service {
                 switch (msg.what){
                     case 1:
                         attendanceList = Attendance.find(Attendance.class,"IS_UPLOAD=?",new String[]{"0"},null,"TIME_STR ASC","0,"+ Const.MAXUPLOADNUM+"");
-                        System.out.println("获取到未上传数据条数："+attendanceList.size()+"条,"+new Date().toString());
+                        if(Const.DEBUG){
+                            System.out.println("获取到未上传数据条数："+attendanceList.size()+"条,"+new Date().toString());
+                        }
                         if(attendanceList.size()>0){
                             canUpload=false;
                             byte[] data=getByte(attendanceList);
@@ -77,7 +79,9 @@ public class UploadServiceScheduledExecutor extends Service {
                 if(canUpload){
                     mHandler.sendEmptyMessage(1);
                 }else{
-                    System.out.println("当前存在未成功上传数据");
+                    if(Const.DEBUG) {
+                        System.out.println("当前存在未成功上传数据");
+                    }
                 }
             }
         }, 1, Const.TIME, TimeUnit.MILLISECONDS);
@@ -259,14 +263,15 @@ public class UploadServiceScheduledExecutor extends Service {
 
     private String getBlandId(){//获取班牌id
         SharedPreferences sp = this.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
-        String blandlv=sp.getString("blandlv", "");
-        return blandlv;
+        String blandid= sp.getString("blandid", "");
+        return blandid;
     }
 
     private String getBlandLv(){//获取班牌类型
         SharedPreferences sp = this.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
-        String blandid= sp.getString("blandid", "");
-        return blandid;
+        String blandlv=sp.getString("blandlv", "");
+        return blandlv;
+
     }
 
     private int getSerNum(){//获取流水号

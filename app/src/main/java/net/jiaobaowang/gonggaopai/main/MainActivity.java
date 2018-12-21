@@ -109,14 +109,13 @@ public class MainActivity extends BaseActivity {
             manager.registerReceiver(cardIdReceiver, intentFilter); //注册广播
         }
         quanxian();
-        SharedPreferences sp = this.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
-        Const.blandlv = sp.getString("blandlv", "");
-        Const.blandid = sp.getString("blandid", "");
-        Const.styleid = sp.getString("styleid", "");
-
+        //TODO 检查开启时间是否是关机时间段内，如果是，弹出dialog，2分钟无人操作关机，否自不关机
+        //TODO 清理数据库，已上传数据清理
+        SharedPreferences sp = cont.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
+        Const.socketIp = sp.getString(Const.socketip, "");
+        Const.socketPort = sp.getInt(Const.socketport, 0);
         AECrashHelper.initCrashHandler(getApplication());
         menuMultipleActions = (FloatingActionsMenu) findViewById(R.id.multiple_actions2);
-
 
         final FloatingActionButton  actionB= (FloatingActionButton)findViewById(R.id.action_b);
         actionB.setColorNormalResId(R.color.pink);
@@ -126,9 +125,9 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onClick(View v) {//设置班牌类型
                 Intent intent = new Intent();
-                intent.putExtra("action","110");
+                intent.putExtra("action",Const.GO_PASSWORD);
                 intent.setClass(cont, PwdActivity.class);
-                startActivityForResult(intent, Const.GO_PASSWORD);
+                startActivityForResult(intent,Const.GO_PASSWORD);
             }
         });
 
@@ -140,7 +139,7 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent();
-                intent.putExtra("action","120");
+                intent.putExtra("action",Const.EXIST);
                 intent.setClass(cont, PwdActivity.class);
                 startActivityForResult(intent, Const.EXIST);
             }
@@ -167,7 +166,7 @@ public class MainActivity extends BaseActivity {
 
             }else{
                 Intent intent = new Intent();
-                intent.putExtra("action","110");
+                intent.putExtra("action",Const.GO_PASSWORD);
                 intent.setClass(cont, PwdActivity.class);
                 startActivityForResult(intent, Const.GO_PASSWORD);
             }
@@ -190,12 +189,17 @@ public class MainActivity extends BaseActivity {
      * 加载webview
      */
     private void initWeb() {
-        String url="";
+        SharedPreferences sp = this.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
+        String blandlv = sp.getString(Const.blandlv, "");
+        String blandid = sp.getString(Const.blandid, "");
+        String styleid = sp.getString(Const.styleid, "");
+        String cityName = sp.getString(Const.cityName, "");
+        String url;
         try {
             if(Const.blandlv==""||Const.blandid==""){
-                url=Const.defaultUrl+"?blandlv="+Const.blandlv+"&blandid="+Const.blandid+"&styleid="+Const.styleid+"&cityName="+ Const.cityName;
+                url=Const.defaultUrl+"?blandlv="+blandlv+"&blandid="+blandid+"&styleid="+styleid+"&cityName="+ cityName;
             }else{
-                url=Const.baseUrl+"?blandlv="+Const.blandlv+"&blandid="+Const.blandid+"&styleid="+Const.styleid+"&cityName="+ Const.cityName;
+                url=Const.baseUrl+"?blandlv="+blandlv+"&blandid="+blandid+"&styleid="+styleid+"&cityName="+ cityName;
             }
             String uid="&v="+System.currentTimeMillis();
             url+=uid;
@@ -211,13 +215,13 @@ public class MainActivity extends BaseActivity {
                         .go(url);
             }
         }catch (Exception e){
+            e.printStackTrace();
         }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         final Timer t = new Timer();
         t.schedule(new TimerTask() {
             @Override
@@ -225,66 +229,73 @@ public class MainActivity extends BaseActivity {
                 setHideAnimation(menuMultipleActions, 1000);
                 t.cancel();
             }
-        }, 1000);
+        }, 5000);
         BaseActivityManager.getAppManager().finishOthersActivity(MainActivity.class);
-        if (resultCode == 1 && requestCode == Const.GO_PASSWORD) {
-            String actionP=data.getStringExtra("action");
-            if("240".equals(actionP)){
-                String styleid=data.getStringExtra("styleid");
-                String stylename=data.getStringExtra("stylename");
-                if (Validate.noNull(styleid)) {
-                    SharedPreferences sp = this.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = sp.edit();
-                    editor.putString("styleid", styleid);
-                    editor.commit();
-                    Const.styleid=styleid;
-                    Toast.makeText(cont, "主题选择成功，名称："+stylename+"，编号：" + Const.styleid, Toast.LENGTH_LONG).show();
-                    initWeb();
-                }else{
-                    if(Const.DEBUG) {
-                        Toast.makeText(cont, "主题选择失败", Toast.LENGTH_LONG).show();
-                    }
-                }
-            }else if("230".equals(actionP)){
-                String blandlv=data.getStringExtra("blandlv");
-                String blandid = data.getStringExtra("blandid");
-                if (Validate.noNull(blandlv)||Validate.noNull(blandid)) {
-                    SharedPreferences sp = this.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = sp.edit();
-                    editor.putString("blandlv", blandlv);
-                    editor.putString("blandid", blandid);
-                    editor.commit();
-                    Const.blandlv=blandlv;
-                    Const.blandid=blandid;
-                    if(Const.DEBUG) {
-                        Toast.makeText(cont, "班级设置成功，" + "班牌类型：" + Const.blandlv + "，班牌ID：" + Const.blandid + ",cityName=" + Const.cityName, Toast.LENGTH_LONG).show();
-                    }
-                    initWeb();
-                }else{
-                    setShowAnimation(menuMultipleActions, 500);
-                    if(Const.DEBUG) {
-                        Toast.makeText(cont, "设置班级失败", Toast.LENGTH_LONG).show();
-                    }
-                }
-            }else if("300".equals(actionP)){
-                String startTime=data.getStringExtra("startTime");
-                String shutdownTime = data.getStringExtra("shutdownTime");
-                if(Const.DEBUG){
-                    Toast.makeText(cont, startTime+"至"+shutdownTime, Toast.LENGTH_SHORT).show();
-                }
-                SharedPreferences sp = this.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sp.edit();
-                editor.putString("startTime", startTime);
-                editor.putString("shutdownTime", shutdownTime);
-                editor.commit();
+        if(resultCode==1){
+            SharedPreferences sp = this.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
+            boolean reload = sp.getBoolean(Const.reload, false);
+            if(reload){
+                initWeb();
             }
-        }else if(resultCode == 1 && requestCode == Const.EXIST){
-            BaseActivityManager manager=BaseActivityManager.getAppManager();
-            manager.AppExit(cont);
-        }else {
-            setShowAnimation(menuMultipleActions, 500);
-//            Toast.makeText(cont, "主题选择成功", Toast.LENGTH_LONG).show();
         }
+//        if (resultCode == 1 && requestCode == Const.GO_PASSWORD) {
+//            String actionP=data.getStringExtra("action");
+//            if("240".equals(actionP)){
+//                String styleid=data.getStringExtra("styleid");
+//                String stylename=data.getStringExtra("stylename");
+//                if (Validate.noNull(styleid)) {
+//                    SharedPreferences sp = this.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
+//                    SharedPreferences.Editor editor = sp.edit();
+//                    editor.putString("styleid", styleid);
+//                    editor.commit();
+//                    Const.styleid=styleid;
+//                    Toast.makeText(cont, "主题选择成功，名称："+stylename+"，编号：" + Const.styleid, Toast.LENGTH_LONG).show();
+//                    initWeb();
+//                }else{
+//                    if(Const.DEBUG) {
+//                        Toast.makeText(cont, "主题选择失败", Toast.LENGTH_LONG).show();
+//                    }
+//                }
+//            }else if("230".equals(actionP)){
+//                String blandlv=data.getStringExtra("blandlv");
+//                String blandid = data.getStringExtra("blandid");
+//                if (Validate.noNull(blandlv)||Validate.noNull(blandid)) {
+//                    SharedPreferences sp = this.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
+//                    SharedPreferences.Editor editor = sp.edit();
+//                    editor.putString("blandlv", blandlv);
+//                    editor.putString("blandid", blandid);
+//                    editor.commit();
+//                    Const.blandlv=blandlv;
+//                    Const.blandid=blandid;
+//                    if(Const.DEBUG) {
+//                        Toast.makeText(cont, "班级设置成功，" + "班牌类型：" + Const.blandlv + "，班牌ID：" + Const.blandid + ",cityName=" + Const.cityName, Toast.LENGTH_LONG).show();
+//                    }
+//                    initWeb();
+//                }else{
+//                    setShowAnimation(menuMultipleActions, 500);
+//                    if(Const.DEBUG) {
+//                        Toast.makeText(cont, "设置班级失败", Toast.LENGTH_LONG).show();
+//                    }
+//                }
+//            }else if("300".equals(actionP)){
+//                String startTime=data.getStringExtra("startTime");
+//                String shutdownTime = data.getStringExtra("shutdownTime");
+//                if(Const.DEBUG){
+//                    Toast.makeText(cont, startTime+"至"+shutdownTime, Toast.LENGTH_SHORT).show();
+//                }
+//                SharedPreferences sp = this.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
+//                SharedPreferences.Editor editor = sp.edit();
+//                editor.putString("startTime", startTime);
+//                editor.putString("shutdownTime", shutdownTime);
+//                editor.commit();
+//            }
+//        }else if(resultCode == 1 && requestCode == Const.EXIST){
+//            BaseActivityManager manager=BaseActivityManager.getAppManager();
+//            manager.AppExit(cont);
+//        }else {
+//            setShowAnimation(menuMultipleActions, 500);
+////            Toast.makeText(cont, "主题选择成功", Toast.LENGTH_LONG).show();
+//        }
     }
     /**
      * 隐藏悬浮按钮
@@ -345,10 +356,9 @@ public class MainActivity extends BaseActivity {
         @Override
         public void onReceiveLocation(BDLocation location){
             String city = location.getCity();    //获取城市
-            Const.cityName=city;
             SharedPreferences sp = cont.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sp.edit();
-            editor.putString("cityName",city);
+            editor.putString(Const.cityName,city);
             editor.commit();
             initWeb();
         }
@@ -369,8 +379,8 @@ public class MainActivity extends BaseActivity {
             ActivityCompat.requestPermissions(cont, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.READ_PHONE_STATE}, BAIDU_READ_PHONE_STATE);
         }else{
             SharedPreferences sp = this.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
-            Const.cityName = sp.getString("cityName", "");
-            if(Validate.isNull(Const.cityName)){
+            String cityName = sp.getString(Const.cityName, "");
+            if(Validate.isNull(cityName)){
                 initMap();
                 mLocationClient.start();
             }else{
@@ -519,8 +529,8 @@ public class MainActivity extends BaseActivity {
      */
     public void setTime(Long timeMill){
         SharedPreferences sp = this.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
-        String startTime= sp.getString("startTime", "");
-        String shutdownTime= sp.getString("shutdownTime", "");
+        String startTime= sp.getString(Const.startTime, "");
+        String shutdownTime= sp.getString(Const.shutdownTime, "");
         if(Validate.isNull(startTime)||Validate.isNull(shutdownTime)){
             if(Const.DEBUG){
                 Toast.makeText(cont, "没有获取到自动开关机时间", Toast.LENGTH_LONG).show();

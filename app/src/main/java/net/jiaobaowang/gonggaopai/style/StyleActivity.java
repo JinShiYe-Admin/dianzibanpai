@@ -2,6 +2,7 @@ package net.jiaobaowang.gonggaopai.style;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.v7.widget.GridLayoutManager;
@@ -14,6 +15,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -33,7 +35,7 @@ public class StyleActivity extends BaseActivity{
     private List<Map> mDatas;
     private HomeAdapter mAdapter;
     private GridLayoutManager manager;
-
+    private  String styleid;
     @Override
     public int initLayout() {
         return R.layout.activity_style;
@@ -58,8 +60,9 @@ public class StyleActivity extends BaseActivity{
     public void doBusiness(Context mContext) {
         TextView lx_name =(TextView)findViewById(R.id.lx_name);
         Button button_backward=(Button)findViewById(R.id.button_backward);
-        Intent intent = getIntent();//获取传来的intent对象
-        String blandlv = intent.getStringExtra("blandlv");//获取键值对的键名
+        SharedPreferences sp = this.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
+        String blandlv = sp.getString(Const.blandlv, "");
+        styleid= sp.getString(Const.styleid, "");
         String json="";
         switch (blandlv){
             case "0":
@@ -89,8 +92,10 @@ public class StyleActivity extends BaseActivity{
         button_backward.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent();
-                setResult(2, intent);
+                SharedPreferences sp = cont.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sp.edit();
+                editor.putBoolean(Const.reload, false);
+                editor.commit();
                 finish();
             }
         });
@@ -101,9 +106,9 @@ public class StyleActivity extends BaseActivity{
 
     @Override
     public boolean widgetOnKey(int keyCode, KeyEvent keyEvent) {
-        Intent intent = new Intent();
-        setResult(2, intent);
-        finish();
+//        Intent intent = new Intent();
+//        setResult(2, intent);
+//        finish();
         return false;
     }
 
@@ -130,6 +135,11 @@ public class StyleActivity extends BaseActivity{
             System.out.println(map.toString());
             holder.id_num_left.setText(texts);
             holder.id_num_left_id.setText(keys);
+            if(keys.equals(styleid)){
+                holder.is_checked.setVisibility(View.VISIBLE);
+            }else{
+                holder.is_checked.setVisibility(View.GONE);
+            }
             final int drawableId_left = cont.getResources().getIdentifier(urls,"drawable", cont.getPackageName());
             holder.style_img_left.setImageResource(drawableId_left);
             holder.left.setOnClickListener(new View.OnClickListener() {
@@ -147,13 +157,12 @@ public class StyleActivity extends BaseActivity{
                         @Override
                         public void onPositiveClick() {
                             dialog.dismiss();
-                            System.out.println("确定:"+mDatas.get(position).toString());
-                            Intent intent = new Intent();
-                            intent.putExtra("action", "240");
-                            intent.putExtra("styleid", map.get("key").toString());
-                            intent.putExtra("stylename", map.get("text").toString());
-                            setResult(1, intent);
-                            finish();
+                            SharedPreferences sp = cont.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
+                            SharedPreferences.Editor editor = sp.edit();
+                            editor.putString(Const.styleid, map.get("key").toString());
+                            editor.putBoolean(Const.reload, true);
+                            editor.commit();
+                            Toast.makeText(StyleActivity.this,"设置成功！",Toast.LENGTH_LONG).show();
                         }
 
                         @Override
@@ -182,6 +191,7 @@ public class StyleActivity extends BaseActivity{
             LinearLayout left;
             TextView id_num_left,id_num_left_id;
             ImageView style_img_left;
+            ImageView is_checked;
             public MyViewHolder(View view)
             {
                 super(view);
@@ -189,6 +199,7 @@ public class StyleActivity extends BaseActivity{
                 id_num_left = (TextView) view.findViewById(R.id.id_num_left);
                 id_num_left_id = (TextView) view.findViewById(R.id.id_num_left_id);
                 style_img_left = (ImageView) view.findViewById(R.id.style_img_left);
+                is_checked = (ImageView) view.findViewById(R.id.is_checked);
             }
         }
     }

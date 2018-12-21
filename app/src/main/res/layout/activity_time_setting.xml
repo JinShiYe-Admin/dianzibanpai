@@ -5,6 +5,40 @@
     android:background="#111731"
     android:layout_height="match_parent" >
     <RelativeLayout
+        android:id="@+id/biaoti"
+        android:layout_width="match_parent"
+        android:layout_height="58dp"
+        android:background="@color/colorPrimary">
+        <TextView
+            android:text="自动开关机时间设置"
+            android:id="@+id/text_title"
+            android:textSize="18sp"
+            android:textColor="#fff"
+            android:gravity="center"
+            android:singleLine="true"
+            android:ellipsize="marquee"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <Button
+            android:id="@+id/button_backward"
+            android:layout_width="70dp"
+            android:layout_height="match_parent"
+            android:drawableLeft="@drawable/returnbtn"
+            android:drawablePadding="6dp"
+            android:background="@color/colorPrimary"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:paddingLeft="10dp"
+            android:singleLine="true"
+            android:text=""
+            android:textColor="#ffffff"
+            android:textSize="18dp"
+            android:visibility="visible"/>
+
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_below="@+id/biaoti"
         android:id="@+id/time"
         android:layout_above="@+id/btns"
         android:layout_width="match_parent"

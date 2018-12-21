@@ -32,52 +32,17 @@ public class PwdActivity extends BaseActivity implements KeyboardAdapter.OnKeybo
     private KeyboardView keyboardView;
     private Button confirmBtn,returnBtn;
     private List<String> datas;
-    private String action="";
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == 1 && requestCode == Const.GO_SETTINGSCHECKED) {
-            String action= data.getStringExtra("action");
-            if("240".equals(action)){
-                String styleid=data.getStringExtra("styleid");
-                String stylename=data.getStringExtra("stylename");
-                Intent intent = new Intent();
-                intent.putExtra("action", "240");
-                intent.putExtra("styleid", styleid);
-                intent.putExtra("stylename", stylename);
-                setResult(1, intent);
-                finish();
-            }else if("230".equals(action)){
-                String blandlv= data.getStringExtra("blandlv");
-                String blandid= data.getStringExtra("blandid");
-                Intent intent = new Intent();
-                intent.putExtra("action", "230");
-                intent.putExtra("blandlv", blandlv);
-                intent.putExtra("blandid", blandid);
-                setResult(1, intent);
-                finish();
-            }else if("300".equals(action)){
-                String startTime=data.getStringExtra("startTime");
-                String shutdownTime=data.getStringExtra("shutdownTime");
-                Intent intent = new Intent();
-                intent.putExtra("action", "300");
-                intent.putExtra("startTime", startTime);
-                intent.putExtra("shutdownTime", shutdownTime);
-                setResult(1, intent);
-                finish();
-            }
-        }
-    }
+    private int action=0;
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        switch (keyCode) {
-            case KeyEvent.KEYCODE_BACK:
-                Intent intent = new Intent();
-                setResult(2, intent);
-                finish();
-                break;
-        }
+//        switch (keyCode) {
+//            case KeyEvent.KEYCODE_BACK:
+//                Intent intent = new Intent();
+//                setResult(2, intent);
+//                finish();
+//                break;
+//        }
         return false;
     }
 
@@ -94,7 +59,7 @@ public class PwdActivity extends BaseActivity implements KeyboardAdapter.OnKeybo
     @Override
     public void initParms(Bundle bundle) {
         Intent intent=getIntent();
-        action=intent.getStringExtra("action");
+        action=intent.getIntExtra("action",0);
     }
 
     @Override
@@ -151,8 +116,7 @@ public class PwdActivity extends BaseActivity implements KeyboardAdapter.OnKeybo
         returnBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if("110".equals(action)){
-
+                if(Const.GO_PASSWORD==action){
                     SharedPreferences sp = cont.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
                     String blandlv = sp.getString("blandlv", "");
                     String blandid = sp.getString("blandid", "");
@@ -164,7 +128,7 @@ public class PwdActivity extends BaseActivity implements KeyboardAdapter.OnKeybo
                         setResult(2, intent);
                         finish();
                     }
-                }else if("120".equals(action)){
+                }else if(Const.EXIST==action){
                     finish();
                 }
 
@@ -175,15 +139,17 @@ public class PwdActivity extends BaseActivity implements KeyboardAdapter.OnKeybo
             @Override
             public void onClick(View v) {
                 String pass=getValue();
-                if(Const.PWD.equals(pass)){
-                    if("110".equals(action)){
+                SharedPreferences sp = cont.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
+                String password = sp.getString(Const.password, "");
+                if(pass.equals(password)){
+                    if(Const.GO_PASSWORD==action){
                         Intent intent=new Intent();
                         intent.setClass(PwdActivity.this,SettingsCheckActivity.class);
-                        startActivityForResult(intent,Const.GO_SETTINGSCHECKED);
-                    }else if("120".equals(action)){
-                        Intent intent = new Intent();
-                        setResult(1, intent);
+                        startActivity(intent);
                         finish();
+                    }else if(Const.EXIST==action){
+                        BaseActivityManager manager=BaseActivityManager.getAppManager();
+                        manager.AppExit(cont);
                     }
 
                 }else{
@@ -195,10 +161,10 @@ public class PwdActivity extends BaseActivity implements KeyboardAdapter.OnKeybo
 
     @Override
     public boolean widgetOnKey(int keyCode, KeyEvent keyEvent) {
-        Intent intent = new Intent();
-        intent.putExtra("classId", "");
-        setResult(1, intent);
-        finish();
+//        Intent intent = new Intent();
+//        intent.putExtra("classId", "");
+//        setResult(1, intent);
+//        finish();
         return false;
     }
 

@@ -26,6 +26,8 @@ import com.alibaba.fastjson.JSONArray;
 
 import net.jiaobaowang.gonggaopai.base.BaseActivity;
 import net.jiaobaowang.gonggaopai.classes.SetClassesActivity;
+import net.jiaobaowang.gonggaopai.ipmodify.IpPortActivity;
+import net.jiaobaowang.gonggaopai.pwdmodify.PasswordModifyActivity;
 import net.jiaobaowang.gonggaopai.service.DownloadIntentService;
 import net.jiaobaowang.gonggaopai.style.StyleActivity;
 import net.jiaobaowang.gonggaopai.timesetting.TimeSettingActivity;
@@ -46,41 +48,7 @@ public class SettingsCheckActivity extends BaseActivity {
     private HomeAdapter mAdapter;
     private GridLayoutManager manager;
     private Button button_backward;
-
     private ProgressDialog dialog;
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == 1 && requestCode == Const.GO_CLASSESSETTING) {
-            String blandlv= data.getStringExtra("blandlv");
-            String blandid= data.getStringExtra("blandid");
-            Intent intent = new Intent();
-            intent.putExtra("action", "230");
-            intent.putExtra("blandlv", blandlv);
-            intent.putExtra("blandid", blandid);
-            setResult(1, intent);
-            finish();
-        }else if(resultCode == 1 && requestCode == Const.GO_STYLESETTING){
-            String styleid=data.getStringExtra("styleid");
-            String stylename=data.getStringExtra("stylename");
-            Intent intent = new Intent();
-            intent.putExtra("action", "240");
-            intent.putExtra("styleid", styleid);
-            intent.putExtra("stylename", stylename);
-            setResult(1, intent);
-            finish();
-        }else if(resultCode == 1 && requestCode == Const.GO_TIMESETTING){
-            String startTime=data.getStringExtra("startTime");
-            String shutdownTime=data.getStringExtra("shutdownTime");
-            Intent intent = new Intent();
-            intent.putExtra("action", "300");
-            intent.putExtra("startTime", startTime);
-            intent.putExtra("shutdownTime", shutdownTime);
-            setResult(1, intent);
-            finish();
-        }
-    }
 
     @Override
     public int initLayout() {
@@ -120,7 +88,7 @@ public class SettingsCheckActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent();
-                setResult(2, intent);
+                setResult(1, intent);
                 finish();
             }
         });
@@ -135,9 +103,9 @@ public class SettingsCheckActivity extends BaseActivity {
 
     @Override
     public boolean widgetOnKey(int keyCode, KeyEvent keyEvent) {
-        Intent intent = new Intent();
-        setResult(2, intent);
-        finish();
+//        Intent intent = new Intent();
+//        setResult(2, intent);
+//        finish();
         return false;
     }
 
@@ -198,7 +166,7 @@ public class SettingsCheckActivity extends BaseActivity {
                         case "blandCheck"://班牌类型设置
                             Intent blandCheck = new Intent();
                             blandCheck.setClass(cont, SetClassesActivity.class);
-                            startActivityForResult(blandCheck, Const.GO_CLASSESSETTING);
+                            startActivity(blandCheck);
                             break;
                         case "styleCheck"://班牌主题设置
                             if(Validate.isNull(Const.blandlv)&&Validate.isNull(Const.blandid)){
@@ -207,18 +175,23 @@ public class SettingsCheckActivity extends BaseActivity {
                                 Intent styleCheck = new Intent();
                                 styleCheck.putExtra("blandlv",Const.blandlv);
                                 styleCheck.setClass(cont, StyleActivity.class);
-                                startActivityForResult(styleCheck, Const.GO_STYLESETTING);
+                                startActivity(styleCheck);
                             }
                             break;
                         case "timeCheck"://自动开关机时间
                             Intent timeCheck = new Intent();
                             timeCheck.setClass(cont, TimeSettingActivity.class);
-                            startActivityForResult(timeCheck, Const.GO_TIMESETTING);
+                            startActivity(timeCheck);
                             break;
-                        case "commonSettings"://通用设置
-//                            Intent commonSettings = new Intent();
-//                            commonSettings.setClass(cont, TimeSettingActivity.class);
-//                            startActivityForResult(commonSettings, Const.GO_TIMESETTING);
+                        case "passwordsetting"://班牌密码
+                            Intent passwordsetting = new Intent();
+                            passwordsetting.setClass(cont, PasswordModifyActivity.class);
+                            startActivity(passwordsetting);
+                            break;
+                        case "ipseeting"://socket ip 端口号
+                            Intent ipseeting = new Intent();
+                            ipseeting.setClass(cont, IpPortActivity.class);
+                            startActivity(ipseeting);
                             break;
                         case "closeSystem"://关机
                             final CommonDialog dialog3 = new CommonDialog(cont);
@@ -233,6 +206,8 @@ public class SettingsCheckActivity extends BaseActivity {
                                         @Override
                                         public void onPositiveClick() {
                                             dialog3.dismiss();
+                                            Intent intent = new Intent("android.intent.action.shutdown");
+                                            sendBroadcast(intent);
                                         }
 
                                         @Override

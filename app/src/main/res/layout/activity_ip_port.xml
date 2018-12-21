@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/pwdBgKey"
+    tools:context=".classes.SetClassesActivity">
+
+    <RelativeLayout
+        android:id="@+id/biaoti"
+        android:layout_width="match_parent"
+        android:layout_height="58dp"
+        android:background="@color/colorPrimary">
+        <TextView
+            android:text="Socket地址设置"
+            android:id="@+id/text_title"
+            android:textSize="18sp"
+            android:textColor="#fff"
+            android:gravity="center"
+            android:singleLine="true"
+            android:ellipsize="marquee"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <Button
+            android:id="@+id/button_backward"
+            android:layout_width="70dp"
+            android:layout_height="match_parent"
+            android:drawableLeft="@drawable/returnbtn"
+            android:drawablePadding="6dp"
+            android:background="@color/colorPrimary"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:paddingLeft="10dp"
+            android:singleLine="true"
+            android:text=""
+            android:textColor="#ffffff"
+            android:textSize="18dp"
+            android:visibility="visible"/>
+
+    </RelativeLayout>
+    <LinearLayout
+        android:layout_below="@+id/biaoti"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="270dp"
+            android:gravity="center_vertical"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/ipText"
+                android:layout_width="wrap_content"
+                android:layout_height="?attr/actionBarSize"
+                android:layout_alignTop="@+id/editIp"
+                android:width="220dp"
+                android:paddingLeft="8dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:paddingRight="20dp"
+                android:textSize="20sp"
+                android:text="Socket IP ："
+                android:drawablePadding="3dp"
+                android:background="@android:color/white"
+                android:gravity="center"
+                />
+
+            <EditText
+                android:id="@+id/editIp"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:layout_toRightOf="@id/ipText"
+                android:background="@android:color/white"
+                android:hint="请输入 IP 地址"
+                android:lines="1"
+                android:layout_marginLeft="1dp"
+                android:inputType="numberDecimal"
+                android:padding="8dp"
+                android:textSize="20sp" />
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="270dp"
+            android:gravity="center_vertical"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/portText"
+                android:layout_width="wrap_content"
+                android:layout_height="?attr/actionBarSize"
+                android:layout_alignTop="@+id/editPort"
+                android:width="220dp"
+                android:paddingLeft="8dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:paddingRight="20dp"
+                android:textSize="20sp"
+                android:text="Socket 端口号 ："
+                android:drawablePadding="3dp"
+                android:background="@android:color/white"
+                android:gravity="center"
+                />
+
+            <EditText
+                android:id="@+id/editPort"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:layout_toRightOf="@id/portText"
+                android:background="@android:color/white"
+                android:hint="请输入端口号"
+                android:lines="1"
+                android:layout_marginLeft="1dp"
+                android:inputType="numberDecimal"
+                android:padding="8dp"
+                android:textSize="20sp" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <net.jiaobaowang.gonggaopai.classes.KeyboardViewClasses
+        android:id="@+id/keyboard_view_classes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:visibility="visible" />
+
+</RelativeLayout>

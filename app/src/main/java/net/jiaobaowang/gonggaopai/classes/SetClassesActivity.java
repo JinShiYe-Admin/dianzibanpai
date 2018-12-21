@@ -1,7 +1,7 @@
 package net.jiaobaowang.gonggaopai.classes;
 
 import android.content.Context;
-import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
@@ -11,6 +11,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,7 +33,7 @@ public class SetClassesActivity extends BaseActivity implements KeyboardAdapterC
     private TextView selectId;
     private KeyboardViewClasses keyboardView;
     private List<String> datas;
-
+    private Button button_backward;
     private SpinerPopWindow<String> mSpinerPopWindow;
     private List<Map> list;
     private String[] ids= Const.ids;
@@ -61,20 +62,31 @@ public class SetClassesActivity extends BaseActivity implements KeyboardAdapterC
     @Override
     public void doBusiness(Context mContext) {
         selectId=(TextView)findViewById(R.id.selectId);
-
         etInput= (EditText) findViewById(R.id.et_input_classes);
-
+        button_backward=(Button)findViewById(R.id.button_backward);
         keyboardView= (KeyboardViewClasses) findViewById(R.id.keyboard_view_classes);
-        etInput.setText(Const.blandid);
-        switch (Const.blandlv){
+        button_backward.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        SharedPreferences sp = this.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
+        String blandlv = sp.getString("blandlv", "");
+        String blandid = sp.getString("blandid", "");
+        etInput.setText(blandid);
+        switch (blandlv){
             case "0":
                 selectId.setText("班级班牌");
+                selectID="0";
                 break;
             case "1":
                 selectId.setText("年级班牌");
+                selectID="1";
                 break;
             case "2":
                 selectId.setText("学校班牌");
+                selectID="2";
                 break;
         }
 
@@ -93,21 +105,6 @@ public class SetClassesActivity extends BaseActivity implements KeyboardAdapterC
             }
         }
 
-        etInput.setOnFocusChangeListener(new android.view.View.
-                OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                hideBottomKey();
-            }
-        });
-
-        selectId.setOnFocusChangeListener(new android.view.View.
-                OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                hideBottomKey();
-            }
-        });
         mSpinerPopWindow = new SpinerPopWindow<String>(this,  getList(),itemClickListener);
         selectId.setOnClickListener(clickListener);
         datas = keyboardView.getDatas();
@@ -116,31 +113,35 @@ public class SetClassesActivity extends BaseActivity implements KeyboardAdapterC
 
     @Override
     public boolean widgetOnKey(int keyCode, KeyEvent keyEvent) {
-        Intent intent = new Intent();
-        setResult(2, intent);
-        finish();
+//        Intent intent = new Intent();
+//        setResult(2, intent);
+//        finish();
         return false;
     }
 
     @Override
     public void onKeyClick(View view, RecyclerView.ViewHolder holder, int position) {
-        Intent intent = new Intent();
         switch (position) {
             case 11:
-                setResult(2, intent);
+                SharedPreferences spCancel = cont.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
+                SharedPreferences.Editor editorCancel = spCancel.edit();
+                editorCancel.putBoolean(Const.reload, false);
+                editorCancel.commit();
                 finish();
                 break;
             case 12:
                 if(Validate.isNull(selectID)){
                     Toast.makeText(SetClassesActivity.this,"请选择班牌类型",Toast.LENGTH_LONG).show();
                 }else if(Validate.isNull(etInput.getText().toString())){
-                    Toast.makeText(SetClassesActivity.this,"请输入班级编号",Toast.LENGTH_LONG).show();
+                    Toast.makeText(SetClassesActivity.this,"请输入班牌编号",Toast.LENGTH_LONG).show();
                 }else{
-                    intent.putExtra("action", "230");
-                    intent.putExtra("blandlv", selectID);
-                    intent.putExtra("blandid", etInput.getText().toString());
-                    setResult(1, intent);
-                    finish();
+                    SharedPreferences sp = this.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sp.edit();
+                    editor.putString(Const.blandlv, selectID);
+                    editor.putString(Const.blandid, etInput.getText().toString());
+                    editor.putBoolean(Const.reload, true);
+                    editor.commit();
+                    Toast.makeText(SetClassesActivity.this,"设置成功！",Toast.LENGTH_LONG).show();
                 }
 
                 break;
@@ -205,7 +206,6 @@ public class SetClassesActivity extends BaseActivity implements KeyboardAdapterC
             mSpinerPopWindow.dismiss();
             selectId.setText(list.get(position).get("name").toString());
             selectID=list.get(position).get("id").toString();
-//            Toast.makeText(SetClassesActivity.this, "点击了:" + list.get(position).get("name").toString()+","+list.get(position).get("id").toString(),Toast.LENGTH_LONG).show();
         }
     };
 

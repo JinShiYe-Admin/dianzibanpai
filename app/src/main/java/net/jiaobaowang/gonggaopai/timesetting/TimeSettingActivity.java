@@ -27,7 +27,7 @@ import java.util.Date;
 public class TimeSettingActivity extends BaseActivity {
     private Button cancelBtn,confirmBtn;
     private EditText startTime,shutdownTime;
-
+    private Button button_backward;
     @Override
     public int initLayout() {
         return R.layout.activity_time_setting;
@@ -58,10 +58,18 @@ public class TimeSettingActivity extends BaseActivity {
         shutdownTime=(EditText)findViewById(R.id.shutdownTime);
         shutdownTime.setFocusable(false);
         shutdownTime.setFocusableInTouchMode(false);
-
+        button_backward=(Button)findViewById(R.id.button_backward);
+        button_backward.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                setResult(1, intent);
+                finish();
+            }
+        });
         SharedPreferences sp = this.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
-        startTime.setText(sp.getString("startTime", "点击选择自动开机时间"));
-        shutdownTime.setText(sp.getString("shutdownTime", "点击选择自动关机时间"));
+        startTime.setText(sp.getString(Const.startTime, "点击选择自动开机时间"));
+        shutdownTime.setText(sp.getString(Const.shutdownTime, "点击选择自动关机时间"));
         startTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -121,7 +129,6 @@ public class TimeSettingActivity extends BaseActivity {
         cancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setResult(2);
                 finish();
             }
         });
@@ -158,19 +165,11 @@ public class TimeSettingActivity extends BaseActivity {
                                     @Override
                                     public void onNegtiveClick() {
                                         dialog.dismiss();
-                                        Intent intent = new Intent();
-                                        intent.putExtra("startTime", startTimestr);
-                                        intent.putExtra("shutdownTime", shutdownTimestr);
-                                        setResult(1, intent);
-                                        finish();
+                                        setTime(System.currentTimeMillis(),startTimestr,shutdownTimestr);
                                     }
                                 }).show();
                     }else{
-                        Intent intent = new Intent();
-                        intent.putExtra("startTime", startTimestr);
-                        intent.putExtra("shutdownTime", shutdownTimestr);
-                        setResult(1, intent);
-                        finish();
+                        setTime(System.currentTimeMillis(),startTimestr,shutdownTimestr);
                     }
                 }
             }
@@ -184,5 +183,42 @@ public class TimeSettingActivity extends BaseActivity {
 
     public String getTime(Date date){
         return new SimpleDateFormat("HH:mm").format(date);
+    }
+
+    /**
+     * 根据网络时间或本机时间，设置自动开关机时间
+     * @param timeMill
+     */
+    public void setTime(Long timeMill,String startTime,String shutdownTime){
+        SharedPreferences sp = cont.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putString(Const.startTime, startTime);
+        editor.putString(Const.shutdownTime, shutdownTime);
+        editor.commit();
+        String startTimes[] =startTime.split(":");
+        String shutdownTimes[] =shutdownTime.split(":");
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timeMill);
+        final int year =calendar.get(Calendar.YEAR);
+        final int shutdownmonth =calendar.get(Calendar.MONTH)+1;//得到实际月份 系统月份是0~11
+        final int shutdowndate =calendar.get(Calendar.DATE);
+        final int shutdownminute =Integer.parseInt(shutdownTimes[0]);
+        final int shutdownsecond =Integer.parseInt(shutdownTimes[1]);
+
+        calendar.add(Calendar.DAY_OF_MONTH,1);
+
+        final int startdate =calendar.get(Calendar.DATE);//开机时间应该是第二天，而不是当天，所以开机时间要加1天
+        final int startmonth =calendar.get(Calendar.MONTH)+1;//得到开机的月份，跨月份
+        final int startminute =Integer.parseInt(startTimes[0]);
+        final int startsecond =Integer.parseInt(startTimes[1]);
+
+        Intent intent = new Intent("android.intent.action.setpoweronoff");
+        int[] timeon = new int[]{year,startmonth,startdate,startminute,startsecond,0}; //开机时间
+        intent.putExtra("timeon", timeon);
+        int[] timeoff = new int[]{year,shutdownmonth,shutdowndate,shutdownminute,shutdownsecond,0}; //关机时间
+        intent.putExtra("timeoff", timeoff);
+        intent.putExtra("enable", true); //true 为启用， false 为取消此功能
+        sendBroadcast(intent);
+        Toast.makeText(cont, "设置自动开关机成功!", Toast.LENGTH_LONG).show();
     }
 }
