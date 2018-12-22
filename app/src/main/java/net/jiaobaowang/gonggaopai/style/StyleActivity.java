@@ -92,10 +92,6 @@ public class StyleActivity extends BaseActivity{
         button_backward.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SharedPreferences sp = cont.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sp.edit();
-                editor.putBoolean(Const.reload, false);
-                editor.commit();
                 finish();
             }
         });

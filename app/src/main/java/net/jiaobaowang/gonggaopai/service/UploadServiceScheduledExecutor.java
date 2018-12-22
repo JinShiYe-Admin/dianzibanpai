@@ -126,18 +126,8 @@ public class UploadServiceScheduledExecutor extends Service {
                         int state=subByte(responseText,12,1)[0];
                         int idNum=BitConverter.bytesToInt2(subByte(responseText,8,4),0);
                         int serNumS=BitConverter.bytesToInt2(subByte(responseText,8,4),0);
-                        if(state==1){//命令接收成功，更改数据库中的数据
-                            RecordData recordResp=RecordData.findById(RecordData.class,Long.valueOf(idNum));
-                            recordResp.setIsUpload(1);
-                            recordResp.save();
-                            for (int i = 0; i <attendanceList.size() ; i++) {
-                                Attendance attendance=attendanceList.get(i);
-                                attendance.setIsUpload(1);
-                                attendance.setSerNum(serNumS);
-                                attendance.save();
-                            }
-                            System.out.println("数据发送成功");
-                            reUpload();
+                        if(state==1){//命令接收成功，如果想保留数据，传1，如果不想保留数据减少数据库查询压力，占用空间，传0
+                          updateDatabase(idNum,serNumS,0);
                         }
                         if(t!=null){
                             t.cancel();
@@ -192,10 +182,40 @@ public class UploadServiceScheduledExecutor extends Service {
     }
 
     /**
-     * 将list封装成指定的byte[]
+     * 更改数据库操作
+     */
+    private void updateDatabase(int idNum,int serNumS,int num){
+        if(num==0){//删除数据
+            RecordData recordResp=RecordData.findById(RecordData.class,Long.valueOf(idNum));
+            recordResp.delete();
+            for (int i = 0; i <attendanceList.size() ; i++) {
+                Attendance attendance=attendanceList.get(i);
+                attendance.delete();
+            }
+        }else if(num==1){//保存数据，修改状态
+            RecordData recordResp=RecordData.findById(RecordData.class,Long.valueOf(idNum));
+            recordResp.setIsUpload(1);
+            recordResp.save();
+            for (int i = 0; i <attendanceList.size() ; i++) {
+                Attendance attendance=attendanceList.get(i);
+                attendance.setIsUpload(1);
+                attendance.setSerNum(serNumS);
+                attendance.save();
+            }
+        }
+        System.out.println("数据发送成功");
+        reUpload();
+    }
+
+    /**
+     * 得到完整数据包
      */
     private byte[] getByte(List<Attendance> li){
         StringBuffer buffer=new StringBuffer();
+        /**
+         *  数据包包体处理
+         *  @des 以打卡为例，一个打卡数据算是一个包体，包体可以有多个。包体内容为String字符串拼接。
+         */
         for (int i = 0; i <li.size(); i++) {
             Attendance attendance=li.get(i);
             String sysId=Const.kID;
@@ -204,23 +224,30 @@ public class UploadServiceScheduledExecutor extends Service {
             String tS=new SimpleDateFormat("MMddHHmmss").format(timeStr);
             buffer.append(sysId+tS+cardId);
         }
-        int packageLength=buffer.toString().getBytes().length+17;//包长度
-        byte[] pLength= BitConverter.intToByte2(packageLength);
+        /**
+         *  数据包包体处理
+         *  @des 长度计算:数据包整包长度=数据包包头长度+数据包包体长度；
+         *  顾工定义的数据包包头长度为固定的17位，这个长度暂时不会变，他说以后为了扩展可能会变。所以我写死了现在
+         */
+        int packageLength=buffer.toString().getBytes().length+17;//数据包整包长度
+        byte[] pLength= BitConverter.intToByte2(packageLength);//包长度转换成字节数组
         int packageCommand=Const.CMD_SUBMIT;//包命令
-        byte[] pCommand= BitConverter.intToByte2(packageCommand);
-        int serNum = getSerNum();//流水号
+        byte[] pCommand= BitConverter.intToByte2(packageCommand);//包命令转换成字节数组
+        int serNum = getSerNum();//这里的流水号是自己定义的，跟顾工那边没有直接关系，顾工说加这个流水号的目的是：上传该数据包后，返回包里会包含当前流水号，你可以根据这个流水号对之前上传的数据包进行处理，以安卓为例，我上传一个数据包之前先把流水号和数据包保存在数据库，状态为未上传，等数据上传成功后，返回流水号，我根据这个流水号修改该条数据库的数据为已上传
         serNum=serNum+1;
         setSerNum(serNum);
 
         byte[] sNum= BitConverter.intToByte2(serNum);
-        int blandId= Integer.parseInt(getBlandId());//设备号
+        int blandId= Integer.parseInt(getBlandId());//设备号转换成字节数组
         byte[] bId= BitConverter.intToByte2(blandId);
-        String blandLv= getBlandLv();//设备类型
+        String blandLv= getBlandLv();//设备类型转换成字节数组
         byte[] bLv =new byte[1];
-        bLv[0]=(byte)Integer.parseInt(blandLv);
+        bLv[0]=(byte)Integer.parseInt(blandLv);//设备类型转换成字节数组
         byte[] content=buffer.toString().getBytes();
-        byte[] bytes=new byte[packageLength];
-
+        byte[] bytes=new byte[packageLength];//声明一个数据包长度的字节数组
+        /**
+         * 数据包封包处理。字节数组拷贝，将以上步骤转换的字节数组放到新声明的字节数组中，组成完整的数据包
+         */
         System.arraycopy(pLength,0,bytes,0,pLength.length);
         System.arraycopy(pCommand,0,bytes,pLength.length,pCommand.length);
         System.arraycopy(sNum,0,bytes,pLength.length+pCommand.length,sNum.length);
@@ -239,6 +266,9 @@ public class UploadServiceScheduledExecutor extends Service {
         byte[] pCommand= BitConverter.intToByte2(packageCommand);
         int serNum = getSerNum();//流水号
         serNum=serNum+1;
+        if(serNum>Integer.MAX_VALUE){
+            serNum=0;
+        }
         setSerNum(serNum);
         byte[] sNum= BitConverter.intToByte2(serNum);
         final byte[] bytes=new byte[12];

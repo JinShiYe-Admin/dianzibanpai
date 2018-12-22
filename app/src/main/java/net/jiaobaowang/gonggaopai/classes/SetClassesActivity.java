@@ -123,10 +123,6 @@ public class SetClassesActivity extends BaseActivity implements KeyboardAdapterC
     public void onKeyClick(View view, RecyclerView.ViewHolder holder, int position) {
         switch (position) {
             case 11:
-                SharedPreferences spCancel = cont.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
-                SharedPreferences.Editor editorCancel = spCancel.edit();
-                editorCancel.putBoolean(Const.reload, false);
-                editorCancel.commit();
                 finish();
                 break;
             case 12:

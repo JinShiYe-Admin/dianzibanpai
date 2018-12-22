@@ -110,7 +110,6 @@ public class MainActivity extends BaseActivity {
         }
         quanxian();
         //TODO 检查开启时间是否是关机时间段内，如果是，弹出dialog，2分钟无人操作关机，否自不关机
-        //TODO 清理数据库，已上传数据清理
         SharedPreferences sp = cont.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
         Const.socketIp = sp.getString(Const.socketip, "");
         Const.socketPort = sp.getInt(Const.socketport, 0);
@@ -231,71 +230,16 @@ public class MainActivity extends BaseActivity {
             }
         }, 5000);
         BaseActivityManager.getAppManager().finishOthersActivity(MainActivity.class);
-        if(resultCode==1){
+        if(resultCode==0){
             SharedPreferences sp = this.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
             boolean reload = sp.getBoolean(Const.reload, false);
+            SharedPreferences.Editor editor = sp.edit();
+            editor.putBoolean(Const.reload, false);
+            editor.commit();
             if(reload){
                 initWeb();
             }
         }
-//        if (resultCode == 1 && requestCode == Const.GO_PASSWORD) {
-//            String actionP=data.getStringExtra("action");
-//            if("240".equals(actionP)){
-//                String styleid=data.getStringExtra("styleid");
-//                String stylename=data.getStringExtra("stylename");
-//                if (Validate.noNull(styleid)) {
-//                    SharedPreferences sp = this.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
-//                    SharedPreferences.Editor editor = sp.edit();
-//                    editor.putString("styleid", styleid);
-//                    editor.commit();
-//                    Const.styleid=styleid;
-//                    Toast.makeText(cont, "主题选择成功，名称："+stylename+"，编号：" + Const.styleid, Toast.LENGTH_LONG).show();
-//                    initWeb();
-//                }else{
-//                    if(Const.DEBUG) {
-//                        Toast.makeText(cont, "主题选择失败", Toast.LENGTH_LONG).show();
-//                    }
-//                }
-//            }else if("230".equals(actionP)){
-//                String blandlv=data.getStringExtra("blandlv");
-//                String blandid = data.getStringExtra("blandid");
-//                if (Validate.noNull(blandlv)||Validate.noNull(blandid)) {
-//                    SharedPreferences sp = this.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
-//                    SharedPreferences.Editor editor = sp.edit();
-//                    editor.putString("blandlv", blandlv);
-//                    editor.putString("blandid", blandid);
-//                    editor.commit();
-//                    Const.blandlv=blandlv;
-//                    Const.blandid=blandid;
-//                    if(Const.DEBUG) {
-//                        Toast.makeText(cont, "班级设置成功，" + "班牌类型：" + Const.blandlv + "，班牌ID：" + Const.blandid + ",cityName=" + Const.cityName, Toast.LENGTH_LONG).show();
-//                    }
-//                    initWeb();
-//                }else{
-//                    setShowAnimation(menuMultipleActions, 500);
-//                    if(Const.DEBUG) {
-//                        Toast.makeText(cont, "设置班级失败", Toast.LENGTH_LONG).show();
-//                    }
-//                }
-//            }else if("300".equals(actionP)){
-//                String startTime=data.getStringExtra("startTime");
-//                String shutdownTime = data.getStringExtra("shutdownTime");
-//                if(Const.DEBUG){
-//                    Toast.makeText(cont, startTime+"至"+shutdownTime, Toast.LENGTH_SHORT).show();
-//                }
-//                SharedPreferences sp = this.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
-//                SharedPreferences.Editor editor = sp.edit();
-//                editor.putString("startTime", startTime);
-//                editor.putString("shutdownTime", shutdownTime);
-//                editor.commit();
-//            }
-//        }else if(resultCode == 1 && requestCode == Const.EXIST){
-//            BaseActivityManager manager=BaseActivityManager.getAppManager();
-//            manager.AppExit(cont);
-//        }else {
-//            setShowAnimation(menuMultipleActions, 500);
-////            Toast.makeText(cont, "主题选择成功", Toast.LENGTH_LONG).show();
-//        }
     }
     /**
      * 隐藏悬浮按钮

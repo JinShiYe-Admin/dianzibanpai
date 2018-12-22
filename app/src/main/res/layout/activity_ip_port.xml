@@ -80,7 +80,6 @@
                 android:hint="请输入 IP 地址"
                 android:lines="1"
                 android:layout_marginLeft="1dp"
-                android:inputType="numberDecimal"
                 android:padding="8dp"
                 android:textSize="20sp" />
         </RelativeLayout>
@@ -125,12 +124,27 @@
                 android:textSize="20sp" />
         </RelativeLayout>
     </LinearLayout>
-
-    <net.jiaobaowang.gonggaopai.classes.KeyboardViewClasses
-        android:id="@+id/keyboard_view_classes"
+    <LinearLayout
+        android:id="@+id/btns"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:layout_alignParentBottom="true"
-        android:visibility="visible" />
-
+        android:orientation="horizontal">
+        <Button
+            android:id="@+id/cancelSocket"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:textSize="16sp"
+            android:background="#EAEAEA"
+            android:text="取消"/>
+        <Button
+            android:id="@+id/confirmSocket"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:textSize="16sp"
+            android:background="@color/colorPrimaryDark"
+            android:text="保存"/>
+    </LinearLayout>
 </RelativeLayout>
