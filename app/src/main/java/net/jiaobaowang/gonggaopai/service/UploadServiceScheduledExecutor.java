@@ -127,7 +127,17 @@ public class UploadServiceScheduledExecutor extends Service {
                         int idNum=BitConverter.bytesToInt2(subByte(responseText,8,4),0);
                         int serNumS=BitConverter.bytesToInt2(subByte(responseText,8,4),0);
                         if(state==1){//命令接收成功，如果想保留数据，传1，如果不想保留数据减少数据库查询压力，占用空间，传0
-                          updateDatabase(idNum,serNumS,0);
+                            RecordData recordResp=RecordData.findById(RecordData.class,Long.valueOf(idNum));
+                            recordResp.setIsUpload(1);
+                            recordResp.save();
+                            for (int i = 0; i <attendanceList.size() ; i++) {
+                                Attendance attendance=attendanceList.get(i);
+                                attendance.setIsUpload(1);
+                                attendance.setSerNum(serNumS);
+                                attendance.save();
+                            }
+                            System.out.println("数据发送成功");
+                            reUpload();
                         }
                         if(t!=null){
                             t.cancel();
@@ -181,31 +191,6 @@ public class UploadServiceScheduledExecutor extends Service {
         }
     }
 
-    /**
-     * 更改数据库操作
-     */
-    private void updateDatabase(int idNum,int serNumS,int num){
-        if(num==0){//删除数据
-            RecordData recordResp=RecordData.findById(RecordData.class,Long.valueOf(idNum));
-            recordResp.delete();
-            for (int i = 0; i <attendanceList.size() ; i++) {
-                Attendance attendance=attendanceList.get(i);
-                attendance.delete();
-            }
-        }else if(num==1){//保存数据，修改状态
-            RecordData recordResp=RecordData.findById(RecordData.class,Long.valueOf(idNum));
-            recordResp.setIsUpload(1);
-            recordResp.save();
-            for (int i = 0; i <attendanceList.size() ; i++) {
-                Attendance attendance=attendanceList.get(i);
-                attendance.setIsUpload(1);
-                attendance.setSerNum(serNumS);
-                attendance.save();
-            }
-        }
-        System.out.println("数据发送成功");
-        reUpload();
-    }
 
     /**
      * 得到完整数据包

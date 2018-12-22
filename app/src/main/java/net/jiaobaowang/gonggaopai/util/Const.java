@@ -4,7 +4,7 @@ package net.jiaobaowang.gonggaopai.util;
 public class Const {
 
     /****可维护字段*****/
-    public static final boolean DEBUG =true; // 是否显示toast
+    public static final boolean DEBUG =false; // 是否显示toast
 
 //  public static final String baseUrl="http://192.168.1.203:8080/banPaiIndex/test12/html/index/firstPage.html";    //设置班牌类型成功后跳转的页面路径
 //  public static final String defaultUrl="http://192.168.1.203:8080/banPaiIndex/test12/html/index/firstPage.html";    //第一次进入或没设置班牌类型时跳转的页面路径
