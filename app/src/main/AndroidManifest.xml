@@ -90,15 +90,7 @@
             android:launchMode="standard"
             android:screenOrientation="landscape" />
 
-        <service
-            android:name=".service.UploadService"
-            android:enabled="true"
-            android:exported="true" />
 
-        <receiver
-            android:name=".receiver.AlarmReceiver"
-            android:enabled="true"
-            android:exported="true" />
 
         <service
             android:name=".service.ReaderService"
