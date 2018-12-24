@@ -3,6 +3,7 @@ package net.jiaobaowang.gonggaopai;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -169,11 +170,14 @@ public class SettingsCheckActivity extends BaseActivity {
                             startActivity(blandCheck);
                             break;
                         case "styleCheck"://班牌主题设置
-                            if(Validate.isNull(Const.blandlv)&&Validate.isNull(Const.blandid)){
+                            SharedPreferences sp = cont.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
+                            String blandlv=sp.getString(Const.blandlv, "");
+                            String blandid=sp.getString(Const.blandid, "");
+                            if(Validate.isNull(blandlv)&&Validate.isNull(blandid)){
                                 Toast.makeText(cont,"请先选择班牌类型，再设置班牌主题",Toast.LENGTH_LONG).show();
                             }else{
                                 Intent styleCheck = new Intent();
-                                styleCheck.putExtra("blandlv",Const.blandlv);
+                                styleCheck.putExtra("blandlv",blandlv);
                                 styleCheck.setClass(cont, StyleActivity.class);
                                 startActivity(styleCheck);
                             }

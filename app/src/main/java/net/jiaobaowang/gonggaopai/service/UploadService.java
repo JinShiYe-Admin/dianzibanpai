@@ -216,11 +216,12 @@ public class UploadService extends Service {
         SharedPreferences.Editor editor = sp.edit();
         editor.putInt("serNum",Const.serNum);
         editor.commit();
-
+        String blandlv=sp.getString(Const.blandlv, "");
+        String blandid=sp.getString(Const.blandid, "");
         byte[] sNum= BitConverter.intToByte2(serNum);
-        int blandId= Integer.parseInt(Const.blandid);//设备号
+        int blandId= Integer.parseInt(blandid);//设备号
         byte[] bId= BitConverter.intToByte2(blandId);
-        String blandLv= Const.blandlv;//设备类型
+        String blandLv= blandlv;//设备类型
         byte[] bLv =new byte[1];
         bLv[0]=(byte)Integer.parseInt(blandLv);
         byte[] content=buffer.toString().getBytes();
