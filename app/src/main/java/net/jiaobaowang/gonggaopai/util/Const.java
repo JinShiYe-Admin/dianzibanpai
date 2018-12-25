@@ -31,12 +31,13 @@ public class Const {
     public static String nj_json="[{\"key\":\"20180002\",\"text\":\"年级皮肤\",\"url\":\"nj_style_1\"}]";    //年级班牌皮肤 key：班牌编号  text：皮肤名称  url：drawable下存放的皮肤图片名称 nj开头
     public static String bj_json="[{\"key\":\"20180003\",\"text\":\"班级皮肤\",\"url\":\"bj_style_1\"}]";    //班级班牌皮肤 key：班牌编号  text：皮肤名称  url：drawable下存放的皮肤图片名称 bj开头
 
-    public static String settings_json="[{\"key\":\"appUpdate\",\"text\":\"系统更新\",\"url\":\"settings_1\"}," +
+    public static String settings_json="[" +
             "{\"key\":\"blandCheck\",\"text\":\"班牌类型设置\",\"url\":\"settings_2\"}," +
             "{\"key\":\"styleCheck\",\"text\":\"班牌主题设置\",\"url\":\"settings_3\"}," +
             "{\"key\":\"timeCheck\",\"text\":\"自动开关机时间\",\"url\":\"settings_4\"}," +
             "{\"key\":\"passwordsetting\",\"text\":\"班牌密码设置\",\"url\":\"passwordsetting\"}," +
             "{\"key\":\"ipseeting\",\"text\":\"Socket地址设置\",\"url\":\"ipseeting\"}," +
+            "{\"key\":\"appUpdate\",\"text\":\"系统更新\",\"url\":\"settings_1\"},"+
             "{\"key\":\"closeSystem\",\"text\":\"关机\",\"url\":\"close_system\"}" +
             "]";  //设置选项
     /*********/
@@ -65,6 +66,8 @@ public class Const {
     public static final int EXIST = 0x120; // 退出APP
     public static final String SPNAME="GGP";//SharedPreferences名称
     public static final String ACTION_NAME="net.jiaobaowang.carid";//广播接收action
+
+    public static final int closeTimeout=1000*60*2;
 
     //upload相关
     public static int serNum=0;//流水号

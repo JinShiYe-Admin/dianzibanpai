@@ -27,7 +27,7 @@ public class CommonDialog extends Dialog {
     /**
      * 显示的标题
      */
-    private TextView titleTv ;
+    public TextView titleTv ;
 
     /**
      * 显示的消息

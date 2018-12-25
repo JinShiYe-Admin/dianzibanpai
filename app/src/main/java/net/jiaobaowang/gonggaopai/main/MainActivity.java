@@ -24,6 +24,7 @@ import com.baidu.location.BDAbstractLocationListener;
 import com.baidu.location.BDLocation;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
+import com.getbase.floatingactionbutton.AddFloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.just.agentweb.AgentWeb;
@@ -34,6 +35,7 @@ import net.jiaobaowang.gonggaopai.R;
 import net.jiaobaowang.gonggaopai.base.BaseActivity;
 import net.jiaobaowang.gonggaopai.base.BaseActivityManager;
 import net.jiaobaowang.gonggaopai.entry.Attendance;
+import net.jiaobaowang.gonggaopai.entry.RecordData;
 import net.jiaobaowang.gonggaopai.pwd.PwdActivity;
 import net.jiaobaowang.gonggaopai.service.ReaderService;
 import net.jiaobaowang.gonggaopai.service.UploadServiceScheduledExecutor;
@@ -49,6 +51,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends BaseActivity {
 
@@ -61,8 +66,8 @@ public class MainActivity extends BaseActivity {
     private MyLocationListener myListener = new MyLocationListener();
     private FloatingActionsMenu menuMultipleActions;
     private static final int BAIDU_READ_PHONE_STATE = 166;
-
-
+    private int num=120;
+    private AddFloatingActionButton mAddButton;
 
     private CardIdReceiver cardIdReceiver; //广播接收者
     private LocalBroadcastManager manager;
@@ -73,18 +78,6 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public void widgetHandle(Message msg) {
-        switch (msg.what){
-//            case 0x666://获取到网络时间，则以网络时间为准
-//                setTime((Long) msg.obj);
-//                break;
-            case 0x667:
-                //设置定时开关机时间
-                if(Const.DEBUG) {
-                    Toast.makeText(cont, "本机时间", Toast.LENGTH_LONG).show();
-                }
-                setTime(System.currentTimeMillis());
-                break;
-        }
     }
 
     @Override
@@ -108,13 +101,41 @@ public class MainActivity extends BaseActivity {
             intentFilter.addAction(Const.ACTION_NAME); //添加动作
             manager.registerReceiver(cardIdReceiver, intentFilter); //注册广播
         }
-        quanxian();
-        //TODO 检查开启时间是否是关机时间段内，如果是，弹出dialog，2分钟无人操作关机，否自不关机
+
         SharedPreferences sp = cont.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
         Const.socketIp = sp.getString(Const.socketip, "");
         Const.socketPort = sp.getInt(Const.socketport, 0);
         AECrashHelper.initCrashHandler(getApplication());
+        mAddButton= (AddFloatingActionButton) findViewById(com.getbase.floatingactionbutton.R.id.fab_expand_menu_button);
+
         menuMultipleActions = (FloatingActionsMenu) findViewById(R.id.multiple_actions2);
+        mAddButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Timer t = new Timer();
+                t.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        setHideAnimation(menuMultipleActions, 1000);
+                        t.cancel();
+                    }
+                }, 5000);
+                menuMultipleActions.toggle();
+            }
+        });
+
+        final FloatingActionButton  actionA= (FloatingActionButton)findViewById(R.id.action_a);
+        actionA.setColorNormalResId(R.color.pink);
+        actionA.setColorPressedResId(R.color.pink_pressed);
+//        actionB.setSize(FloatingActionButton.SIZE_MINI);
+        actionA.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {//设置班牌类型
+                if (mAgentWeb != null) {
+                        mAgentWeb.getUrlLoader().reload();
+                }
+            }
+        });
 
         final FloatingActionButton  actionB= (FloatingActionButton)findViewById(R.id.action_b);
         actionB.setColorNormalResId(R.color.pink);
@@ -160,18 +181,32 @@ public class MainActivity extends BaseActivity {
             }
         });
         setHideAnimation(menuMultipleActions, 1000);
-        if(Validate.isNull(Const.blandlv)&&Validate.isNull(Const.blandid)){
+        String blandlv=sp.getString(Const.blandlv, "");
+        String blandid=sp.getString(Const.blandid, "");
+        if(Validate.isNull(blandlv)&&Validate.isNull(blandid)){
             if(BaseActivityManager.getAppManager().isActivityStarted(PwdActivity.class)){
 
             }else{
+                String password = sp.getString(Const.password, "");
+                if(password==""){
+                    SharedPreferences.Editor editor = sp.edit();
+                    editor.putString(Const.password, "12345678");
+                    editor.commit();
+                }
                 Intent intent = new Intent();
                 intent.putExtra("action",Const.GO_PASSWORD);
                 intent.setClass(cont, PwdActivity.class);
                 startActivityForResult(intent, Const.GO_PASSWORD);
             }
         }
-        getNetTime();
-        _startService();
+
+        if(getRunntime()){
+            quanxian();
+            setTime(System.currentTimeMillis());
+            _startService();
+        }else{//计时器，弹出关机提醒
+            alertShutDownDialog();
+        }
     }
 
     @Override
@@ -195,7 +230,7 @@ public class MainActivity extends BaseActivity {
         String cityName = sp.getString(Const.cityName, "");
         String url;
         try {
-            if(Const.blandlv==""||Const.blandid==""){
+            if(blandlv==""||blandid==""){
                 url=Const.defaultUrl+"?blandlv="+blandlv+"&blandid="+blandid+"&styleid="+styleid+"&cityName="+ cityName;
             }else{
                 url=Const.baseUrl+"?blandlv="+blandlv+"&blandid="+blandid+"&styleid="+styleid+"&cityName="+ cityName;
@@ -320,7 +355,11 @@ public class MainActivity extends BaseActivity {
                 != PackageManager.PERMISSION_GRANTED) {
 //                Toast.makeText(getApplicationContext(), "没有权限,请手动开启定位权限", Toast.LENGTH_SHORT).show();
             // 申请一个（或多个）权限，并提供用于回调返回的获取码（用户定义）
-            ActivityCompat.requestPermissions(cont, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.READ_PHONE_STATE}, BAIDU_READ_PHONE_STATE);
+            ActivityCompat.requestPermissions(cont, new String[]{
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.READ_PHONE_STATE
+            }, BAIDU_READ_PHONE_STATE);
         }else{
             SharedPreferences sp = this.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
             String cityName = sp.getString(Const.cityName, "");
@@ -374,6 +413,27 @@ public class MainActivity extends BaseActivity {
     }
 
     private void _startService(){
+        //清理已经上传过的超过7天的数据 TODO
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try{
+                    List<RecordData> recordRespList=RecordData.find(RecordData.class,"IS_UPLOAD=? AND (?-SEND_TIME) > 100",new String[]{"1",System.currentTimeMillis()+""},null,"SEND_TIME ASC",null);
+                    for (int i = 0; i < recordRespList.size(); i++) {
+                        RecordData recordData=recordRespList.get(i);
+                        recordData.delete();
+                    }
+                    List<Attendance> attendanceList = Attendance.find(Attendance.class,"IS_UPLOAD=? AND (date(?)-date(TIME_STR)) > 100  ",new String[]{"1",System.currentTimeMillis()+""},null,"TIME_STR ASC",null);
+                    for (int i = 0; i < attendanceList.size(); i++) {
+                        Attendance attendance=attendanceList.get(i);
+                        attendance.delete();
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
+            }
+        }).start();
         boolean isUploadServiceRunning= ReceiverAndServiceUtil.isServiceRunning(cont,"net.jiaobaowang.gonggaopai.service.UploadServiceScheduledExecutor");
         boolean isReaderServiceRunning=ReceiverAndServiceUtil.isServiceRunning(cont,"net.jiaobaowang.gonggaopai.service.ReaderService");
         if(!isUploadServiceRunning){
@@ -404,67 +464,51 @@ public class MainActivity extends BaseActivity {
             stopService(startIntent);
         }
     }
-//    /**
-//     * 获取网络时间，然后设置本机时间为网络时间，同时设置班级的自动开关机时间
-//     */
-//    private void getNetTime(){
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                URL url = null;//取得资源对象
-//                try {
-//                    url = new URL("http://www.baidu.com");
-//                    //url = new URL("http://www.ntsc.ac.cn");//中国科学院国家授时中心
-//                    //url = new URL("http://www.bjtime.cn");
-//                    URLConnection uc = url.openConnection();//生成连接对象
-//                    uc.connect(); //发出连接
-//                    final long ld = uc.getDate(); //取得网站日期时间
-//                    Calendar calendar = Calendar.getInstance();
-//                    calendar.setTimeInMillis(ld);
-//                    final int year =calendar.get(Calendar.YEAR);
-//                    final int month =calendar.get(Calendar.MONTH);
-//                    final int date =calendar.get(Calendar.DATE);
-//                    final int hour =calendar.get(Calendar.HOUR_OF_DAY);
-//                    final int minute =calendar.get(Calendar.MINUTE);
-//                    final int second =calendar.get(Calendar.SECOND);
-//                    runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            //重置本地时间为网络时间
-//                            Intent intent = new Intent("android.intent.action.settime");
-//                            int[] settime= new int[]{year,month,date,hour,minute,second};
-//                            intent.putExtra("settime", settime);
-//                            sendBroadcast(intent);
-//                            Message message=new Message();
-//                            message.what=0x666;
-//                            message.obj=ld;
-//                            handler.sendMessage(message);
-//                        }
-//                    });
-//                } catch (Exception e) {
-//                    Message message=new Message();
-//                    message.what=0x667;
-//                    handler.sendMessage(message);
-//                    e.printStackTrace();
-//                }
-//            }
-//        }).start();
-//    }
+
     /**
-     * 参照本机时间设置班级的自动开关机时间
+     * 判断一下开机时间是否在关机时间段内
+     * @return true:执行其他操作
      */
-    private void getNetTime() {
-        final Handler mHandler = new Handler();
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                mHandler.removeCallbacks(this);
-                Message message=new Message();
-                message.what=0x667;
-                handler.sendMessage(message);
+
+    private boolean getRunntime(){
+        SharedPreferences sp = cont.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
+        String startTime=sp.getString(Const.startTime, "");
+        String shutdownTime=sp.getString(Const.shutdownTime, "");
+        if(Validate.isNull(startTime)||Validate.isNull(shutdownTime)){
+            return true;
+        }else{
+            int starthour=Integer.parseInt(startTime.split(":")[0]);
+            int startminute=Integer.parseInt(startTime.split(":")[1]);
+            int afstartminute=0;
+            if(startminute==0){
+                afstartminute=60;
             }
-        };
-        mHandler.postDelayed(r, 10000);//延时10秒
+            int shutdownhour=Integer.parseInt(shutdownTime.split(":")[0]);
+            int shutdownminute=Integer.parseInt(shutdownTime.split(":")[1]);
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(System.currentTimeMillis());
+            int currHour =calendar.get(Calendar.HOUR_OF_DAY);
+            int currMinute =calendar.get(Calendar.MINUTE);
+            if(currHour==shutdownhour&&currMinute>=shutdownminute){//当前小时与关机小时相同，当前分钟数比关机分钟数大，关机
+                return false;
+            }else if(currHour>shutdownhour){//当前小时比关机小时大，关机
+                return false;
+            }else if(starthour-currHour==1&&afstartminute-currMinute>=4){//当前小时比开机小时早一个小时，分钟数比开机时间早4分钟关机  比如7:56开机   开机时间是8:00 关机
+                return false;
+            }else if(starthour-currHour>1){//当前小时比开机小时早两个个小时以上 关机
+                return false;
+            }else if(currHour==starthour&&startminute!=0){//当前小时比开机小时相同 开机分钟不为0
+                if(startminute-currMinute>=4){//开机分钟比当前分钟早4分钟 关机 比如8:20 开机时间是8:30  关机
+                    return false;
+                }else{
+                    return true;
+                }
+            }else if(currHour==starthour&&startminute==0){//当前小时比开机小时相同 开机分钟为0  比如8:01 开机时间是8:00 开机
+                return true;
+            }else {
+                return true;
+            }
+        }
     }
 
     /**
@@ -484,36 +528,132 @@ public class MainActivity extends BaseActivity {
             String shutdownTimes[] =shutdownTime.split(":");
             Calendar calendar = Calendar.getInstance();
             calendar.setTimeInMillis(timeMill);
-            final int year =calendar.get(Calendar.YEAR);
+            final int shutdownyear =calendar.get(Calendar.YEAR);
             final int shutdownmonth =calendar.get(Calendar.MONTH)+1;//得到实际月份 系统月份是0~11
-            final int shutdowndate =calendar.get(Calendar.DATE);
-            final int shutdownminute =Integer.parseInt(shutdownTimes[0]);
-            final int shutdownsecond =Integer.parseInt(shutdownTimes[1]);
+            final int shutdownday =calendar.get(Calendar.DAY_OF_MONTH);
+            final int shutdownhour =Integer.parseInt(shutdownTimes[0]);
+            final int shutdownminute =Integer.parseInt(shutdownTimes[1]);
 
-            calendar.add(Calendar.DAY_OF_MONTH,1);
+            calendar.add(Calendar.DAY_OF_MONTH,1);//第二天开机
 
-            final int startdate =calendar.get(Calendar.DATE);//开机时间应该是第二天，而不是当天，所以开机时间要加1天
+            final int startyear =calendar.get(Calendar.YEAR);
             final int startmonth =calendar.get(Calendar.MONTH)+1;//得到开机的月份，跨月份
-            final int startminute =Integer.parseInt(startTimes[0]);
-            final int startsecond =Integer.parseInt(startTimes[1]);
+            final int startday =calendar.get(Calendar.DAY_OF_MONTH);//开机时间应该是第二天，而不是当天，所以开机时间要加1天
+            final int starthour=Integer.parseInt(startTimes[0]);
+            final int startminute =Integer.parseInt(startTimes[1]);
 
             Intent intent = new Intent("android.intent.action.setpoweronoff");
-            int[] timeon = new int[]{year,startmonth,startdate,startminute,startsecond,0}; //开机时间
+            int[] timeon = new int[]{startyear,startmonth,startday,starthour,startminute,0}; //开机时间
             intent.putExtra("timeon", timeon);
-            int[] timeoff = new int[]{year,shutdownmonth,shutdowndate,shutdownminute,shutdownsecond,0}; //关机时间
+            int[] timeoff = new int[]{shutdownyear,shutdownmonth,shutdownday,shutdownhour,shutdownminute,0}; //关机时间
             intent.putExtra("timeoff", timeoff);
             intent.putExtra("enable", true); //true 为启用， false 为取消此功能
             sendBroadcast(intent);
             if(Const.DEBUG){
-                Toast.makeText(cont, "设置自动开关机成功111111111:"+year+"-"+startmonth+"-"+startdate+" "+startminute+":"+startsecond+"至"+year+"-"+shutdownmonth+"-"+shutdowndate+" "+shutdownminute+":"+shutdownsecond, Toast.LENGTH_LONG).show();
+                Toast.makeText(cont, "设置自动开关机成功111111111:"+startyear+"-"+startmonth+"-"+startday+" "+starthour+":"+startminute+"至"+shutdownyear+"-"+shutdownmonth+"-"+shutdownday+" "+shutdownhour+":"+shutdownminute, Toast.LENGTH_LONG).show();
             }
+        }
+    }
+
+    /**
+     * 关机时间段 关机提醒
+     */
+    private void alertShutDownDialog(){
+        final CommonDialog dialog = new CommonDialog(cont);
+        final ScheduledExecutorService mScheduledExecutorService = Executors.newScheduledThreadPool(1);
+        final Timer t = new Timer();
+        t.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                dialog.dismiss();
+                resetTime();
+                mScheduledExecutorService.shutdownNow();
+                Intent intent = new Intent("android.intent.action.shutdown");
+                sendBroadcast(intent);
+                t.cancel();
+            }
+        }, Const.closeTimeout);
+        dialog.setMessage(" ")
+                .setImageResId(-1)
+                .setTitle("当前系统不在正常运行时间范围内，系统将在 "+Const.closeTimeout/1000+" 秒后自动关机！")
+                .setPositive("取消关机")
+                .setNegtive("")
+                .setSingle(1)
+                .setOnClickBottomListener(new CommonDialog.OnClickBottomListener() {
+                    @Override
+                    public void onPositiveClick() {
+                        dialog.dismiss();
+                        t.cancel();
+                        resetTime();
+                        quanxian();
+                        _startService();
+                    }
+
+                    @Override
+                    public void onNegtiveClick() {
+                        dialog.dismiss();
+                    }
+                }).show();
+
+
+        mScheduledExecutorService.scheduleWithFixedDelay(new Runnable() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        dialog.titleTv.setText("当前系统不在正常运行时间范围内，系统将在 "+num+" 秒后自动关机！");
+                        num--;
+                    }
+                });
+            }
+        }, 1, 1, TimeUnit.SECONDS);
+    }
+
+    private void resetTime(){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        final int currhour =calendar.get(Calendar.HOUR_OF_DAY);
+        SharedPreferences sp = cont.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
+        String startTime=sp.getString(Const.startTime, "");
+        String shutdownTime=sp.getString(Const.shutdownTime, "");
+        int _shutdownhour=Integer.parseInt(shutdownTime.split(":")[0]);
+        if(currhour-_shutdownhour>=0) {
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
+        }
+        final int startyear =calendar.get(Calendar.YEAR);
+        final int startmonth =calendar.get(Calendar.MONTH)+1;//得到开机的月份，跨月份
+        final int startday =calendar.get(Calendar.DAY_OF_MONTH);//开机时间应该是第二天，而不是当天，所以开机时间要加1天
+        final int starthour=Integer.parseInt(startTime.split(":")[0]);
+        final int startminute =Integer.parseInt(startTime.split(":")[1]);
+
+        final int shutdownyear =calendar.get(Calendar.YEAR);
+        final int shutdownmonth =calendar.get(Calendar.MONTH)+1;//得到实际月份 系统月份是0~11
+        final int shutdownday =calendar.get(Calendar.DAY_OF_MONTH);
+        final int shutdownhour =Integer.parseInt(shutdownTime.split(":")[0]);
+        final int shutdownminute =Integer.parseInt(shutdownTime.split(":")[1]);
+
+        Intent intent = new Intent("android.intent.action.setpoweronoff");
+        int[] timeon = new int[]{startyear,startmonth,startday,starthour,startminute,0}; //开机时间
+        intent.putExtra("timeon", timeon);
+        int[] timeoff = new int[]{shutdownyear,shutdownmonth,shutdownday,shutdownhour,shutdownminute,0}; //关机时间
+        intent.putExtra("timeoff", timeoff);
+        intent.putExtra("enable", true); //true 为启用， false 为取消此功能
+        sendBroadcast(intent);
+        if(Const.DEBUG){
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(cont, "设置自动开关机成功111111111:"+startyear+"-"+startmonth+"-"+startday+" "+starthour+":"+startminute+"至"+shutdownyear+"-"+shutdownmonth+"-"+shutdownday+" "+shutdownhour+":"+shutdownminute, Toast.LENGTH_LONG).show();
+                }
+            });
         }
     }
 
     /**
      * 打卡提示
      */
-    private void alertDialog(String id){
+    private void alertDialog(){
         final CommonDialog dialog = new CommonDialog(cont);
         dialog.setMessage(" ")
                 .setImageResId(R.drawable.success)
@@ -593,8 +733,11 @@ public class MainActivity extends BaseActivity {
                     if(Const.DEBUG){
                         Toast.makeText(cont,"cardId2222:"+cardId,Toast.LENGTH_SHORT).show();
                     }
-                    if(Validate.noNull(Const.blandlv)&&Validate.noNull(Const.blandid)){
-                        alertDialog(cardId);
+                    SharedPreferences sp = cont.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
+                    String blandlv=sp.getString(Const.blandlv, "");
+                    String blandid=sp.getString(Const.blandid, "");
+                    if(Validate.noNull(blandlv)&&Validate.noNull(blandid)){
+                        alertDialog();
                         Long timestr= System.currentTimeMillis();
                         Map info=new HashMap();
                         info.put("id",cardId);

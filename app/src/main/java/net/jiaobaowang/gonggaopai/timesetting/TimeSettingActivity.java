@@ -68,8 +68,18 @@ public class TimeSettingActivity extends BaseActivity {
             }
         });
         SharedPreferences sp = this.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
-        startTime.setText(sp.getString(Const.startTime, "点击选择自动开机时间"));
-        shutdownTime.setText(sp.getString(Const.shutdownTime, "点击选择自动关机时间"));
+        String start=sp.getString(Const.startTime, "点击选择自动开机时间");
+        String shutdown=sp.getString(Const.shutdownTime, "点击选择自动关机时间");
+        if(start.equals("点击选择自动开机时间")){
+            startTime.setText(start);
+        }else{
+            startTime.setText("明天上午 "+start);
+        }
+        if(shutdown.equals("点击选择自动关机时间")){
+            shutdownTime.setText(shutdown);
+        }else{
+            shutdownTime.setText("今天下午 "+shutdown);
+        }
         startTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -85,7 +95,7 @@ public class TimeSettingActivity extends BaseActivity {
                         if(hour<4||hour>12){
                             Toast.makeText(cont, "开机时间段必须在：04:00 至 12:00 之间", Toast.LENGTH_SHORT).show();
                         }else{
-                            startTime.setText(time);
+                            startTime.setText("明天上午 "+time);
                         }
                     }
                 }) .setType(new boolean[]{false, false, false, true, true, false})// 默认全部显示
@@ -113,7 +123,7 @@ public class TimeSettingActivity extends BaseActivity {
                         if(hour<16){
                             Toast.makeText(cont, "关机时间段必须在：16:00 至 24:00 之间", Toast.LENGTH_SHORT).show();
                         }else{
-                            shutdownTime.setText(time);
+                            shutdownTime.setText("今天下午 "+time);
                         }
                     }
                 }) .setType(new boolean[]{false, false, false, true, true, false})// 默认全部显示
@@ -135,45 +145,53 @@ public class TimeSettingActivity extends BaseActivity {
         confirmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final String startTimestr=startTime.getText().toString();
-                final String shutdownTimestr=shutdownTime.getText().toString();
-                if("点击选择自动开机时间".equals(startTimestr)){
+                String startstr=startTime.getText().toString();
+                String shutdownstr=shutdownTime.getText().toString();
+                if("点击选择自动开机时间".equals(startstr)){
                     Toast.makeText(cont,"请选择开机时间",Toast.LENGTH_LONG).show();
-                }else if("点击选择自动关机时间".equals(shutdownTimestr)){
+                }else if("点击选择自动关机时间".equals(shutdownstr)){
                     Toast.makeText(cont,"请选择关机时间",Toast.LENGTH_LONG).show();
                 }else{
+                    final String startTimestr = startstr.substring(5);
+                    final String shutdownTimestr = shutdownstr.substring(5);
                     int hour=Integer.parseInt(shutdownTimestr.split(":")[0]);
                     int minute=Integer.parseInt(shutdownTimestr.split(":")[1]);
                     Calendar calendar = Calendar.getInstance();
                     calendar.setTimeInMillis(System.currentTimeMillis());
                     int currHour =calendar.get(Calendar.HOUR_OF_DAY);
                     int currMinute =calendar.get(Calendar.MINUTE);
-                    if(hour<=currHour && minute<=currMinute){//设定的时间比当前时间早，设备会直接关机，到指定的开机时间时自动开机。
-                        final CommonDialog dialog = new CommonDialog(cont);
-                        dialog.setMessage(" ")
-                                .setImageResId(-1)
-                                .setTitle("您设定的关机时间比当前时间要早，设备会立即关机，直到指定开机时间时才会自动开机。")
-                                .setPositive("重新调整")
-                                .setNegtive("保存设置")
-                                .setSingle(2)
-                                .setOnClickBottomListener(new CommonDialog.OnClickBottomListener() {
-                                    @Override
-                                    public void onPositiveClick() {
-                                        dialog.dismiss();
-                                    }
-
-                                    @Override
-                                    public void onNegtiveClick() {
-                                        dialog.dismiss();
-                                        setTime(System.currentTimeMillis(),startTimestr,shutdownTimestr);
-                                    }
-                                }).show();
+                    if(hour==currHour && minute<=currMinute){//设定的时间比当前时间早，设备会直接关机，到指定的开机时间时自动开机。
+                        alertDialog(startTimestr,shutdownTimestr);
+                    }else if(hour<currHour){
+                        alertDialog(startTimestr,shutdownTimestr);
                     }else{
                         setTime(System.currentTimeMillis(),startTimestr,shutdownTimestr);
                     }
                 }
             }
         });
+    }
+
+    private void alertDialog(final String startTimestr,final String shutdownTimestr){
+        final CommonDialog dialog = new CommonDialog(cont);
+        dialog.setMessage(" ")
+                .setImageResId(-1)
+                .setTitle("您设定的关机时间比当前时间要早，设备会立即关机，直到指定开机时间时才会自动开机。")
+                .setPositive("重新调整")
+                .setNegtive("保存设置")
+                .setSingle(2)
+                .setOnClickBottomListener(new CommonDialog.OnClickBottomListener() {
+                    @Override
+                    public void onPositiveClick() {
+                        dialog.dismiss();
+                    }
+
+                    @Override
+                    public void onNegtiveClick() {
+                        dialog.dismiss();
+                        setTime(System.currentTimeMillis(),startTimestr,shutdownTimestr);
+                    }
+                }).show();
     }
 
     @Override
@@ -199,23 +217,24 @@ public class TimeSettingActivity extends BaseActivity {
         String shutdownTimes[] =shutdownTime.split(":");
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(timeMill);
-        final int year =calendar.get(Calendar.YEAR);
+        final int shutdownyear =calendar.get(Calendar.YEAR);
         final int shutdownmonth =calendar.get(Calendar.MONTH)+1;//得到实际月份 系统月份是0~11
-        final int shutdowndate =calendar.get(Calendar.DATE);
-        final int shutdownminute =Integer.parseInt(shutdownTimes[0]);
-        final int shutdownsecond =Integer.parseInt(shutdownTimes[1]);
+        final int shutdownday =calendar.get(Calendar.DAY_OF_MONTH);
+        final int shutdownhour =Integer.parseInt(shutdownTimes[0]);
+        final int shutdownminute =Integer.parseInt(shutdownTimes[1]);
 
-        calendar.add(Calendar.DAY_OF_MONTH,1);
+        calendar.add(Calendar.DAY_OF_MONTH,1);//第二天开机
 
-        final int startdate =calendar.get(Calendar.DATE);//开机时间应该是第二天，而不是当天，所以开机时间要加1天
+        final int startyear =calendar.get(Calendar.YEAR);
         final int startmonth =calendar.get(Calendar.MONTH)+1;//得到开机的月份，跨月份
-        final int startminute =Integer.parseInt(startTimes[0]);
-        final int startsecond =Integer.parseInt(startTimes[1]);
+        final int startday =calendar.get(Calendar.DAY_OF_MONTH);//开机时间应该是第二天，而不是当天，所以开机时间要加1天
+        final int starthour=Integer.parseInt(startTimes[0]);
+        final int startminute =Integer.parseInt(startTimes[1]);
 
         Intent intent = new Intent("android.intent.action.setpoweronoff");
-        int[] timeon = new int[]{year,startmonth,startdate,startminute,startsecond,0}; //开机时间
+        int[] timeon = new int[]{startyear,startmonth,startday,starthour,startminute,0}; //开机时间
         intent.putExtra("timeon", timeon);
-        int[] timeoff = new int[]{year,shutdownmonth,shutdowndate,shutdownminute,shutdownsecond,0}; //关机时间
+        int[] timeoff = new int[]{shutdownyear,shutdownmonth,shutdownday,shutdownhour,shutdownminute,0}; //关机时间
         intent.putExtra("timeoff", timeoff);
         intent.putExtra("enable", true); //true 为启用， false 为取消此功能
         sendBroadcast(intent);

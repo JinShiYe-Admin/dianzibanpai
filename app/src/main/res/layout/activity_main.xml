@@ -43,9 +43,9 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           fab:fab_colorNormal="@color/white"
-          fab:fab_icon="@drawable/style"
+          fab:fab_icon="@drawable/refreshweb"
           fab:fab_addButtonSize="mini"
-          android:visibility="gone"
+          android:visibility="visible"
           fab:fab_colorPressed="@color/white_pressed"/>
 
       <com.getbase.floatingactionbutton.FloatingActionButton
