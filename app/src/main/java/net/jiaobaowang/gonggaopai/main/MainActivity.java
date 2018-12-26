@@ -256,6 +256,13 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        SharedPreferences sp = cont.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
+        String blandlv = sp.getString("blandlv", "");
+        String blandid = sp.getString("blandid", "");
+        if(Validate.isNull(blandlv)||Validate.isNull(blandid)){
+            BaseActivityManager manager=BaseActivityManager.getAppManager();
+            manager.AppExit(cont);
+        }
         final Timer t = new Timer();
         t.schedule(new TimerTask() {
             @Override
@@ -266,7 +273,6 @@ public class MainActivity extends BaseActivity {
         }, 5000);
         BaseActivityManager.getAppManager().finishOthersActivity(MainActivity.class);
         if(resultCode==0){
-            SharedPreferences sp = this.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
             boolean reload = sp.getBoolean(Const.reload, false);
             SharedPreferences.Editor editor = sp.edit();
             editor.putBoolean(Const.reload, false);

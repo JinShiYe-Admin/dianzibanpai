@@ -59,10 +59,12 @@ public class PasswordModifyActivity extends BaseActivity implements KeyboardAdap
         edit_password= (EditText) findViewById(R.id.edit_password);
         button_backward=(Button)findViewById(R.id.button_backward);
         keyboardView= (KeyboardViewClasses) findViewById(R.id.keyboard_view_classes);
+        edit_password.setFocusable(true);
+        edit_password.requestFocus();
         SharedPreferences sp = this.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
         String password = sp.getString(Const.password, "");
         edit_password.setText(password);
-
+        edit_password.setSelection(edit_password.getText().toString().trim().length());
         button_backward.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -125,8 +127,10 @@ public class PasswordModifyActivity extends BaseActivity implements KeyboardAdap
     @Override
     public void onDeleteClick(View view, RecyclerView.ViewHolder holder, int position) {
         int index = edit_password.getSelectionStart();
-        Editable editable = edit_password.getText();
-        editable.delete(index-1, index);
+        if(index>0){
+            Editable editable = edit_password.getText();
+            editable.delete(index-1, index);
+        }
         // 点击删除按钮
 //        String num = edit_password.getText().toString().trim();
 //        if (num.length() > 0) {

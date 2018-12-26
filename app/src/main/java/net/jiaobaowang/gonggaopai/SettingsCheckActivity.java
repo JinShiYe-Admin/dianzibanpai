@@ -129,7 +129,6 @@ public class SettingsCheckActivity extends BaseActivity {
             final String keys= map.get("key").toString();
             final String texts= map.get("text").toString();
             String urls= map.get("url").toString();
-            System.out.println(map.toString());
             holder.settings_left.setText(texts);
             final int drawableId_left = cont.getResources().getIdentifier(urls,"drawable", cont.getPackageName());
             holder.settings_img_left.setImageResource(drawableId_left);

@@ -72,10 +72,13 @@ public class SetClassesActivity extends BaseActivity implements KeyboardAdapterC
                 finish();
             }
         });
+        etInput.setFocusable(true);
+        etInput.requestFocus();
         SharedPreferences sp = this.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
         String blandlv = sp.getString("blandlv", "");
         String blandid = sp.getString("blandid", "");
         etInput.setText(blandid);
+        etInput.setSelection(etInput.getText().toString().trim().length());
         switch (blandlv){
             case "0":
                 selectId.setText("班级班牌");
@@ -144,8 +147,10 @@ public class SetClassesActivity extends BaseActivity implements KeyboardAdapterC
                 break;
             default: // 按下数字键
                 int index = etInput.getSelectionStart();
-                Editable editable = etInput.getText();
-                editable.insert(index, datas.get(position));
+                if(index>0){
+                    Editable editable = etInput.getText();
+                    editable.insert(index, datas.get(position));
+                }
 //                etInput.setText(etInput.getText().toString().trim() + datas.get(position));
 //                etInput.setSelection(etInput.getText().length());
                 break;
@@ -155,8 +160,10 @@ public class SetClassesActivity extends BaseActivity implements KeyboardAdapterC
     @Override
     public void onDeleteClick(View view, RecyclerView.ViewHolder holder, int position) {
         int index = etInput.getSelectionStart();
-        Editable editable = etInput.getText();
-        editable.delete(index-1, index);
+        if(index>0) {
+            Editable editable = etInput.getText();
+            editable.delete(index - 1, index);
+        }
         // 点击删除按钮
 //        String num = etInput.getText().toString().trim();
 //        if (num.length() > 0) {
