@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
 import android.text.InputType;
 import android.view.KeyEvent;
 import android.view.View;
@@ -112,20 +113,26 @@ public class PasswordModifyActivity extends BaseActivity implements KeyboardAdap
                 }
                 break;
             default: // 按下数字键
-                edit_password.setText(edit_password.getText().toString().trim() + datas.get(position));
-                edit_password.setSelection(edit_password.getText().length());
+                int index = edit_password.getSelectionStart();
+                Editable editable = edit_password.getText();
+                editable.insert(index, datas.get(position));
+//                edit_password.setText(edit_password.getText().toString().trim() + datas.get(position));
+//                edit_password.setSelection(edit_password.getText().length());
                 break;
         }
     }
 
     @Override
     public void onDeleteClick(View view, RecyclerView.ViewHolder holder, int position) {
+        int index = edit_password.getSelectionStart();
+        Editable editable = edit_password.getText();
+        editable.delete(index-1, index);
         // 点击删除按钮
-        String num = edit_password.getText().toString().trim();
-        if (num.length() > 0) {
-            edit_password.setText(num.substring(0, num.length() - 1));
-            edit_password.setSelection(edit_password.getText().length());
-        }
+//        String num = edit_password.getText().toString().trim();
+//        if (num.length() > 0) {
+//            edit_password.setText(num.substring(0, num.length() - 1));
+//            edit_password.setSelection(edit_password.getText().length());
+//        }
     }
 
     @Override

@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
 import android.text.InputType;
 import android.view.KeyEvent;
 import android.view.View;
@@ -142,20 +143,26 @@ public class SetClassesActivity extends BaseActivity implements KeyboardAdapterC
 
                 break;
             default: // 按下数字键
-                etInput.setText(etInput.getText().toString().trim() + datas.get(position));
-                etInput.setSelection(etInput.getText().length());
+                int index = etInput.getSelectionStart();
+                Editable editable = etInput.getText();
+                editable.insert(index, datas.get(position));
+//                etInput.setText(etInput.getText().toString().trim() + datas.get(position));
+//                etInput.setSelection(etInput.getText().length());
                 break;
         }
     }
 
     @Override
     public void onDeleteClick(View view, RecyclerView.ViewHolder holder, int position) {
+        int index = etInput.getSelectionStart();
+        Editable editable = etInput.getText();
+        editable.delete(index-1, index);
         // 点击删除按钮
-        String num = etInput.getText().toString().trim();
-        if (num.length() > 0) {
-            etInput.setText(num.substring(0, num.length() - 1));
-            etInput.setSelection(etInput.getText().length());
-        }
+//        String num = etInput.getText().toString().trim();
+//        if (num.length() > 0) {
+//            etInput.setText(num.substring(0, num.length() - 1));
+//            etInput.setSelection(etInput.getText().length());
+//        }
     }
 
     @Override

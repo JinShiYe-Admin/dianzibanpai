@@ -203,7 +203,7 @@ public class MainActivity extends BaseActivity {
         if(getRunntime()){
             quanxian();
             setTime(System.currentTimeMillis());
-            _startService();
+//            _startService();
         }else{//计时器，弹出关机提醒
             alertShutDownDialog();
         }
@@ -388,7 +388,7 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void onDestroy() {
-        _stopService();
+//        _stopService();
         super.onDestroy();
     }
 
@@ -586,7 +586,7 @@ public class MainActivity extends BaseActivity {
                         t.cancel();
                         resetTime();
                         quanxian();
-                        _startService();
+//                        _startService();
                     }
 
                     @Override

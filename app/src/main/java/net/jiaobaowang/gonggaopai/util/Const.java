@@ -12,7 +12,7 @@ public class Const {
 //  public static final String socketIp="192.168.1.121";    //顾工 socket数据交互接口
 //  public static final int socketPort=8086;    //顾工 socket数据交互端口号
 
-    public static final String    baseUrl="https://zyja.zhuxue101.net/appsources/html/index/firstPage.html";//    设置班牌类型成功后跳转的页面路径
+    public static final String baseUrl="https://zyja.zhuxue101.net/appsources/html/index/firstPage.html";//    设置班牌类型成功后跳转的页面路径
     public static final String defaultUrl="https://zyja.zhuxue101.net/appsources/html/index/firstPage.html";//    第一次进入或没设置班牌类型时跳转的页面路径
     public static final String updateUrl="https://boss.zhuxue101.net:446/banpai/dianzibanpai.apk";//    App更新路径
     public static String socketIp="192.168.1.238";//    顾工 socket数据交互接口
@@ -36,7 +36,7 @@ public class Const {
             "{\"key\":\"styleCheck\",\"text\":\"班牌主题设置\",\"url\":\"settings_3\"}," +
             "{\"key\":\"timeCheck\",\"text\":\"自动开关机时间\",\"url\":\"settings_4\"}," +
             "{\"key\":\"passwordsetting\",\"text\":\"班牌密码设置\",\"url\":\"passwordsetting\"}," +
-            "{\"key\":\"ipseeting\",\"text\":\"Socket地址设置\",\"url\":\"ipseeting\"}," +
+//            "{\"key\":\"ipseeting\",\"text\":\"Socket地址设置\",\"url\":\"ipseeting\"}," +
             "{\"key\":\"appUpdate\",\"text\":\"系统更新\",\"url\":\"settings_1\"},"+
             "{\"key\":\"closeSystem\",\"text\":\"关机\",\"url\":\"close_system\"}" +
             "]";  //设置选项
