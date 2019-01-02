@@ -67,8 +67,8 @@ public class Const {
     public static final String SPNAME="GGP";//SharedPreferences名称
     public static final String ACTION_NAME="net.jiaobaowang.carid";//广播接收action
 
-    public static final int closeTimeout=1000*60*2;
-
+    public static final int closeTimeout=1000*60*2;//异常开机后自动关机等待时间
+    public static final int tapReturnTime=60*1;//无点击事件后1分钟返回主页面
     //upload相关
     public static int serNum=0;//流水号
     public static final String kID="11";//子卡机ID

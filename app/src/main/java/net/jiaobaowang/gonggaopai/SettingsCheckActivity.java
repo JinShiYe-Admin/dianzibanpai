@@ -88,9 +88,14 @@ public class SettingsCheckActivity extends BaseActivity {
         button_backward.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent();
-                setResult(1, intent);
-                finish();
+                if(getSetBlandIDLV()){
+                    Intent intent = new Intent();
+                    setResult(1, intent);
+                    finish();
+                }else{
+                    showToast("请先设置班牌类型和编号");
+                }
+
             }
         });
         dialog= new ProgressDialog(this);
@@ -173,7 +178,7 @@ public class SettingsCheckActivity extends BaseActivity {
                             String blandlv=sp.getString(Const.blandlv, "");
                             String blandid=sp.getString(Const.blandid, "");
                             if(Validate.isNull(blandlv)&&Validate.isNull(blandid)){
-                                Toast.makeText(cont,"请先选择班牌类型，再设置班牌主题",Toast.LENGTH_LONG).show();
+                                Toast.makeText(cont,"请先设置班牌类型和编号，再选择班牌主题",Toast.LENGTH_LONG).show();
                             }else{
                                 Intent styleCheck = new Intent();
                                 styleCheck.putExtra("blandlv",blandlv);
@@ -244,6 +249,25 @@ public class SettingsCheckActivity extends BaseActivity {
                 settings_img_left = (ImageView) view.findViewById(R.id.settings_img_left);
             }
         }
+    }
+
+    /**
+     * 判断是否设置了班牌编号和类型
+     * @return
+     */
+    private boolean getSetBlandIDLV(){
+        SharedPreferences sp = cont.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
+        String blandlv=sp.getString(Const.blandlv, "");
+        String blandid=sp.getString(Const.blandid, "");
+        if(Validate.isNull(blandlv)&&Validate.isNull(blandid)){
+            return false;
+        }else{
+            return true;
+        }
+    }
+
+    private  void showToast(String text){
+        Toast.makeText(cont,text,Toast.LENGTH_LONG).show();
     }
 
     public class DownloadReceiver extends ResultReceiver {

@@ -147,10 +147,8 @@ public class SetClassesActivity extends BaseActivity implements KeyboardAdapterC
                 break;
             default: // 按下数字键
                 int index = etInput.getSelectionStart();
-                if(index>0){
                     Editable editable = etInput.getText();
                     editable.insert(index, datas.get(position));
-                }
 //                etInput.setText(etInput.getText().toString().trim() + datas.get(position));
 //                etInput.setSelection(etInput.getText().length());
                 break;

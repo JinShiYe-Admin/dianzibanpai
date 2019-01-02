@@ -13,6 +13,7 @@ import android.os.Message;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
@@ -68,6 +69,8 @@ public class MainActivity extends BaseActivity {
     private static final int BAIDU_READ_PHONE_STATE = 166;
     private int num=120;
     private AddFloatingActionButton mAddButton;
+    private ScheduledExecutorService mScheduledExecutor  = Executors.newScheduledThreadPool(1);
+
 
     private CardIdReceiver cardIdReceiver; //广播接收者
     private LocalBroadcastManager manager;
@@ -93,7 +96,9 @@ public class MainActivity extends BaseActivity {
         base = (RelativeLayout) findViewById(R.id.baseLayout);
         view = (LinearLayout) findViewById(R.id.webView);
         manager = LocalBroadcastManager.getInstance(cont);
-
+        /**
+         * 判断打卡广播接收器是否注册
+         */
         boolean isRegister = ReceiverAndServiceUtil.isRegister(manager, Const.ACTION_NAME);
         if (!isRegister) {
             cardIdReceiver = new CardIdReceiver();
@@ -103,8 +108,8 @@ public class MainActivity extends BaseActivity {
         }
 
         SharedPreferences sp = cont.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
-        Const.socketIp = sp.getString(Const.socketip, "");
-        Const.socketPort = sp.getInt(Const.socketport, 0);
+        Const.socketIp = sp.getString(Const.socketip, Const.socketIp);
+        Const.socketPort = sp.getInt(Const.socketport, Const.socketPort);
         AECrashHelper.initCrashHandler(getApplication());
         mAddButton= (AddFloatingActionButton) findViewById(com.getbase.floatingactionbutton.R.id.fab_expand_menu_button);
 
@@ -176,7 +181,10 @@ public class MainActivity extends BaseActivity {
                     if(!url.contains("indexPage1.html")){
                         mAgentWeb.back();
                     }
-
+                }
+                if(!mScheduledExecutor.isShutdown()){
+                    mScheduledExecutor.shutdown();
+                    mScheduledExecutor.shutdownNow();
                 }
             }
         });
@@ -203,22 +211,22 @@ public class MainActivity extends BaseActivity {
         if(getRunntime()){
             quanxian();
             setTime(System.currentTimeMillis());
-//            _startService();
+            _startService();
         }else{//计时器，弹出关机提醒
             alertShutDownDialog();
         }
     }
 
+    /**
+     * 点击事件
+     * @param keyCode
+     * @param keyEvent
+     * @return
+     */
     @Override
     public boolean widgetOnKey(int keyCode, KeyEvent keyEvent) {
-        switch (keyCode) {
-            case KeyEvent.KEYCODE_BACK:
-                mAgentWeb.back();
-                break;
-        }
         return false;
     }
-
     /**
      * 加载webview
      */
@@ -247,6 +255,50 @@ public class MainActivity extends BaseActivity {
                         .createAgentWeb()
                         .ready()
                         .go(url);
+                /**
+                 * 屏幕tap事件,用于N分钟没有点击事件后返回主页面
+                 */
+                mAgentWeb.getWebCreator().getWebView().setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        switch (event.getAction()) {
+                            case MotionEvent.ACTION_UP:
+                                final Timer t =new Timer();
+                                t.schedule(new TimerTask() {
+                                    @Override
+                                    public void run() {
+                                        t.cancel();
+                                        System.out.println("抬起时启动定时");
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                String url=mAgentWeb.getWebCreator().getWebView().getUrl();
+                                                System.out.println(url);
+                                                mScheduledExecutor.shutdown();
+                                                mScheduledExecutor.shutdownNow();
+                                                if(!url.contains("indexPage1.html")&&!url.contains("firstPage.html")){
+                                                    mScheduledExecutor= Executors.newScheduledThreadPool(1);
+                                                    mScheduledExecutor.scheduleAtFixedRate(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            if (mAgentWeb != null) {
+                                                                initWeb();
+                                                                mScheduledExecutor.shutdown();
+                                                                mScheduledExecutor.shutdownNow();
+                                                                System.out.println("执行了几次？");
+                                                            }
+                                                        }
+                                                    }, Const.tapReturnTime, Const.tapReturnTime, TimeUnit.SECONDS);
+                                                }
+                                            }
+                                        });
+                                    }
+                                },1000);
+                                break;
+                        }
+                        return false;
+                    }
+                });
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -394,7 +446,7 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void onDestroy() {
-//        _stopService();
+        _stopService();
         super.onDestroy();
     }
 
@@ -592,7 +644,7 @@ public class MainActivity extends BaseActivity {
                         t.cancel();
                         resetTime();
                         quanxian();
-//                        _startService();
+                        _startService();
                     }
 
                     @Override
