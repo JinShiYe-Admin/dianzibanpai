@@ -10,7 +10,7 @@ public class Const {
 //  public static final String defaultUrl="http://192.168.1.203:8080/banPaiIndex/test12/html/index/firstPage.html";    //第一次进入或没设置班牌类型时跳转的页面路径
 //  public static String updateUrl="http://192.168.1.203:8080/app/a/apk";    //App更新路径
 //  public static final String socketIp="192.168.1.121";    //顾工 socket数据交互接口
-//  public static final int socketPort=8086;    //顾工 socket数据交互端口号
+//  public static int socketPort=8086;    //顾工 socket数据交互端口号
 
     public static final String baseUrl="https://zyja.zhuxue101.net/appsources/html/index/firstPage.html";//    设置班牌类型成功后跳转的页面路径
     public static final String defaultUrl="https://zyja.zhuxue101.net/appsources/html/index/firstPage.html";//    第一次进入或没设置班牌类型时跳转的页面路径
@@ -24,7 +24,7 @@ public class Const {
 //    public static final String defaultUrl="http://gxcs.jiaobaowang.net/appsources/html/index/firstPage.html"; //第一次进入或没设置班牌类型时跳转的页面路径
 //    public static String updateUrl="http://zhxy.jiaobaowang.net:8015/appupdate/banpai/dianzibanpai-test.apk"; //App更新路径
 //    public static String socketIp="192.168.1.236";//顾工 socket数据交互接口
-//    public static final int socketPort=8086;
+//    public static int socketPort=8086;
 
     public static String[] ids={"班级班牌","年级班牌","学校班牌"}; //班牌类型
     public static String xx_json="[{\"key\":\"20180001\",\"text\":\"学校皮肤\",\"url\":\"xx_style_1\"}]";  //学校班牌皮肤 key：班牌编号  text：皮肤名称  url：drawable下存放的皮肤图片名称 xx开头

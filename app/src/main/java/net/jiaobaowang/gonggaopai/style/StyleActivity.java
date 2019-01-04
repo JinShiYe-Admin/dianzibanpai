@@ -24,6 +24,7 @@ import net.jiaobaowang.gonggaopai.R;
 import net.jiaobaowang.gonggaopai.base.BaseActivity;
 import net.jiaobaowang.gonggaopai.util.CommonDialog;
 import net.jiaobaowang.gonggaopai.util.Const;
+import net.jiaobaowang.gonggaopai.util.Validate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,14 +69,44 @@ public class StyleActivity extends BaseActivity{
             case "0":
                 json= Const.bj_json;
                 lx_name.setText("班  级  班  牌");
+                if(Validate.noNull(json)){
+                    JSONArray array = JSON.parseArray(json);
+                    if(Validate.isNull(styleid)){
+                        Map map= (Map) array.get(0);
+                        styleid=map.get("key").toString();
+                        SharedPreferences.Editor editor = sp.edit();
+                        editor.putString(Const.styleid,styleid );
+                        editor.commit();
+                    }
+                }
                 break;
             case "1":
                 json= Const.nj_json;
                 lx_name.setText("年  级  班  牌");
+                if(Validate.noNull(json)){
+                    JSONArray array1 = JSON.parseArray(json);
+                    if(Validate.isNull(styleid)){
+                        Map map= (Map) array1.get(0);
+                        styleid=map.get("key").toString();
+                        SharedPreferences.Editor editor = sp.edit();
+                        editor.putString(Const.styleid,styleid );
+                        editor.commit();
+                    }
+                }
                 break;
             case "2":
                 json= Const.xx_json;
                 lx_name.setText("学  校  班  牌");
+                if(Validate.noNull(json)){
+                    JSONArray array2 = JSON.parseArray(json);
+                    if(Validate.isNull(styleid)){
+                        Map map= (Map) array2.get(0);
+                        styleid=map.get("key").toString();
+                        SharedPreferences.Editor editor = sp.edit();
+                        editor.putString(Const.styleid,styleid );
+                        editor.commit();
+                    }
+                }
                 break;
         }
         JSONArray array = JSON.parseArray(json);
