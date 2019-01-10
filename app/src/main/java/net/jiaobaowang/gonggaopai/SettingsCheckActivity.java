@@ -137,6 +137,37 @@ public class SettingsCheckActivity extends BaseActivity {
             holder.settings_left.setText(texts);
             final int drawableId_left = cont.getResources().getIdentifier(urls,"drawable", cont.getPackageName());
             holder.settings_img_left.setImageResource(drawableId_left);
+            SharedPreferences sp = cont.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
+            if("blandCheck".equals(keys)){
+                String blandlv = sp.getString(Const.blandlv, "");
+                String blandid = sp.getString(Const.blandid, "");
+                if("0".equals(blandlv)){
+                    holder.settings_right.setText("班级班牌（"+blandid+"）");
+                }else if("1".equals(blandlv)){
+                    holder.settings_right.setText("年级班牌（"+blandid+"）");
+                }else if("2".equals(blandlv)){
+                    holder.settings_right.setText("学校班牌（"+blandid+"）");
+                }
+            }else if("styleCheck".equals(keys)){
+                String styleid = sp.getString(Const.styleid, "");
+                String stylename = sp.getString(Const.stylename, "");
+                if(Validate.noNull(styleid)){
+                    holder.settings_right.setText(stylename+"（"+styleid+"）");
+                }
+            }else if("timeCheck".equals(keys)){
+                String startTime = sp.getString(Const.startTime, "");
+                String shutdownTime = sp.getString(Const.shutdownTime, "");
+                if(Validate.noNull(startTime)) {
+                    holder.settings_right.setText("开机时间：" + startTime + "，关机时间：" + shutdownTime);
+                }
+            }else if("ipseeting".equals(keys)){
+                String socketip = sp.getString(Const.socketip, "");
+                int socketport = sp.getInt(Const.socketport, 0);
+                if(Validate.noNull(socketip)) {
+                    holder.settings_right.setText(socketip + ":" + socketport);
+                }
+            }
+
             holder.left.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -239,13 +270,14 @@ public class SettingsCheckActivity extends BaseActivity {
         {
 
             LinearLayout left;
-            TextView settings_left;
+            TextView settings_left,settings_right;
             ImageView settings_img_left;
             public MyViewHolder(View view)
             {
                 super(view);
                 left = (LinearLayout) view.findViewById(R.id.left);
                 settings_left = (TextView) view.findViewById(R.id.settings_left);
+                settings_right= (TextView) view.findViewById(R.id.settings_right);
                 settings_img_left = (ImageView) view.findViewById(R.id.settings_img_left);
             }
         }

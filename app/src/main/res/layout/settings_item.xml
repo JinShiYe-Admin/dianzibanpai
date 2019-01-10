@@ -28,15 +28,24 @@
              />
         <TextView
             android:id="@+id/settings_left"
-            android:layout_width="match_parent"
+            android:layout_width="200dp"
             android:layout_marginLeft="20dp"
             android:layout_height="100dp"
             android:textSize="16sp"
             android:layout_gravity="center_vertical"
             android:gravity="center_vertical"
-            android:drawableRight="@drawable/right"
             android:textColor="@color/key_normal_bg"
             android:text="系统更新"
             />
+        <TextView
+            android:id="@+id/settings_right"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:textSize="14sp"
+            android:layout_gravity="center_vertical"
+            android:gravity="center_vertical|right"
+            android:drawableRight="@drawable/right"
+            android:textColor="@color/keyboard_bg"
+            android:text="" />
     </LinearLayout>
 </LinearLayout>

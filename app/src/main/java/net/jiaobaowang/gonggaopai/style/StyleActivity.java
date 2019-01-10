@@ -36,7 +36,7 @@ public class StyleActivity extends BaseActivity{
     private List<Map> mDatas;
     private HomeAdapter mAdapter;
     private GridLayoutManager manager;
-    private  String styleid;
+    private  String styleid,stylename;
     @Override
     public int initLayout() {
         return R.layout.activity_style;
@@ -64,6 +64,7 @@ public class StyleActivity extends BaseActivity{
         SharedPreferences sp = this.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
         String blandlv = sp.getString(Const.blandlv, "");
         styleid= sp.getString(Const.styleid, "");
+        stylename= sp.getString(Const.stylename, "");
         String json="";
         switch (blandlv){
             case "0":
@@ -74,8 +75,10 @@ public class StyleActivity extends BaseActivity{
                     if(Validate.isNull(styleid)){
                         Map map= (Map) array.get(0);
                         styleid=map.get("key").toString();
+                        stylename=map.get("text").toString();
                         SharedPreferences.Editor editor = sp.edit();
                         editor.putString(Const.styleid,styleid );
+                        editor.putString(Const.stylename,stylename );
                         editor.commit();
                     }
                 }
@@ -88,8 +91,10 @@ public class StyleActivity extends BaseActivity{
                     if(Validate.isNull(styleid)){
                         Map map= (Map) array1.get(0);
                         styleid=map.get("key").toString();
+                        stylename=map.get("text").toString();
                         SharedPreferences.Editor editor = sp.edit();
                         editor.putString(Const.styleid,styleid );
+                        editor.putString(Const.stylename,stylename );
                         editor.commit();
                     }
                 }
@@ -102,8 +107,10 @@ public class StyleActivity extends BaseActivity{
                     if(Validate.isNull(styleid)){
                         Map map= (Map) array2.get(0);
                         styleid=map.get("key").toString();
+                        stylename=map.get("text").toString();
                         SharedPreferences.Editor editor = sp.edit();
                         editor.putString(Const.styleid,styleid );
+                        editor.putString(Const.stylename,stylename );
                         editor.commit();
                     }
                 }
@@ -187,6 +194,7 @@ public class StyleActivity extends BaseActivity{
                             SharedPreferences sp = cont.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
                             SharedPreferences.Editor editor = sp.edit();
                             editor.putString(Const.styleid, map.get("key").toString());
+                            editor.putString(Const.stylename, map.get("text").toString());
                             editor.putBoolean(Const.reload, true);
                             editor.commit();
                             Toast.makeText(StyleActivity.this,"设置成功！",Toast.LENGTH_LONG).show();

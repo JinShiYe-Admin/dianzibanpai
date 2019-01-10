@@ -4,6 +4,7 @@
     <color name="colorPrimaryDark">#0274CC</color>
     <color name="colorAccent">#FF4081</color>
 
+    <color name="setting_key">#79797B</color>
     <color name="keyboard_bg">#BDBDBD</color>
     <color name="iv_back_bg">#F5F5F5</color>
     <color name="key_normal_bg">#F5F5F5</color>

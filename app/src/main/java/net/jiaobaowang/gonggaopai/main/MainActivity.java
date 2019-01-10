@@ -309,8 +309,8 @@ public class MainActivity extends BaseActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         SharedPreferences sp = cont.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
-        String blandlv = sp.getString("blandlv", "");
-        String blandid = sp.getString("blandid", "");
+        String blandlv = sp.getString(Const.blandlv, "");
+        String blandid = sp.getString(Const.blandid, "");
         if(Validate.isNull(blandlv)||Validate.isNull(blandid)){
             BaseActivityManager manager=BaseActivityManager.getAppManager();
             manager.AppExit(cont);

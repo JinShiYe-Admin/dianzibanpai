@@ -46,6 +46,7 @@ public class Const {
     public static final String blandlv="blandlv";//班牌类型
     public static final String blandid="blandid";//班牌编号
     public static final String styleid="styleid";//主题编号
+    public static final String stylename="styleName";//主题名称
     public static final String reload="reload";//加载webview
     public static final String startTime="startTime";//自动开机时间
     public static final String shutdownTime="shutdownTime";//自动关机时间

@@ -125,8 +125,12 @@
             android:enabled="true"
             android:exported="true" />
 
-        <activity android:name=".ipmodify.IpPortActivity" />
-        <activity android:name=".pwdmodify.PasswordModifyActivity"></activity>
+        <activity android:name=".ipmodify.IpPortActivity"
+            android:launchMode="standard"
+            android:screenOrientation="landscape" />
+        <activity android:name=".pwdmodify.PasswordModifyActivity"
+            android:launchMode="standard"
+            android:screenOrientation="landscape"/>
     </application>
 
 </manifest>
