@@ -12,7 +12,7 @@
         android:layout_height="58dp"
         android:background="@color/colorPrimary">
         <TextView
-            android:text="服务器地址设置"
+            android:text="APP更新地址设置"
             android:id="@+id/text_title"
             android:textSize="18sp"
             android:textColor="#fff"
@@ -55,69 +55,31 @@
             android:layout_weight="1">
 
             <TextView
-                android:id="@+id/ipText"
+                android:id="@+id/htmlText"
                 android:layout_width="wrap_content"
                 android:layout_height="?attr/actionBarSize"
+                android:layout_alignTop="@+id/editAppAddress"
                 android:width="220dp"
                 android:paddingLeft="8dp"
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp"
                 android:paddingRight="20dp"
                 android:textSize="20sp"
-                android:text="服务器 IP ："
+                android:text="APP更新地址："
                 android:drawablePadding="3dp"
                 android:background="@android:color/white"
                 android:gravity="center"
                 />
 
             <EditText
-                android:id="@+id/edit_ip"
+                android:id="@+id/editAppAddress"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:layout_toRightOf="@id/ipText"
+                android:layout_toRightOf="@id/htmlText"
                 android:background="@android:color/white"
-                android:hint="请输入 IP 地址"
+                android:hint="请输入APP更新地址"
                 android:lines="1"
                 android:layout_marginLeft="1dp"
-                android:padding="8dp"
-                android:textSize="20sp" />
-        </RelativeLayout>
-        <RelativeLayout
-            android:layout_width="0dp"
-            android:layout_height="270dp"
-            android:gravity="center_vertical"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
-            android:layout_marginLeft="40dp"
-            android:layout_marginRight="40dp"
-            android:layout_weight="1">
-
-            <TextView
-                android:id="@+id/portText"
-                android:layout_width="wrap_content"
-                android:layout_height="?attr/actionBarSize"
-                android:width="220dp"
-                android:paddingLeft="8dp"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp"
-                android:paddingRight="20dp"
-                android:textSize="20sp"
-                android:text="服务器 端口号 ："
-                android:drawablePadding="3dp"
-                android:background="@android:color/white"
-                android:gravity="center"
-                />
-
-            <EditText
-                android:id="@+id/duankouhao"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:layout_toRightOf="@id/portText"
-                android:background="@android:color/white"
-                android:hint="请输入端口号"
-                android:lines="1"
-                android:layout_marginLeft="1dp"
-                android:inputType="numberDecimal"
                 android:padding="8dp"
                 android:textSize="20sp" />
         </RelativeLayout>
@@ -129,7 +91,7 @@
         android:layout_alignParentBottom="true"
         android:orientation="horizontal">
         <Button
-            android:id="@+id/cancelSocket"
+            android:id="@+id/cancelApp"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -137,7 +99,7 @@
             android:background="#EAEAEA"
             android:text="取消"/>
         <Button
-            android:id="@+id/confirmSocket"
+            android:id="@+id/confirmApp"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"

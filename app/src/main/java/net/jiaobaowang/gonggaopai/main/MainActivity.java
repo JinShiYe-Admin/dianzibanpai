@@ -110,6 +110,8 @@ public class MainActivity extends BaseActivity {
         SharedPreferences sp = cont.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
         Const.socketIp = sp.getString(Const.socketip, Const.socketIp);
         Const.socketPort = sp.getInt(Const.socketport, Const.socketPort);
+        Const.updateUrl = sp.getString(Const.updateaddress, Const.updateUrl);
+
         AECrashHelper.initCrashHandler(getApplication());
         mAddButton= (AddFloatingActionButton) findViewById(com.getbase.floatingactionbutton.R.id.fab_expand_menu_button);
 
@@ -236,10 +238,11 @@ public class MainActivity extends BaseActivity {
         String blandid = sp.getString(Const.blandid, "");
         String styleid = sp.getString(Const.styleid, "");
         String cityName = sp.getString(Const.cityName, "");
+        Const.baseUrl=  sp.getString(Const.htmladdress, Const.baseUrl);
         String url;
         try {
             if(blandlv==""||blandid==""){
-                url=Const.defaultUrl+"?blandlv="+blandlv+"&blandid="+blandid+"&styleid="+styleid+"&cityName="+ cityName;
+                url=Const.baseUrl+"?cityName="+ cityName;
             }else{
                 url=Const.baseUrl+"?blandlv="+blandlv+"&blandid="+blandid+"&styleid="+styleid+"&cityName="+ cityName;
             }

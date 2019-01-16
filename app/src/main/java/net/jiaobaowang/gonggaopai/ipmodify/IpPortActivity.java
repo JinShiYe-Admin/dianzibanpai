@@ -17,7 +17,8 @@ import net.jiaobaowang.gonggaopai.util.Validate;
 
 public class IpPortActivity extends BaseActivity {
 
-    private EditText edit_ip,edit_port;
+    private EditText edit_ip;
+    private EditText edit_port;
     private Button button_backward,cancelSocket,confirmSocket;
     String ip="";
     int port=0;
@@ -44,20 +45,16 @@ public class IpPortActivity extends BaseActivity {
 
     @Override
     public void doBusiness(Context mContext) {
-        edit_ip= (EditText) findViewById(R.id.editIp);
-        edit_port= (EditText) findViewById(R.id.editPort);
+        edit_ip= (EditText) findViewById(R.id.edit_ip);
+        edit_port= (EditText) findViewById(R.id.duankouhao);
         button_backward=(Button)findViewById(R.id.button_backward);
         cancelSocket=(Button)findViewById(R.id.cancelSocket);
         confirmSocket=(Button)findViewById(R.id.confirmSocket);
         SharedPreferences sp = this.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
-        ip = sp.getString(Const.socketip, "");
-        port = sp.getInt(Const.socketport, 0);
-        if(Validate.noNull(ip)){
-            edit_ip.setText(ip);
-        }
-        if(port!=0){
-            edit_port.setText(String.valueOf(port));
-        }
+        ip = sp.getString(Const.socketip, Const.socketIp);
+        port = sp.getInt(Const.socketport, Const.socketPort);
+        edit_ip.setText(ip);
+        edit_port.setText(String.valueOf(port));
         button_backward.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

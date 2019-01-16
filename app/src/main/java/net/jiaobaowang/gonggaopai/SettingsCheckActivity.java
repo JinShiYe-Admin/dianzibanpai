@@ -27,11 +27,13 @@ import com.alibaba.fastjson.JSONArray;
 
 import net.jiaobaowang.gonggaopai.base.BaseActivity;
 import net.jiaobaowang.gonggaopai.classes.SetClassesActivity;
+import net.jiaobaowang.gonggaopai.htmladdress.HtmlAddressActivity;
 import net.jiaobaowang.gonggaopai.ipmodify.IpPortActivity;
 import net.jiaobaowang.gonggaopai.pwdmodify.PasswordModifyActivity;
 import net.jiaobaowang.gonggaopai.service.DownloadIntentService;
 import net.jiaobaowang.gonggaopai.style.StyleActivity;
 import net.jiaobaowang.gonggaopai.timesetting.TimeSettingActivity;
+import net.jiaobaowang.gonggaopai.updateaddress.AppUpdateAddressActivity;
 import net.jiaobaowang.gonggaopai.util.CommonDialog;
 import net.jiaobaowang.gonggaopai.util.Const;
 import net.jiaobaowang.gonggaopai.util.Validate;
@@ -165,9 +167,12 @@ public class SettingsCheckActivity extends BaseActivity {
                 int socketport = sp.getInt(Const.socketport, 0);
                 if(Validate.noNull(socketip)) {
                     holder.settings_right.setText(socketip + ":" + socketport);
+                }else{
+                    holder.settings_right.setText(Const.socketIp + ":" + Const.socketPort);
                 }
+            }else{
+                holder.settings_right.setText("");
             }
-
             holder.left.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -231,6 +236,16 @@ public class SettingsCheckActivity extends BaseActivity {
                             Intent ipseeting = new Intent();
                             ipseeting.setClass(cont, IpPortActivity.class);
                             startActivity(ipseeting);
+                            break;
+                        case "htmlseeting"://网页地址设置
+                            Intent htmlseeting = new Intent();
+                            htmlseeting.setClass(cont, HtmlAddressActivity.class);
+                            startActivity(htmlseeting);
+                            break;
+                        case "appupdateseeting"://APP更新地址设置
+                            Intent appupdateseeting = new Intent();
+                            appupdateseeting.setClass(cont, AppUpdateAddressActivity.class);
+                            startActivity(appupdateseeting);
                             break;
                         case "closeSystem"://关机
                             final CommonDialog dialog3 = new CommonDialog(cont);

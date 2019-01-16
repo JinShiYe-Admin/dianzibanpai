@@ -90,8 +90,6 @@
             android:launchMode="standard"
             android:screenOrientation="landscape" />
 
-
-
         <service
             android:name=".service.ReaderService"
             android:enabled="true"
@@ -125,12 +123,21 @@
             android:enabled="true"
             android:exported="true" />
 
-        <activity android:name=".ipmodify.IpPortActivity"
+        <activity
+            android:name=".ipmodify.IpPortActivity"
             android:launchMode="standard"
             android:screenOrientation="landscape" />
-        <activity android:name=".pwdmodify.PasswordModifyActivity"
+        <activity
+            android:name=".pwdmodify.PasswordModifyActivity"
             android:launchMode="standard"
-            android:screenOrientation="landscape"/>
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".htmladdress.HtmlAddressActivity"
+            android:launchMode="standard"
+            android:screenOrientation="landscape" />
+        <activity android:name=".updateaddress.AppUpdateAddressActivity"
+            android:launchMode="standard"
+            android:screenOrientation="landscape" />
     </application>
 
 </manifest>
