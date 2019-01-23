@@ -32,8 +32,8 @@ public class Const {
             "{\"key\":\"blandCheck\",\"text\":\"班牌类型\",\"url\":\"settings_2\"}," +
             "{\"key\":\"styleCheck\",\"text\":\"班牌主题\",\"url\":\"settings_3\"}," +
             "{\"key\":\"timeCheck\",\"text\":\"自动开关机时间\",\"url\":\"settings_4\"}," +
-            "{\"key\":\"passwordsetting\",\"text\":\"班牌密码\",\"url\":\"passwordsetting\"}," +
-            "{\"key\":\"ipseeting\",\"text\":\"考勤数据上传地址\",\"url\":\"ipseeting\"}," +
+//            "{\"key\":\"passwordsetting\",\"text\":\"班牌密码\",\"url\":\"passwordsetting\"}," +
+//            "{\"key\":\"ipseeting\",\"text\":\"考勤数据上传地址\",\"url\":\"ipseeting\"}," +
             "{\"key\":\"htmlseeting\",\"text\":\"主页地址\",\"url\":\"html_address\"}," +
             "{\"key\":\"appupdateseeting\",\"text\":\"APP更新地址\",\"url\":\"settings_1\"}," +
             "{\"key\":\"appUpdate\",\"text\":\"系统更新\",\"url\":\"download_address\"},"+
@@ -49,12 +49,12 @@ public class Const {
     public static final String reload="reload";//加载webview
     public static final String startTime="startTime";//自动开机时间
     public static final String shutdownTime="shutdownTime";//自动关机时间
-    public static final String password="password";//班牌密码
     public static final String socketip="socketip";//socket ip
     public static final String socketport="socketport";//socket port
     public static final String htmladdress="htmladdress";//html网页地址
     public static final String updateaddress="updateaddress";//APP更新地址
 
+    public static final String PASSWORD="20192019";//班牌超管密码
 
     public static final int CMD_ERROR = 0xFFFFFFFF;//命令错误
     public static final int CMD_CONNECT = 0x00000001;//连接

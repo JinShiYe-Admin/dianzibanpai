@@ -197,12 +197,6 @@ public class MainActivity extends BaseActivity {
             if(BaseActivityManager.getAppManager().isActivityStarted(PwdActivity.class)){
 
             }else{
-                String password = sp.getString(Const.password, "");
-                if(password==""){
-                    SharedPreferences.Editor editor = sp.edit();
-                    editor.putString(Const.password, "12345678");
-                    editor.commit();
-                }
                 Intent intent = new Intent();
                 intent.putExtra("action",Const.GO_PASSWORD);
                 intent.setClass(cont, PwdActivity.class);
@@ -213,7 +207,7 @@ public class MainActivity extends BaseActivity {
         if(getRunntime()){
             quanxian();
             setTime(System.currentTimeMillis());
-            _startService();
+//            _startService();
         }else{//计时器，弹出关机提醒
             alertShutDownDialog();
         }
@@ -449,7 +443,7 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void onDestroy() {
-        _stopService();
+//        _stopService();
         super.onDestroy();
     }
 
@@ -647,7 +641,7 @@ public class MainActivity extends BaseActivity {
                         t.cancel();
                         resetTime();
                         quanxian();
-                        _startService();
+//                        _startService();
                     }
 
                     @Override

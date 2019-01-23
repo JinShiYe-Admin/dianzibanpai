@@ -1,7 +1,6 @@
 package net.jiaobaowang.gonggaopai.pwdmodify;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
@@ -19,6 +18,7 @@ import net.jiaobaowang.gonggaopai.R;
 import net.jiaobaowang.gonggaopai.base.BaseActivity;
 import net.jiaobaowang.gonggaopai.classes.KeyboardAdapterClasses;
 import net.jiaobaowang.gonggaopai.classes.KeyboardViewClasses;
+import net.jiaobaowang.gonggaopai.entry.Password;
 import net.jiaobaowang.gonggaopai.util.Const;
 import net.jiaobaowang.gonggaopai.util.Validate;
 
@@ -31,7 +31,7 @@ public class PasswordModifyActivity extends BaseActivity implements KeyboardAdap
     private KeyboardViewClasses keyboardView;
     private List<String> datas;
     private Button button_backward;
-    String password="";
+    String passwordStr="";
 
     @Override
     public int initLayout() {
@@ -61,9 +61,13 @@ public class PasswordModifyActivity extends BaseActivity implements KeyboardAdap
         keyboardView= (KeyboardViewClasses) findViewById(R.id.keyboard_view_classes);
         edit_password.setFocusable(true);
         edit_password.requestFocus();
-        SharedPreferences sp = this.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
-        String password = sp.getString(Const.password, "");
-        edit_password.setText(password);
+        Password password = Password.findById(Password.class, 1);
+        if(Validate.noNull(password+"")){
+            passwordStr = password.getPassword();
+        }else{
+            passwordStr=Const.PASSWORD;
+        }
+        edit_password.setText(passwordStr);
         edit_password.setSelection(edit_password.getText().toString().trim().length());
         button_backward.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -101,16 +105,15 @@ public class PasswordModifyActivity extends BaseActivity implements KeyboardAdap
                 finish();
                 break;
             case 12:
-                password=edit_password.getText().toString().trim();
-                if(Validate.isNull(password)){
+                passwordStr=edit_password.getText().toString().trim();
+                if(Validate.isNull(passwordStr)){
                     Toast.makeText(cont,"请输入班牌密码",Toast.LENGTH_LONG).show();
-                }else if(password.length()!=8){
+                }else if(passwordStr.length()!=8){
                     Toast.makeText(cont,"班牌密码长度必须为8位",Toast.LENGTH_LONG).show();
                 }else{
-                    SharedPreferences sp = this.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = sp.edit();
-                    editor.putString(Const.password, password);
-                    editor.commit();
+                    Password password = Password.findById(Password.class, 1);
+                    password.setPassword(passwordStr);
+                    password.save();
                     Toast.makeText(cont,"设置成功！",Toast.LENGTH_LONG).show();
                 }
                 break;

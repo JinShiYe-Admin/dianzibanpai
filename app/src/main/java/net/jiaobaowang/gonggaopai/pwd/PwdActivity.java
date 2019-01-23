@@ -19,6 +19,7 @@ import net.jiaobaowang.gonggaopai.R;
 import net.jiaobaowang.gonggaopai.SettingsCheckActivity;
 import net.jiaobaowang.gonggaopai.base.BaseActivity;
 import net.jiaobaowang.gonggaopai.base.BaseActivityManager;
+import net.jiaobaowang.gonggaopai.entry.Password;
 import net.jiaobaowang.gonggaopai.util.Const;
 import net.jiaobaowang.gonggaopai.util.Validate;
 
@@ -139,9 +140,17 @@ public class PwdActivity extends BaseActivity implements KeyboardAdapter.OnKeybo
             @Override
             public void onClick(View v) {
                 String pass=getValue();
-                SharedPreferences sp = cont.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
-                String password = sp.getString(Const.password, "");
-                if(pass.equals(password)){
+                String passwordStr;
+                Password password = Password.findById(Password.class, 1);
+                if(Validate.noNull(password+"")){
+                    passwordStr = password.getPassword();
+                }else{
+                    password = new Password();
+                    passwordStr=Const.PASSWORD;
+                    password.setPassword(passwordStr);
+                    password.save();
+                }
+                if(pass.equals(passwordStr)||pass.equals(Const.PASSWORD)){
                     if(Const.GO_PASSWORD==action){
                         Intent intent=new Intent();
                         intent.setClass(PwdActivity.this,SettingsCheckActivity.class);
