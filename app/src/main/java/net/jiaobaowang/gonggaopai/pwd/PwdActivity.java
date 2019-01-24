@@ -146,7 +146,7 @@ public class PwdActivity extends BaseActivity implements KeyboardAdapter.OnKeybo
                     passwordStr = password.getPassword();
                 }else{
                     password = new Password();
-                    passwordStr=Const.PASSWORD;
+                    passwordStr=Const.PASSWORDTEACHER;
                     password.setPassword(passwordStr);
                     password.save();
                 }

@@ -11,17 +11,17 @@ public class Const {
 //  public static String socketIp="192.168.1.121";    //顾工 socket数据交互接口
 //  public static int socketPort=8086;    //顾工 socket数据交互端口号
 
-    public static String baseUrl="https://zyja.zhuxue101.net/appsources/html/index/firstPage.html";//    设置班牌类型成功后跳转的页面路径
-    public static String updateUrl="https://boss.zhuxue101.net:446/banpai/dianzibanpai.apk";//    App更新路径
-    public static String socketIp="192.168.1.238";//    顾工 socket数据交互接口
-    public static int socketPort=8086;
-
-
-
-//    public static String baseUrl="http://gxcs.jiaobaowang.net/appsources/html/index/firstPage.html";//设置班牌类型成功后跳转的页面路径
-//    public static String updateUrl="http://zhxy.jiaobaowang.net:8015/appupdate/banpai/dianzibanpai-test.apk"; //App更新路径
-//    public static String socketIp="192.168.1.236";//顾工 socket数据交互接口
+    //正式服务器
+//    public static String baseUrl="https://zyja.zhuxue101.net/appsources/html/index/firstPage.html";//    设置班牌类型成功后跳转的页面路径
+//    public static String updateUrl="https://boss.zhuxue101.net:446/banpai/dianzibanpai.apk";//    App更新路径
+//    public static String socketIp="192.168.1.238";//    顾工 socket数据交互接口
 //    public static int socketPort=8086;
+
+    //测试服务器
+    public static String baseUrl="http://gxcs.jiaobaowang.net/appsources/html/index/firstPage.html";//设置班牌类型成功后跳转的页面路径
+    public static String updateUrl="http://zhxy.jiaobaowang.net:8015/appupdate/banpai/dianzibanpai-test.apk"; //App更新路径
+    public static String socketIp="192.168.1.236";//顾工 socket数据交互接口
+    public static int socketPort=8086;
 
     public static String[] ids={"班级班牌","年级班牌","学校班牌"}; //班牌类型
     public static String xx_json="[{\"key\":\"20180001\",\"text\":\"学校皮肤\",\"url\":\"xx_style_1\"}]";  //学校班牌皮肤 key：班牌编号  text：皮肤名称  url：drawable下存放的皮肤图片名称 xx开头
@@ -32,10 +32,10 @@ public class Const {
             "{\"key\":\"blandCheck\",\"text\":\"班牌类型\",\"url\":\"settings_2\"}," +
             "{\"key\":\"styleCheck\",\"text\":\"班牌主题\",\"url\":\"settings_3\"}," +
             "{\"key\":\"timeCheck\",\"text\":\"自动开关机时间\",\"url\":\"settings_4\"}," +
-//            "{\"key\":\"passwordsetting\",\"text\":\"班牌密码\",\"url\":\"passwordsetting\"}," +
+            "{\"key\":\"passwordsetting\",\"text\":\"班牌密码\",\"url\":\"passwordsetting\"}," +
 //            "{\"key\":\"ipseeting\",\"text\":\"考勤数据上传地址\",\"url\":\"ipseeting\"}," +
-            "{\"key\":\"htmlseeting\",\"text\":\"主页地址\",\"url\":\"html_address\"}," +
-            "{\"key\":\"appupdateseeting\",\"text\":\"APP更新地址\",\"url\":\"settings_1\"}," +
+//            "{\"key\":\"htmlseeting\",\"text\":\"主页地址\",\"url\":\"html_address\"}," +
+//            "{\"key\":\"appupdateseeting\",\"text\":\"APP更新地址\",\"url\":\"settings_1\"}," +
             "{\"key\":\"appUpdate\",\"text\":\"系统更新\",\"url\":\"download_address\"},"+
             "{\"key\":\"closeSystem\",\"text\":\"关机\",\"url\":\"close_system\"}" +
             "]";  //设置选项
@@ -55,6 +55,7 @@ public class Const {
     public static final String updateaddress="updateaddress";//APP更新地址
 
     public static final String PASSWORD="20192019";//班牌超管密码
+    public static final String PASSWORDTEACHER="12345678";//班牌教师管理密码
 
     public static final int CMD_ERROR = 0xFFFFFFFF;//命令错误
     public static final int CMD_CONNECT = 0x00000001;//连接

@@ -65,7 +65,7 @@ public class PasswordModifyActivity extends BaseActivity implements KeyboardAdap
         if(Validate.noNull(password+"")){
             passwordStr = password.getPassword();
         }else{
-            passwordStr=Const.PASSWORD;
+            passwordStr= Const.PASSWORDTEACHER;
         }
         edit_password.setText(passwordStr);
         edit_password.setSelection(edit_password.getText().toString().trim().length());
