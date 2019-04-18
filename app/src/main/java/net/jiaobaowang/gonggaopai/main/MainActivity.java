@@ -36,10 +36,7 @@ import net.jiaobaowang.gonggaopai.R;
 import net.jiaobaowang.gonggaopai.base.BaseActivity;
 import net.jiaobaowang.gonggaopai.base.BaseActivityManager;
 import net.jiaobaowang.gonggaopai.entry.Attendance;
-import net.jiaobaowang.gonggaopai.entry.RecordData;
 import net.jiaobaowang.gonggaopai.pwd.PwdActivity;
-import net.jiaobaowang.gonggaopai.service.ReaderService;
-import net.jiaobaowang.gonggaopai.service.UploadServiceScheduledExecutor;
 import net.jiaobaowang.gonggaopai.util.CommonDialog;
 import net.jiaobaowang.gonggaopai.util.Const;
 import net.jiaobaowang.gonggaopai.util.NetUtil;
@@ -111,7 +108,6 @@ public class MainActivity extends BaseActivity {
         Const.socketIp = sp.getString(Const.socketip, Const.socketIp);
         Const.socketPort = sp.getInt(Const.socketport, Const.socketPort);
         Const.updateUrl = sp.getString(Const.updateaddress, Const.updateUrl);
-
         AECrashHelper.initCrashHandler(getApplication());
         mAddButton= (AddFloatingActionButton) findViewById(com.getbase.floatingactionbutton.R.id.fab_expand_menu_button);
 
@@ -207,7 +203,7 @@ public class MainActivity extends BaseActivity {
         if(getRunntime()){
             quanxian();
             setTime(System.currentTimeMillis());
-//            _startService();
+            _startService();
         }else{//计时器，弹出关机提醒
             alertShutDownDialog();
         }
@@ -443,7 +439,7 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void onDestroy() {
-//        _stopService();
+        _stopService();
         super.onDestroy();
     }
 
@@ -469,55 +465,55 @@ public class MainActivity extends BaseActivity {
 
     private void _startService(){
         //清理已经上传过的超过7天的数据 TODO
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try{
-                    List<RecordData> recordRespList=RecordData.find(RecordData.class,"IS_UPLOAD=? AND (?-SEND_TIME) > 100",new String[]{"1",System.currentTimeMillis()+""},null,"SEND_TIME ASC",null);
-                    for (int i = 0; i < recordRespList.size(); i++) {
-                        RecordData recordData=recordRespList.get(i);
-                        recordData.delete();
-                    }
-                    List<Attendance> attendanceList = Attendance.find(Attendance.class,"IS_UPLOAD=? AND (date(?)-date(TIME_STR)) > 100  ",new String[]{"1",System.currentTimeMillis()+""},null,"TIME_STR ASC",null);
-                    for (int i = 0; i < attendanceList.size(); i++) {
-                        Attendance attendance=attendanceList.get(i);
-                        attendance.delete();
-                    }
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-
-            }
-        }).start();
-        boolean isUploadServiceRunning= ReceiverAndServiceUtil.isServiceRunning(cont,"net.jiaobaowang.gonggaopai.service.UploadServiceScheduledExecutor");
-        boolean isReaderServiceRunning=ReceiverAndServiceUtil.isServiceRunning(cont,"net.jiaobaowang.gonggaopai.service.ReaderService");
-        if(!isUploadServiceRunning){
-            //启动定时任务
-            Intent startService = new Intent(cont,UploadServiceScheduledExecutor.class);
-            startService(startService);
-        }
-
-        if(!isReaderServiceRunning){
-            //启动串口读取服务
-            Intent startIntent = new Intent(cont,ReaderService.class);
-            startService(startIntent);
-        }
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                try{
+//                    List<RecordData> recordRespList=RecordData.find(RecordData.class,"IS_UPLOAD=? AND (?-SEND_TIME) > 100",new String[]{"1",System.currentTimeMillis()+""},null,"SEND_TIME ASC",null);
+//                    for (int i = 0; i < recordRespList.size(); i++) {
+//                        RecordData recordData=recordRespList.get(i);
+//                        recordData.delete();
+//                    }
+//                    List<Attendance> attendanceList = Attendance.find(Attendance.class,"IS_UPLOAD=? AND (date(?)-date(TIME_STR)) > 100  ",new String[]{"1",System.currentTimeMillis()+""},null,"TIME_STR ASC",null);
+//                    for (int i = 0; i < attendanceList.size(); i++) {
+//                        Attendance attendance=attendanceList.get(i);
+//                        attendance.delete();
+//                    }
+//                }catch (Exception e){
+//                    e.printStackTrace();
+//                }
+//
+//            }
+//        }).start();
+//        boolean isUploadServiceRunning= ReceiverAndServiceUtil.isServiceRunning(cont,"net.jiaobaowang.gonggaopai.service.UploadServiceScheduledExecutor");
+//        boolean isReaderServiceRunning=ReceiverAndServiceUtil.isServiceRunning(cont,"net.jiaobaowang.gonggaopai.service.ReaderService");
+//        if(!isUploadServiceRunning){
+//            //启动定时任务
+//            Intent startService = new Intent(cont,UploadServiceScheduledExecutor.class);
+//            startService(startService);
+//        }
+//
+//        if(!isReaderServiceRunning){
+//            //启动串口读取服务
+//            Intent startIntent = new Intent(cont,ReaderService.class);
+//            startService(startIntent);
+//        }
     }
 
     private void _stopService(){
-        boolean isUploadServiceRunning= ReceiverAndServiceUtil.isServiceRunning(cont,"net.jiaobaowang.gonggaopai.service.UploadServiceScheduledExecutor");
-        boolean isReaderServiceRunning=ReceiverAndServiceUtil.isServiceRunning(cont,"net.jiaobaowang.gonggaopai.service.ReaderService");
-        if(isUploadServiceRunning){
-            //关闭定时任务
-            Intent startService = new Intent(cont,UploadServiceScheduledExecutor.class);
-            stopService(startService);
-        }
-
-        if(isReaderServiceRunning){
-            //关闭串口读取服务
-            Intent startIntent = new Intent(cont,ReaderService.class);
-            stopService(startIntent);
-        }
+//        boolean isUploadServiceRunning= ReceiverAndServiceUtil.isServiceRunning(cont,"net.jiaobaowang.gonggaopai.service.UploadServiceScheduledExecutor");
+//        boolean isReaderServiceRunning=ReceiverAndServiceUtil.isServiceRunning(cont,"net.jiaobaowang.gonggaopai.service.ReaderService");
+//        if(isUploadServiceRunning){
+//            //关闭定时任务
+//            Intent startService = new Intent(cont,UploadServiceScheduledExecutor.class);
+//            stopService(startService);
+//        }
+//
+//        if(isReaderServiceRunning){
+//            //关闭串口读取服务
+//            Intent startIntent = new Intent(cont,ReaderService.class);
+//            stopService(startIntent);
+//        }
     }
 
     /**
@@ -605,7 +601,7 @@ public class MainActivity extends BaseActivity {
             intent.putExtra("enable", true); //true 为启用， false 为取消此功能
             sendBroadcast(intent);
             if(Const.DEBUG){
-                Toast.makeText(cont, "设置自动开关机成功111111111:"+startyear+"-"+startmonth+"-"+startday+" "+starthour+":"+startminute+"至"+shutdownyear+"-"+shutdownmonth+"-"+shutdownday+" "+shutdownhour+":"+shutdownminute, Toast.LENGTH_LONG).show();
+                Toast.makeText(cont, "设置自动开关机成功:"+startyear+"-"+startmonth+"-"+startday+" "+starthour+":"+startminute+"至"+shutdownyear+"-"+shutdownmonth+"-"+shutdownday+" "+shutdownhour+":"+shutdownminute, Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -641,7 +637,7 @@ public class MainActivity extends BaseActivity {
                         t.cancel();
                         resetTime();
                         quanxian();
-//                        _startService();
+                        _startService();
                     }
 
                     @Override
@@ -699,7 +695,7 @@ public class MainActivity extends BaseActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Toast.makeText(cont, "设置自动开关机成功111111111:"+startyear+"-"+startmonth+"-"+startday+" "+starthour+":"+startminute+"至"+shutdownyear+"-"+shutdownmonth+"-"+shutdownday+" "+shutdownhour+":"+shutdownminute, Toast.LENGTH_LONG).show();
+                    Toast.makeText(cont, "设置自动开关机成功:"+startyear+"-"+startmonth+"-"+startday+" "+starthour+":"+startminute+"至"+shutdownyear+"-"+shutdownmonth+"-"+shutdownday+" "+shutdownhour+":"+shutdownminute, Toast.LENGTH_LONG).show();
                 }
             });
         }
