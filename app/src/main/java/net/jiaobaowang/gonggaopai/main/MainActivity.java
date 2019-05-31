@@ -16,7 +16,11 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
+import android.webkit.WebChromeClient;
+import android.webkit.WebView;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -56,10 +60,11 @@ import java.util.concurrent.TimeUnit;
 public class MainActivity extends BaseActivity {
 
     private AgentWeb mAgentWeb;
+    private FrameLayout baseLayout;
+    private RelativeLayout floatingBtn;
     private AlphaAnimation mHideAnimation;
     private AlphaAnimation mShowAnimation;
-    private RelativeLayout base;
-    private LinearLayout view;
+    private WebView webview;
     private LocationClient mLocationClient = null;
     private MyLocationListener myListener = new MyLocationListener();
     private FloatingActionsMenu menuMultipleActions;
@@ -90,9 +95,11 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public void doBusiness(Context mContext) {
-        base = (RelativeLayout) findViewById(R.id.baseLayout);
-        view = (LinearLayout) findViewById(R.id.webView);
+        baseLayout=(FrameLayout)findViewById(R.id.baseLayout);
+        webview =(WebView)findViewById(R.id.webView);
+        floatingBtn=(RelativeLayout)findViewById(R.id.floatingBtn);
         manager = LocalBroadcastManager.getInstance(cont);
+
         /**
          * 判断打卡广播接收器是否注册
          */
@@ -103,12 +110,12 @@ public class MainActivity extends BaseActivity {
             intentFilter.addAction(Const.ACTION_NAME); //添加动作
             manager.registerReceiver(cardIdReceiver, intentFilter); //注册广播
         }
-
         SharedPreferences sp = cont.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
         Const.socketIp = sp.getString(Const.socketip, Const.socketIp);
         Const.socketPort = sp.getInt(Const.socketport, Const.socketPort);
         Const.updateUrl = sp.getString(Const.updateaddress, Const.updateUrl);
         AECrashHelper.initCrashHandler(getApplication());
+//        initTBS();//初始化腾讯内核
         mAddButton= (AddFloatingActionButton) findViewById(com.getbase.floatingactionbutton.R.id.fab_expand_menu_button);
 
         menuMultipleActions = (FloatingActionsMenu) findViewById(R.id.multiple_actions2);
@@ -240,11 +247,13 @@ public class MainActivity extends BaseActivity {
             url+=uid;
             if (mAgentWeb != null) {
                 IUrlLoader a = mAgentWeb.getUrlLoader();
-                a.loadUrl(url);
+               a.loadUrl(url);
             } else {
                 mAgentWeb = AgentWeb.with(this)
-                        .setAgentWebParent(view, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+                        .setAgentWebParent(webview, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
                         .closeIndicator()
+//                        .setWebSettings()
+                        .setWebChromeClient(new MyWebChromeClient())
                         .createAgentWeb()
                         .ready()
                         .go(url);
@@ -287,7 +296,6 @@ public class MainActivity extends BaseActivity {
                                         });
                                     }
                                 },1000);
-                                break;
                         }
                         return false;
                     }
@@ -295,6 +303,89 @@ public class MainActivity extends BaseActivity {
             }
         }catch (Exception e){
             e.printStackTrace();
+        }
+    }
+
+
+//    @Override
+//    public void onConfigurationChanged(Configuration newConfig) {
+//        super.onConfigurationChanged(newConfig);
+////        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+//        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+//            Toast.makeText(this, "横屏模式", Toast.LENGTH_SHORT).show();
+//        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+//            Toast.makeText(this, "竖屏模式", Toast.LENGTH_SHORT).show();
+//        }
+//    }
+
+    private FrameLayout fullscreenContainer;
+    protected static final FrameLayout.LayoutParams COVER_SCREEN_PARAMS = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+    class MyWebChromeClient extends WebChromeClient {
+        private View myView = null;
+        // 全屏
+        @Override
+        public void onShowCustomView(View view, CustomViewCallback callback) {
+            super.onShowCustomView(view, callback);
+            ViewGroup parent = (ViewGroup) webview.getParent();
+            parent.removeView(webview);
+            parent.removeView(floatingBtn);
+            FrameLayout decor = (FrameLayout) getWindow().getDecorView();
+            fullscreenContainer = new FullscreenHolder(cont);
+            fullscreenContainer.addView(view, COVER_SCREEN_PARAMS);
+            decor.addView(fullscreenContainer, COVER_SCREEN_PARAMS);
+            myView = view;
+            mAgentWeb.clearWebCache();
+            setFullScreen();
+        }
+
+        // 退出全屏
+        @Override
+        public void onHideCustomView() {
+            super.onHideCustomView();
+            if (myView != null) {
+                FrameLayout decor = (FrameLayout) getWindow().getDecorView();
+                decor.removeView(fullscreenContainer);
+                fullscreenContainer = null;
+                baseLayout.addView(webview);
+                baseLayout.addView(floatingBtn);
+                myView = null;
+                mAgentWeb.clearWebCache();
+                quitFullScreen();
+            }
+        }
+    }
+    /**
+     * 设置全屏
+     */
+    private void setFullScreen() {
+        // 设置全屏的相关属性，获取当前的屏幕状态，然后设置全屏
+        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+    }
+
+    /**
+     * 退出全屏
+     */
+    private void quitFullScreen() {
+        // 声明当前屏幕状态的参数并获取
+//        final WindowManager.LayoutParams attrs = this.getWindow().getAttributes();
+//        attrs.flags &= (~WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//        this.getWindow().setAttributes(attrs);
+//        this.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+//        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+    }
+
+    /** 全屏容器界面 */
+    static class FullscreenHolder extends FrameLayout {
+
+        public FullscreenHolder(Context ctx) {
+            super(ctx);
+            setBackgroundColor(ctx.getResources().getColor(android.R.color.black));
+        }
+
+        @Override
+        public boolean onTouchEvent(MotionEvent evt) {
+            return true;
         }
     }
 
@@ -316,6 +407,7 @@ public class MainActivity extends BaseActivity {
                 t.cancel();
             }
         }, 5000);
+
         BaseActivityManager.getAppManager().finishOthersActivity(MainActivity.class);
         if(resultCode==0){
             boolean reload = sp.getBoolean(Const.reload, false);

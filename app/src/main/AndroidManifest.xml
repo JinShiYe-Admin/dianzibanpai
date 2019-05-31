@@ -30,27 +30,31 @@
         android:label="@string/app_name"
         android:roundIcon="@drawable/launcher"
         android:supportsRtl="true"
+        android:hardwareAccelerated="true"
         android:theme="@style/AppTheme">
         <meta-data
             android:name="DATABASE"
             android:value="gonggaopai.db" />
-        //数据库名称
+        <!--//数据库名称-->
         <meta-data
             android:name="VERSION"
             android:value="1" />
-        //数据库版本号
+        <!--//数据库版本号-->
         <meta-data
             android:name="QUERY_LOG"
             android:value="false" />
-        //log
+        <!--//log-->
         <meta-data
             android:name="DOMAIN_PACKAGE_NAME"
             android:value="net.jiaobaowang.gonggaopai.entry" />
-        //实体类包名
+        <!--//实体类包名-->
         <activity
             android:name=".main.MainActivity"
             android:launchMode="standard"
-            android:screenOrientation="landscape">
+            android:hardwareAccelerated="true"
+            android:screenOrientation="landscape"
+
+            android:configChanges="keyboardHidden|orientation|navigation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -60,11 +64,13 @@
         <activity
             android:name=".classes.SetClassesActivity"
             android:launchMode="standard"
-            android:screenOrientation="landscape" />
+            android:screenOrientation="landscape"
+            android:configChanges="keyboardHidden|orientation|navigation|screenSize"/>
         <activity
             android:name=".pwd.PwdActivity"
             android:launchMode="standard"
-            android:screenOrientation="landscape" />
+            android:screenOrientation="landscape"
+            android:configChanges="keyboardHidden|orientation|navigation|screenSize"/>
 
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
@@ -76,19 +82,23 @@
         <activity
             android:name=".main.Main2Activity"
             android:launchMode="standard"
-            android:screenOrientation="landscape" />
+            android:screenOrientation="landscape"
+            android:configChanges="keyboardHidden|orientation|navigation|screenSize"/>
         <activity
             android:name=".style.StyleActivity"
             android:launchMode="standard"
-            android:screenOrientation="landscape" />
+            android:screenOrientation="landscape"
+            android:configChanges="keyboardHidden|orientation|navigation|screenSize"/>
         <activity
             android:name=".style.ImageActivity"
             android:launchMode="standard"
-            android:screenOrientation="landscape" />
+            android:screenOrientation="landscape"
+            android:configChanges="keyboardHidden|orientation|navigation|screenSize"/>
         <activity
             android:name=".main.Main3Activity"
             android:launchMode="standard"
-            android:screenOrientation="landscape" />
+            android:screenOrientation="landscape"
+            android:configChanges="keyboardHidden|orientation|navigation|screenSize"/>
 
         <service
             android:name=".service.ReaderService"
@@ -109,11 +119,13 @@
         <activity
             android:name=".SettingsCheckActivity"
             android:launchMode="standard"
-            android:screenOrientation="landscape" />
+            android:screenOrientation="landscape"
+            android:configChanges="keyboardHidden|orientation|navigation|screenSize"/>
         <activity
             android:name=".timesetting.TimeSettingActivity"
             android:launchMode="standard"
-            android:screenOrientation="landscape" />
+            android:screenOrientation="landscape"
+            android:configChanges="keyboardHidden|orientation|navigation|screenSize"/>
 
         <service
             android:name=".service.DownloadIntentService"
@@ -126,18 +138,22 @@
         <activity
             android:name=".ipmodify.IpPortActivity"
             android:launchMode="standard"
-            android:screenOrientation="landscape" />
+            android:screenOrientation="landscape"
+            android:configChanges="keyboardHidden|orientation|navigation|screenSize"/>
         <activity
             android:name=".pwdmodify.PasswordModifyActivity"
             android:launchMode="standard"
-            android:screenOrientation="landscape" />
+            android:screenOrientation="landscape"
+            android:configChanges="keyboardHidden|orientation|navigation|screenSize"/>
         <activity
             android:name=".htmladdress.HtmlAddressActivity"
             android:launchMode="standard"
-            android:screenOrientation="landscape" />
+            android:screenOrientation="landscape"
+            android:configChanges="keyboardHidden|orientation|navigation|screenSize"/>
         <activity android:name=".updateaddress.AppUpdateAddressActivity"
             android:launchMode="standard"
-            android:screenOrientation="landscape" />
+            android:screenOrientation="landscape"
+            android:configChanges="keyboardHidden|orientation|navigation|screenSize"/>
     </application>
 
 </manifest>
