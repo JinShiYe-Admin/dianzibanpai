@@ -40,6 +40,7 @@ import net.jiaobaowang.gonggaopai.R;
 import net.jiaobaowang.gonggaopai.base.BaseActivity;
 import net.jiaobaowang.gonggaopai.base.BaseActivityManager;
 import net.jiaobaowang.gonggaopai.entry.Attendance;
+import net.jiaobaowang.gonggaopai.entry.Pageurl;
 import net.jiaobaowang.gonggaopai.pwd.PwdActivity;
 import net.jiaobaowang.gonggaopai.util.CommonDialog;
 import net.jiaobaowang.gonggaopai.util.Const;
@@ -184,7 +185,14 @@ public class MainActivity extends BaseActivity {
                 if (mAgentWeb != null) {
                     String url=mAgentWeb.getWebCreator().getWebView().getUrl();
                     if(!url.contains("indexPage1.html")){
-                        mAgentWeb.back();
+                        if(mAgentWeb.getWebCreator().getWebView().canGoBack()){
+                            mAgentWeb.back();
+                        }else{
+                            Pageurl mainUrl = Pageurl.findById(Pageurl.class, 0);
+                            String urlStr = mainUrl.getUrl();
+                            IUrlLoader a = mAgentWeb.getUrlLoader();
+                            a.loadUrl(urlStr);
+                        }
                     }
                 }
                 if(!mScheduledExecutor.isShutdown()){
@@ -287,7 +295,6 @@ public class MainActivity extends BaseActivity {
                                                                 initWeb();
                                                                 mScheduledExecutor.shutdown();
                                                                 mScheduledExecutor.shutdownNow();
-                                                                System.out.println("执行了几次？");
                                                             }
                                                         }
                                                     }, Const.tapReturnTime, Const.tapReturnTime, TimeUnit.SECONDS);
@@ -353,6 +360,22 @@ public class MainActivity extends BaseActivity {
                 quitFullScreen();
             }
         }
+
+        public void onProgressChanged(WebView view, int progress)
+        {
+            //当进度走到100的时候做自己的操作，我这边是弹出dialog
+            if(progress == 100){
+                String url=mAgentWeb.getWebCreator().getWebView().getUrl();
+                System.out.println("页面加载完成了"+url);
+                if(url.contains("indexPage1.html")){
+                    Pageurl mainUrl=new Pageurl();
+                    mainUrl.setId(0L);
+                    mainUrl.setpId("1");
+                    mainUrl.setUrl(url);
+                    mainUrl.save();
+                }
+            }
+        }
     }
     /**
      * 设置全屏
@@ -368,9 +391,12 @@ public class MainActivity extends BaseActivity {
      */
     private void quitFullScreen() {
         // 声明当前屏幕状态的参数并获取
-//        final WindowManager.LayoutParams attrs = this.getWindow().getAttributes();
-//        attrs.flags &= (~WindowManager.LayoutParams.FLAG_FULLSCREEN);
-//        this.getWindow().setAttributes(attrs);
+        final WindowManager.LayoutParams attrs = this.getWindow().getAttributes();
+       attrs.flags &= (~WindowManager.LayoutParams.FLAG_FULLSCREEN);
+       int num =10;
+       num &=(~10);
+       System.out.println(num);
+        this.getWindow().setAttributes(attrs);
 //        this.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
 //        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
     }
