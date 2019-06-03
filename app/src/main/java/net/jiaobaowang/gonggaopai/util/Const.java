@@ -3,14 +3,13 @@ package net.jiaobaowang.gonggaopai.util;
 
 public class Const {
 
+  public static final boolean DEBUG =false; // 是否显示toast
     /****可维护字段*****/
-    public static final boolean DEBUG =false; // 是否显示toast
-  //http://192.168.1.121:8081/classCard-master/html/index/firstPage.html
-  //http://192.168.1.203:8080/banPaiIndex/test12/html/index/firstPage.html
-  public static String baseUrl="http://192.168.1.203:8080/banPaiIndex/test12/html/index/firstPage.html";    //设置班牌类型成功后跳转的页面路径
-  public static String updateUrl="http://192.168.1.203:8080/app/a.apk";    //App更新路径
-  public static String socketIp="192.168.1.121";    //顾工 socket数据交互接口
-  public static int socketPort=8086;    //顾工 socket数据交互端口号
+    //开发服务器
+    public static String baseUrl="http://192.168.1.203:8080/banPaiIndex/test12/html/index/firstPage.html";    //设置班牌类型成功后跳转的页面路径
+    public static String updateUrl="http://192.168.1.203:8080/app/a.apk";    //App更新路径
+    public static String socketIp="192.168.1.121";    //顾工 socket数据交互接口
+    public static int socketPort=8086;    //顾工 socket数据交互端口号
 
     //正式服务器
 //    public static String baseUrl="https://zyja.zhuxue101.net/appsources/html/index/firstPage.html";//    设置班牌类型成功后跳转的页面路径
