@@ -39,7 +39,7 @@ dependencies {
         compile 'com.just.agentweb:agentweb:4.0.2'
     implementation 'com.squareup.okhttp3:okhttp:3.11.0'
     compile 'com.github.satyan:sugar:1.5'
-    compile 'com.mauiie.aech:AECrashHandler:0.0.1'
+    implementation 'com.iqiyi.xcrash:xcrash-android-lib:2.1.4'
     // (必选)
     compile 'com.alibaba:fastjson:1.1.70.android'
     implementation files('libs/BaiduLBS_Android.jar')

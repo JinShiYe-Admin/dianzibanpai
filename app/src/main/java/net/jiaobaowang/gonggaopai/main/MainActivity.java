@@ -34,7 +34,6 @@ import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.just.agentweb.AgentWeb;
 import com.just.agentweb.IUrlLoader;
-import com.mauiie.aech.AECrashHelper;
 
 import net.jiaobaowang.gonggaopai.R;
 import net.jiaobaowang.gonggaopai.base.BaseActivity;
@@ -99,7 +98,6 @@ public class MainActivity extends BaseActivity {
         webview =(WebView)findViewById(R.id.webView);
         floatingBtn=(RelativeLayout)findViewById(R.id.floatingBtn);
         manager = LocalBroadcastManager.getInstance(cont);
-
         /**
          * 判断打卡广播接收器是否注册
          */
@@ -114,7 +112,7 @@ public class MainActivity extends BaseActivity {
         Const.socketIp = sp.getString(Const.socketip, Const.socketIp);
         Const.socketPort = sp.getInt(Const.socketport, Const.socketPort);
         Const.updateUrl = sp.getString(Const.updateaddress, Const.updateUrl);
-        AECrashHelper.initCrashHandler(getApplication());
+        xcrash.XCrash.init(cont);
 //        initTBS();//初始化腾讯内核
         mAddButton= (AddFloatingActionButton) findViewById(com.getbase.floatingactionbutton.R.id.fab_expand_menu_button);
 
