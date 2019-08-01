@@ -5,6 +5,9 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.util.Log;
 
+import com.orm.SugarContext;
+import com.squareup.leakcanary.LeakCanary;
+
 
 public class BaseApplication extends Application {
 
@@ -16,6 +19,11 @@ public class BaseApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        SugarContext.init(this);
+        if (LeakCanary.isInAnalyzerProcess(this)) {
+            return;
+        }
+        LeakCanary.install(this);
     }
 
     @Override
@@ -33,6 +41,7 @@ public class BaseApplication extends Application {
     public void onTerminate() {
         super.onTerminate();
             Log.e("BaseApplication", "onTerminate");
+        SugarContext.terminate();
     }
 
     @Override

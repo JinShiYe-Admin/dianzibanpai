@@ -251,18 +251,20 @@ public class MainActivity extends BaseActivity {
             }
             String uid="&v="+System.currentTimeMillis();
             url+=uid;
+            final String newUrl=url;
             if (mAgentWeb != null) {
                 IUrlLoader a = mAgentWeb.getUrlLoader();
                a.loadUrl(url);
             } else {
-                mAgentWeb = AgentWeb.with(this)
+                mAgentWeb = AgentWeb.with(cont)
                         .setAgentWebParent(webview, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
                         .closeIndicator()
 //                        .setWebSettings()
                         .setWebChromeClient(new MyWebChromeClient())
                         .createAgentWeb()
                         .ready()
-                        .go(url);
+                        .go(newUrl);
+
                 /**
                  * 屏幕tap事件,用于N分钟没有点击事件后返回主页面
                  */
