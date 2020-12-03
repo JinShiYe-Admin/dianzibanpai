@@ -112,7 +112,7 @@ public class MainActivity extends BaseActivity {
         Const.socketIp = sp.getString(Const.socketip, Const.socketIp);
         Const.socketPort = sp.getInt(Const.socketport, Const.socketPort);
         Const.updateUrl = sp.getString(Const.updateaddress, Const.updateUrl);
-        xcrash.XCrash.init(cont);
+//        xcrash.XCrash.init(cont);
 //        initTBS();//初始化腾讯内核
         mAddButton= (AddFloatingActionButton) findViewById(com.getbase.floatingactionbutton.R.id.fab_expand_menu_button);
 

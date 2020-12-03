@@ -60,9 +60,7 @@ public class ReceiverAndServiceUtil {
                 }
             }
 
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return isRegister;
