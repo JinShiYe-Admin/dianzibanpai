@@ -140,7 +140,8 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onClick(View v) {//设置班牌类型
                 if (mAgentWeb != null) {
-                        mAgentWeb.getUrlLoader().reload();
+//                        mAgentWeb.getUrlLoader().reload();
+                    initWeb();
                 }
             }
         });
