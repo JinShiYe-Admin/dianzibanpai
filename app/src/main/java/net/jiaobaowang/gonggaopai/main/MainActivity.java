@@ -532,11 +532,7 @@ public class MainActivity extends BaseActivity {
             }, BAIDU_READ_PHONE_STATE);
         }else{
             SharedPreferences sp = this.getSharedPreferences(Const.SPNAME,Context.MODE_PRIVATE);
-            String cityName = sp.getString(Const.cityName, "");
-            if(Validate.isNull(cityName)){
-                initMap();
-                mLocationClient.start();
-            }else{
+            final String cityName = sp.getString(Const.cityName, "");
                 //开机后wifi还没准备好，需要延时加载webview
                 final Handler mHandler = new Handler();
                 Runnable r = new Runnable() {
@@ -546,13 +542,16 @@ public class MainActivity extends BaseActivity {
                             mHandler.postDelayed(this, 200);
                         }else{
                             mHandler.removeCallbacks(this);
+                            if(Validate.isNull(cityName)){
+                                initMap();
+                                mLocationClient.start();
+                            }
                             initWeb();
                         }
 
                     }
                 };
                 mHandler.postDelayed(r, 100);//延时100毫秒
-            }
         }
     }
 
